@@ -775,7 +775,7 @@ function renderMasterCards(){
 function checkLoadSave(){
   if(hasSave()){
     if(confirm("發現已有存檔，是否載入？")){
-      loadGame();showScreen(""s-main"");renderMain();return true;
+      loadGame();showScreen('s-main');renderMain();return true;
     }else{clearSave();}
   }
   return false;
