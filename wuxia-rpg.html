@@ -578,7 +578,7 @@ const SAVE_KEY='wuxia_rpg_save';
 function saveGame(){
   if(!player)return;
   const data={player,selBirth,selFaction,selMaster,shopStock,savedAt:Date.now()};
-  try{localStorage.setItem(SAVE_KEY,JSON.stringify(data));showNotice("💾 遊戲已儲存",'#60b060');}catch(e){showNotice("儲存失敗","'#e05050');}
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify(data));showNotice("💾 遊戲已儲存",'#60b060');}catch(e){showNotice('儲存失敗','#e05050');}
 }
 function loadGame(){
   try{
