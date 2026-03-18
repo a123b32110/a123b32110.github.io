@@ -996,7 +996,7 @@ async function exploreAI(locId){
     document.getElementById('story-content').innerHTML=`<span class="nbadge" style="background:${ncolor(loc.novel)};margin-bottom:10px;display:inline-block">${loc.novel}</span><p id="stxt" style="color:var(--paper);line-height:2.2;font-size:14px;letter-spacing:1px;margin-top:8px"></p>`;
     let buf='';
     const full=await callStream([{role:'user',content:prompt}],d=>{buf+=d;try{const j=JSON.parse(buf.replace(/```json|```/g,'').trim());if(j.story)document.getElementById('stxt').textContent=j.story;}catch{}});
-    const p=JSON.parse(full.replace(/```json|```/g,'').trim());
+    const p=parseAIJson(full);
     const rc={'高':'#e05050','中':'var(--goldl)','低':'#60b060'};
     document.getElementById('story-content').innerHTML=`<span class="nbadge" style="background:${ncolor(loc.novel)};margin-bottom:10px;display:inline-block">${loc.novel}</span><p style="color:var(--paper);line-height:2.2;font-size:14px;letter-spacing:1px;margin-top:8px">${p.story}</p>`;
     document.getElementById('story-choices').innerHTML=p.choices.map(c=>`
@@ -1040,7 +1040,7 @@ async function aiChoice(enc,novEnc){
     sc.innerHTML+=`<div class="decor" style="margin:12px 0"><span>◆</span></div><p id="sres" style="color:var(--goldl);line-height:2;font-size:13px;letter-spacing:1px"></p>`;
     let buf='';
     const full=await callStream([{role:'user',content:prompt}],d=>{buf+=d;try{const j=JSON.parse(buf.replace(/```json|```/g,'').trim());if(j.result)document.getElementById('sres').textContent=j.result;}catch{}});
-    const p=JSON.parse(full.replace(/```json|```/g,'').trim());
+    const p=parseAIJson(full);
     if(p.reward){
       player.gold=Math.max(0,player.gold+(p.reward.gold||0));
       player.hp=Math.min(player.maxHp,Math.max(1,player.hp+(p.reward.hp||0)));
