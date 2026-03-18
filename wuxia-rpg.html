@@ -65,7 +65,8 @@ input:focus{border-color:var(--gold)}
 .tab-btn.active{border-color:var(--gold);color:var(--goldl)}
 /* Animations */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.screen.active { animation: fadeIn 0.4s ease; }
 .log-area p { animation: slideIn 0.3s ease-out; }
 </style>
 </head>
@@ -80,8 +81,8 @@ input:focus{border-color:var(--gold)}
   <div class="decor"><span>◆</span></div>
   <p style="color:var(--dim);font-size:13px;letter-spacing:2px;line-height:2.3;max-width:360px;margin:12px auto">降龍十八掌震天動地<br>獨孤九劍無招勝有招<br>小李飛刀例不虛發<br>你的傳奇，由你書寫</p>
   <div class="decor"><span>◆</span></div>
-  <div style="margin-top:24px"><button class="btn-p" onclick="showScreen('s-apikey')">踏入江湖</button>
-    <div style="margin-top:8px" id="load-btn-area"></div>
+  <div style="margin-top:24px"><button class="btn-p" onclick="if(hasSave() && confirm('發現存檔，載入?')){loadGame();showScreen('s-main');renderMain();}else{showScreen('s-apikey')}">踏入江湖</button>
+      <div id="load-btn-area"></div></div>
   <div style="margin-top:10px;color:rgba(200,180,140,.18);font-size:10px;letter-spacing:3px">裝備系統 · 商店買賣 · AI奇遇 · 本門武學</div>
 </div>
 
@@ -453,7 +454,7 @@ const EQUIP_DB={
     {id:'c6',name:'虎豹雷音丸',icon:'🟠',rarity:'稀有',price:250,effect:{tempStr:10,rounds:5},desc:'5回合內武力+10'},
     {id:'c7',name:'醍醐灌頂丹',icon:'🟣',rarity:'史詩',price:500,effect:{wis:3,permanent:true},desc:'永久提升悟性3點'},
   ],
-}
+};
 
 // 奇遇 — 可獲得稀有武學或裝備
 const QIYUS=[
@@ -575,14 +576,12 @@ let apiKey='',groupId='';
 let selBirth=null,selFaction=null,selMaster=null;
 let player=null,enemy=null,combatBusy=false;
 let shopStock=[];
-// ═══════════════════════════════════════════════════
-// SAVE/LOAD SYSTEM
-// ═══════════════════════════════════════════════════
-const SAVE_KEY='wuxia_rpg_save';
+// Save/Load System
+const SAVE_KEY = 'wuxia_rpg_v2';
 function saveGame(){
   if(!player)return;
-  const data={player,selBirth,selFaction,selMaster,shopStock,savedAt:Date.now()}
-  try{localStorage.setItem(SAVE_KEY,JSON.stringify(data));showNotice("💾 遊戲已儲存",'#60b060');}catch(e){showNotice('儲存失敗','#e05050');}
+  const data={player,selBirth,selFaction,selMaster,shopStock,savedAt:Date.now()};
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify(data));showNotice("💾 進度已封存","#60b060");}catch(e){showNotice("封存失敗","#e05050");}
 }
 function loadGame(){
   try{
@@ -595,7 +594,6 @@ function loadGame(){
 }
 function hasSave(){return!!localStorage.getItem(SAVE_KEY);}
 function clearSave(){localStorage.removeItem(SAVE_KEY);showNotice("存檔已清除");}
-
 
 function getAllSkills(){return FACTIONS.flatMap(f=>f.skills).concat(EXTRA_SKILLS);}
 function findSkill(id){return getAllSkills().find(s=>s.id===id);}
@@ -617,16 +615,16 @@ function makePlayer(birth,faction,master){
     gold:150,sp:3,skills:[],kills:0,days:1,
     equipped:{weapon:null,armor:null,accessory:null},
     inventory:[],consumables:[],
-  }
+  };
   // Give master's gift equipment
-  const giftPool={weapon:EQUIP_DB.weapon,armor:EQUIP_DB.armor,accessory:EQUIP_DB.accessory}
+  const giftPool={weapon:EQUIP_DB.weapon,armor:EQUIP_DB.armor,accessory:EQUIP_DB.accessory};
   if(master.giftType && master.gift){
     const match=giftPool[master.giftType]?.find(e=>e.name===master.gift||e.id.startsWith(master.giftType[0]));
     // Give a themed starter item based on master
     const starterEquips={
       guojing:'w4',linghu:'ac4',zhangwuji:'ac3',yanguo:'w4',
       chuliu:'ac1',lixunhuan:'ac1',zhuge:'ac5',dugu:'w5'
-    }
+    };
     const sid=starterEquips[master.id];
     const allE=[...EQUIP_DB.weapon,...EQUIP_DB.armor,...EQUIP_DB.accessory];
     const item=allE.find(e=>e.id===sid);
@@ -639,8 +637,8 @@ function makePlayer(birth,faction,master){
 
 // Equipment bonuses
 function getEquipBonus(){
-  if(!player)return{atk:0,def:0,hp:0,mp:0,str:0,qi:0,wis:0,crit:0,dodge:0}
-  const b={atk:0,def:0,hp:0,mp:0,str:0,qi:0,wis:0,crit:0,dodge:0,reflect:0}
+  if(!player)return{atk:0,def:0,hp:0,mp:0,str:0,qi:0,wis:0,crit:0,dodge:0};
+  const b={atk:0,def:0,hp:0,mp:0,str:0,qi:0,wis:0,crit:0,dodge:0,reflect:0};
   Object.values(player.equipped).forEach(item=>{
     if(!item)return;
     Object.entries(item.stats||{}).forEach(([k,v])=>{if(b[k]!==undefined)b[k]+=v;});
@@ -652,14 +650,12 @@ function effectiveStats(){
   return{
     str:player.str+b.str,qi:player.qi+b.qi,wis:player.wis+b.wis,
     atk:b.atk,def:b.def,crit:b.crit,dodge:b.dodge,reflect:b.reflect
-  }
+  };
 }
 
 // ═══════════════════════════════════════════════════
 // UI HELPERS
 // ═══════════════════════════════════════════════════
-.screen { display: none; animation: fadeIn 0.3s ease; }
-
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function showNotice(msg,color=null){
   const el=document.getElementById('notice');
@@ -742,8 +738,8 @@ function showFactionScreen(){showScreen('s-faction');renderFactionCards();}
 function renderFactionCards(){
   document.getElementById('faction-cards').innerHTML=FACTIONS.map(f=>`
     <div onclick="selFaction=FACTIONS.find(x=>x.id==='${f.id}');document.getElementById('faction-confirm').style.display='inline-block';renderFactionCards()" style="
-      background:${selFaction?.id===f.id?f.color+'ee':f.color+'44'}
-      border:${selFaction?.id===f.id?'2px solid '+f.accent:'1px solid '+f.color+'88'}
+      background:${selFaction?.id===f.id?f.color+'ee':f.color+'44'};
+      border:${selFaction?.id===f.id?'2px solid '+f.accent:'1px solid '+f.color+'88'};
       border-radius:8px;padding:13px;cursor:pointer;text-align:center;transition:all .2s">
       <div style="font-size:28px;margin-bottom:5px">${f.icon}</div>
       <div style="color:var(--paper);font-size:13px;font-weight:bold;letter-spacing:2px;margin-bottom:3px">${f.name}</div>
@@ -777,16 +773,6 @@ function renderMasterCards(){
 // ═══════════════════════════════════════════════════
 // GAME START
 // ═══════════════════════════════════════════════════
-// Check for save and ask to load
-function checkLoadSave(){
-  if(hasSave()){
-    if(confirm("發現已有存檔，是否載入？")){
-      loadGame();showScreen('s-main');renderMain();return true;
-    }else{clearSave();}
-  }
-  return false;
-}
-
 function startGame(){
   if(!selBirth||!selFaction||!selMaster)return;
   player=makePlayer(selBirth,selFaction,selMaster);
@@ -805,8 +791,8 @@ function renderMain(){
     {icon:'📖',label:'本門修煉',sub:`修煉${player.faction.name}武學${player.sp>0?` (${player.sp}點)`:''}`,action:"showScreen('s-skills');renderSkillTree()",bg:'#0a0a1a',badge:player.sp},
     {icon:'🛡️',label:'裝備管理',sub:'查看裝備、切換配置',action:"showScreen('s-equip');renderEquip()",bg:'#101a10'},
     {icon:'🏮',label:'江湖市集',sub:'購買兵器、藥品、秘笈',action:"showScreen('s-shop');renderShop()",bg:'#1a1000'},
+    {icon:'💾',label:'儲存進度',sub:'手動封存',action:'saveGame()',bg:'#101018'},
     {icon:'🌙',label:'打坐休息',sub:'恢復生命內力，過一天',action:'doRest();saveGame()',bg:'#111009'},
-    {icon:'💾',label:'儲存進度',sub:'手動儲存遊戲',action:'saveGame()',bg:'#101018'},
   ];
   document.getElementById('action-grid').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
     ${actions.map(a=>`<div class="acard" style="background:${a.bg}" onclick="${a.action}">
@@ -908,7 +894,7 @@ function doQiyu(id){
   document.getElementById('story-back-btn').innerHTML=`<button class="btn-d" onclick="showScreen(&apos;s-explore&apos;);renderExplore()">← 返回</button>`;
   document.getElementById('story-done-btns').style.display='none';
   document.getElementById('story-content').innerHTML=`<p style="color:var(--paper);line-height:2.1;font-size:14px;letter-spacing:1px">${q.story}</p>`;
-  const riskColor={'高':'#e05050','中':'var(--goldl)','低':'#60b060'}
+  const riskColor={'高':'#e05050','中':'var(--goldl)','低':'#60b060'};
   document.getElementById('story-choices').innerHTML=q.choices.map((c,i)=>`
     <button class="choice-btn" onclick="resolveQiyu(${JSON.stringify(q.choices).replace(/"/g,'&quot;')},${i})">
       <div style="display:flex;justify-content:space-between;align-items:center">
@@ -964,7 +950,7 @@ function doClassic(id){
     </button>`).join('');
 }
 function resolveClassic(choices,idx){
-  const c=choices[idx];const r=c.reward||{}
+  const c=choices[idx];const r=c.reward||{};
   if(r.str)player.str+=r.str;if(r.qi)player.qi+=r.qi;if(r.wis)player.wis+=r.wis;
   if(r.hp)player.hp=Math.min(player.maxHp,player.hp+r.hp);
   if(r.exp){player.exp+=r.exp;checkLevelUp();}
@@ -1011,7 +997,7 @@ async function exploreAI(locId){
     let buf='';
     const full=await callStream([{role:'user',content:prompt}],d=>{buf+=d;try{const j=JSON.parse(buf.replace(/```json|```/g,'').trim());if(j.story)document.getElementById('stxt').textContent=j.story;}catch{}});
     const p=JSON.parse(full.replace(/```json|```/g,'').trim());
-    const rc={'高':'#e05050','中':'var(--goldl)','低':'#60b060'}
+    const rc={'高':'#e05050','中':'var(--goldl)','低':'#60b060'};
     document.getElementById('story-content').innerHTML=`<span class="nbadge" style="background:${ncolor(loc.novel)};margin-bottom:10px;display:inline-block">${loc.novel}</span><p style="color:var(--paper);line-height:2.2;font-size:14px;letter-spacing:1px;margin-top:8px">${p.story}</p>`;
     document.getElementById('story-choices').innerHTML=p.choices.map(c=>`
       <button class="choice-btn" onclick="aiChoice('${encodeURIComponent(JSON.stringify(c))}','${encodeURIComponent(loc.novel)}')">
@@ -1031,7 +1017,6 @@ async function exploreAI(locId){
     document.getElementById('story-choices').querySelectorAll('button').forEach(b=>{b.addEventListener('click',()=>aiChoice(b.dataset.c,b.dataset.n));});
     const bb=document.createElement('button');bb.className='btn-d';bb.textContent='← 返回';bb.onclick=()=>{showScreen('s-explore');renderExplore();};document.getElementById('story-back-btn').innerHTML='';document.getElementById('story-back-btn').appendChild(bb);
   }
-}
 }
 
 async function aiChoice(enc,novEnc){
@@ -1075,14 +1060,14 @@ async function aiChoice(enc,novEnc){
 // ═══════════════════════════════════════════════════
 // COMBAT
 // ═══════════════════════════════════════════════════
-const MP_COST={1:16,2:26,3:40}
+const MP_COST={1:16,2:26,3:40};
 function beginCombat(){
   const lv=player.level;
   const pool=ENEMIES.slice(0,Math.min(ENEMIES.length,Math.max(2,Math.ceil(lv/1.4))));
   const base=pool[Math.floor(Math.random()*pool.length)];
   const sc=1+(lv-1)*0.13;
   enemy={...base,hp:Math.floor(base.hp*sc),maxHp:Math.floor(base.hp*sc),
-    atk:Math.floor(base.atk*sc),def:Math.floor(base.def*sc),stunned:0,bleed:0,burn:0}
+    atk:Math.floor(base.atk*sc),def:Math.floor(base.def*sc),stunned:0,bleed:0,burn:0};
   combatBusy=false;
   showScreen('s-combat');
   document.getElementById('combat-log').innerHTML='';
@@ -1257,7 +1242,7 @@ function renderSkillTree(){
         const learned=player.skills.includes(sk.id);
         const reqOk=!sk.req||player.skills.includes(sk.req);
         const can=!learned&&reqOk&&player.sp>=sk.cost;
-        return`<div class="card" style="margin-bottom:8px;cursor:${can?'pointer':'default'};${learned?'background:rgba(40,120,40,.18);border-color:rgba(60,160,60,.4)':!reqOk?'opacity:.4':''}" ${can?`onclick="learnSkill('${sk.id}')"`:''}>>
+        return`<div class="card" style="margin-bottom:8px;cursor:${can?'pointer':'default'};${learned?'background:rgba(40,120,40,.18);border-color:rgba(60,160,60,.4)':!reqOk?'opacity:.4':''}" ${can?`onclick="learnSkill('${sk.id}')"`:''}>
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-size:22px">${sk.icon}</span>
             <div style="flex:1">
@@ -1291,7 +1276,7 @@ function learnSkill(id){
 // ═══════════════════════════════════════════════════
 // EQUIPMENT
 // ═══════════════════════════════════════════════════
-const SLOT_META={weapon:{label:'兵器',icon:'⚔️'},armor:{label:'護甲',icon:'🛡️'},accessory:{label:'飾品',icon:'💍'}}
+const SLOT_META={weapon:{label:'兵器',icon:'⚔️'},armor:{label:'護甲',icon:'🛡️'},accessory:{label:'飾品',icon:'💍'}};
 function renderEquip(){
   const slots=document.getElementById('equip-slots');
   slots.innerHTML=Object.entries(SLOT_META).map(([slot,meta])=>{
@@ -1348,7 +1333,7 @@ function generateShopStock(){
     armor:pickRandom(EQUIP_DB.armor,4),
     accessory:pickRandom(EQUIP_DB.accessory,4),
     consumable:pickRandom(EQUIP_DB.consumable,5),
-  }
+  };
   // Chance for rare extra skill scroll
   if(Math.random()<0.35){
     const sk=EXTRA_SKILLS[Math.floor(Math.random()*EXTRA_SKILLS.length)];
@@ -1436,17 +1421,20 @@ function sellItem(i){
 // ═══════════════════════════════════════════════════
 // MINIMAX API
 // ═══════════════════════════════════════════════════
-// Robust JSON parser like GEMINI.html
+// Robust JSON parser - handles malformed AI responses
 function parseAIJson(text){
   try{
-    const match=text.match(/\{[\s\S]*\}/);
-    return JSON.parse(match?match[0]:text);
-  }catch(e){throw new Error("JSON_PARSE_ERROR");}
+    const match = text.match(/\{[\s\S]*\}/);
+    return JSON.parse(match ? match[0] : text);
+  }catch(e){
+    console.error("JSON parse error:", e);
+    return {story:"天機紊亂，什麼都沒有發生。",choices:[],reward:{gold:0,exp:0}};
+  }
 }
 
 async function callStream(msgs,onChunk){
   if(!apiKey)throw new Error('no key');
-  const body={model:'MiniMax-M2.5',messages:msgs,max_tokens:700,stream:true}
+  const body={model:'MiniMax-M2.5',messages:msgs,max_tokens:700,stream:true};
   if(groupId)body.group_id=groupId;
   const res=await fetch('https://api.minimax.io/v1/text/chatcompletion_v2',{
     method:'POST',headers:{'Authorization':`Bearer ${apiKey}`,'Content-Type':'application/json'},
@@ -1463,15 +1451,6 @@ async function callStream(msgs,onChunk){
     }
   }
   return full;
-}
-
-// Show load button if save exists
-window.onload=function(){
-  if(document.getElementById("load-btn-area")){
-    if(hasSave()){
-      document.getElementById("load-btn-area").innerHTML = "<button class=\"btn-d\" onclick=\"checkLoadSave()\">載入進度</button>";
-    }
-  }
 }
 </script>
 </body>
