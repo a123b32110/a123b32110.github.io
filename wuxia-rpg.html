@@ -7,7 +7,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#080603;--paper:#f0e2c0;--dim:rgba(240,226,192,0.55);--border:rgba(180,140,30,0.28);--gold:#c9940d;--goldl:#f0b820;--red:#b5241c;--font:'Noto Serif TC','KaiTi','SimSun',serif}
+:root{--bg:#080603;--paper:#f0e2c0;--dim:rgba(240,226,192,0.55);--border:rgba(180,140,30,0.28);--gold:#c9940d;--goldl:#f0b820;--red:#b5241c;--blue:#2060c0;--green:#308830;--font:'Noto Serif TC','KaiTi','SimSun',serif}
 body{background:var(--bg);font-family:var(--font);color:var(--paper);min-height:100vh}
 .screen{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:20px}
 .screen.active{display:flex}
@@ -16,58 +16,53 @@ h2{color:var(--gold);letter-spacing:6px;text-align:center;margin-bottom:6px}
 .decor::before,.decor::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,var(--border))}
 .decor::after{background:linear-gradient(to left,transparent,var(--border))}
 .decor span{color:var(--gold);font-size:10px}
-.btn-primary{background:var(--red);border:none;color:#fff;padding:11px 30px;border-radius:5px;cursor:pointer;font-family:var(--font);font-size:14px;letter-spacing:3px;font-weight:bold;box-shadow:0 3px 14px rgba(181,36,28,.55);transition:filter .18s}
-.btn-primary:hover{filter:brightness(1.2)}
-.btn-gold{background:transparent;border:1px solid var(--gold);color:var(--goldl);padding:10px 22px;border-radius:5px;cursor:pointer;font-family:var(--font);font-size:13px;letter-spacing:2px;transition:background .2s}
-.btn-gold:hover{background:rgba(180,140,20,.15)}
-.btn-dim{background:transparent;border:1px solid var(--border);color:var(--dim);padding:7px 16px;border-radius:4px;cursor:pointer;font-family:var(--font);font-size:11px;letter-spacing:1px}
-.btn-dim:hover{border-color:var(--gold)}
-.card{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:18px}
-.card.selected{background:rgba(180,100,20,.22);border:2px solid var(--gold);box-shadow:0 0 22px rgba(180,140,20,.28)}
-.card:hover{cursor:pointer;filter:brightness(1.2)}
-.hpbar-wrap{background:rgba(0,0,0,.5);border-radius:3px;height:8px;overflow:hidden;border:1px solid var(--border)}
+.btn-p{background:var(--red);border:none;color:#fff;padding:10px 26px;border-radius:5px;cursor:pointer;font-family:var(--font);font-size:13px;letter-spacing:3px;font-weight:bold;box-shadow:0 3px 14px rgba(181,36,28,.5);transition:filter .18s}
+.btn-p:hover{filter:brightness(1.2)}
+.btn-g{background:transparent;border:1px solid var(--gold);color:var(--goldl);padding:8px 18px;border-radius:5px;cursor:pointer;font-family:var(--font);font-size:12px;letter-spacing:2px;transition:all .2s}
+.btn-g:hover{background:rgba(180,140,20,.15)}
+.btn-d{background:transparent;border:1px solid var(--border);color:var(--dim);padding:6px 14px;border-radius:4px;cursor:pointer;font-family:var(--font);font-size:11px;letter-spacing:1px}
+.btn-d:hover{border-color:var(--gold);color:var(--paper)}
+.card{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:16px}
+.card.sel{background:rgba(180,100,20,.22);border:2px solid var(--gold);box-shadow:0 0 20px rgba(180,140,20,.25)}
+.hpbar-wrap{background:rgba(0,0,0,.5);border-radius:3px;height:7px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
 .hpbar{height:100%;transition:width .35s}
-.tag{background:rgba(0,0,0,.38);border-radius:4px;padding:4px 10px;font-size:11px;color:var(--paper);border:1px solid var(--border);display:inline-block}
-.notice{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(12,8,2,.98);border-radius:6px;padding:10px 28px;letter-spacing:2px;font-size:13px;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.7);transition:opacity .3s}
+.mpbar-wrap{background:rgba(0,0,0,.5);border-radius:3px;height:5px;overflow:hidden;border:1px solid rgba(40,100,200,.25)}
+.tag{background:rgba(0,0,0,.38);border-radius:4px;padding:3px 8px;font-size:11px;color:var(--paper);border:1px solid var(--border);display:inline-block}
+.notice{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(12,8,2,.98);border-radius:6px;padding:10px 26px;letter-spacing:2px;font-size:13px;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.8);transition:opacity .3s;border:1px solid var(--gold)}
 input[type=text],input[type=password]{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--paper);padding:10px 14px;border-radius:5px;font-family:var(--font);font-size:13px;width:100%;outline:none;letter-spacing:1px}
 input:focus{border-color:var(--gold)}
-.log-area{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:12px;height:200px;overflow-y:auto;font-size:12px;line-height:1.9;letter-spacing:.5px}
-.log-area p{margin:0;border-bottom:1px solid rgba(255,255,255,.04);padding:2px 0}
-.spinner{display:inline-block;width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+.log-area{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:12px;height:190px;overflow-y:auto;font-size:12px;line-height:1.9}
+.log-area p{margin:0;padding:1px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
-.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:14px}
-.stat-box{background:rgba(0,0,0,.38);border-radius:4px;padding:5px 6px;text-align:center}
-.stat-box .lbl{color:var(--dim);font-size:9px}
-.stat-box .val{font-weight:bold;font-size:13px}
-.sidebar{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:16px;min-width:200px;flex-shrink:0}
-.main-layout{display:flex;gap:18px;width:100%;max-width:920px;flex-wrap:wrap}
-.main-content{flex:1;min-width:260px}
-.action-card{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:18px 14px;cursor:pointer;text-align:center;transition:filter .2s;position:relative}
-.action-card:hover{filter:brightness(1.45)}
-.skill-branch{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px}
-.skill-node{border:1px solid var(--border);border-radius:6px;padding:10px;transition:background .2s;margin-bottom:8px}
-.skill-node.available{cursor:pointer}
-.skill-node.available:hover{background:rgba(180,140,20,.1)}
-.skill-node.learned{background:rgba(40,120,40,.2);border-color:rgba(60,160,60,.5)}
-.skill-node.locked{opacity:.4;cursor:not-allowed}
-.choice-btn{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:6px;padding:13px 16px;cursor:pointer;transition:background .2s;margin-bottom:9px;width:100%;text-align:left;font-family:var(--font);color:var(--paper);font-size:14px;letter-spacing:1px}
-.choice-btn:hover{background:rgba(180,140,20,.1)}
-.combat-enemy{background:rgba(100,0,0,.2);border:1px solid rgba(180,40,40,.3);border-radius:8px;padding:16px;text-align:center}
-.combat-skill-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.combat-skill-btn{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:5px;padding:8px 12px;cursor:pointer;font-family:var(--font);font-size:11px;color:var(--paper);transition:background .2s;letter-spacing:1px}
-.combat-skill-btn:hover:not(:disabled){background:rgba(180,140,20,.15);border-color:var(--gold)}
-.combat-skill-btn:disabled{opacity:.4;cursor:not-allowed}
-.novel-badge{display:inline-block;font-size:9px;padding:2px 6px;border-radius:3px;letter-spacing:1px;margin-left:6px;vertical-align:middle}
-.event-card{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px;cursor:pointer;transition:background .2s}
-.event-card:hover{background:rgba(180,140,20,.08)}
-.npc-card{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;text-align:center;transition:all .2s}
-.npc-card:hover{background:rgba(180,140,20,.1);border-color:var(--gold)}
-.npc-card.selected{background:rgba(180,100,20,.22);border:2px solid var(--gold)}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.sbox{background:rgba(0,0,0,.38);border-radius:4px;padding:5px 6px;text-align:center}
+.sbox .l{color:var(--dim);font-size:9px}
+.sbox .v{font-weight:bold;font-size:12px}
+.sidebar{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:14px;min-width:196px;flex-shrink:0}
+.layout{display:flex;gap:16px;width:100%;max-width:940px;flex-wrap:wrap}
+.main-c{flex:1;min-width:260px}
+.acard{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:16px 12px;cursor:pointer;text-align:center;transition:filter .2s;position:relative}
+.acard:hover{filter:brightness(1.5)}
+.choice-btn{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:6px;padding:12px 15px;cursor:pointer;transition:background .2s;margin-bottom:8px;width:100%;text-align:left;font-family:var(--font);color:var(--paper);font-size:13px;letter-spacing:1px}
+.choice-btn:hover{background:rgba(180,140,20,.1);border-color:rgba(180,140,20,.4)}
+.cecard{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;cursor:pointer;transition:background .2s}
+.cecard:hover{background:rgba(180,140,20,.07)}
+.cbtn{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:5px;padding:7px 11px;cursor:pointer;font-family:var(--font);font-size:11px;color:var(--paper);transition:background .2s;letter-spacing:.5px;text-align:center}
+.cbtn:hover:not(:disabled){background:rgba(180,140,20,.15);border-color:var(--gold)}
+.cbtn:disabled{opacity:.35;cursor:not-allowed}
+.nbadge{font-size:9px;padding:1px 5px;border-radius:3px;letter-spacing:1px;display:inline-block}
+.equip-slot{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:6px;padding:10px;min-height:54px;cursor:pointer;transition:border-color .2s;text-align:center}
+.equip-slot:hover{border-color:var(--gold)}
+.equip-slot.filled{border-color:rgba(180,140,20,.5);background:rgba(180,100,20,.1)}
+.shop-item{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:7px;padding:12px;transition:background .2s}
+.shop-item:hover{background:rgba(180,140,20,.08)}
+.rarity-普通{color:#aaa}.rarity-精良{color:#5aaa5a}.rarity-稀有{color:#5080e0}.rarity-史詩{color:#a060d0}.rarity-傳說{color:var(--goldl)}
+.tab-btn{background:transparent;border:1px solid var(--border);color:var(--dim);padding:6px 16px;border-radius:4px;cursor:pointer;font-family:var(--font);font-size:11px;letter-spacing:1px;transition:all .2s}
+.tab-btn.active{border-color:var(--gold);color:var(--goldl)}
 </style>
 </head>
 <body>
@@ -76,31 +71,30 @@ input:focus{border-color:var(--gold)}
 <!-- TITLE -->
 <div class="screen active" id="s-title" style="text-align:center">
   <div style="color:var(--gold);font-size:11px;letter-spacing:8px;opacity:.6;margin-bottom:14px">══ 金庸 · 古龍 · 溫瑞安 ══</div>
-  <h1 style="margin:0;font-size:clamp(48px,9vw,88px);color:var(--paper);letter-spacing:10px;font-weight:900;text-shadow:0 0 40px rgba(180,100,15,.4),2px 3px 0 rgba(0,0,0,.8)">武俠傳說</h1>
-  <div style="color:var(--red);font-size:clamp(13px,2.5vw,19px);letter-spacing:6px;margin:10px 0">江湖 · 武學 · 傳奇</div>
+  <h1 style="margin:0;font-size:clamp(46px,9vw,86px);color:var(--paper);letter-spacing:10px;font-weight:900;text-shadow:0 0 40px rgba(180,100,15,.4),2px 3px 0 rgba(0,0,0,.8)">武俠傳說</h1>
+  <div style="color:var(--red);font-size:clamp(13px,2.5vw,18px);letter-spacing:6px;margin:10px 0">江湖 · 武學 · 傳奇</div>
   <div class="decor"><span>◆</span></div>
-  <p style="color:var(--dim);font-size:13px;letter-spacing:2px;line-height:2.2;max-width:360px;margin:12px auto">
-    降龍十八掌震天動地<br>獨孤九劍無招勝有招<br>小李飛刀例不虛發<br>你的傳奇，由你書寫
-  </p>
+  <p style="color:var(--dim);font-size:13px;letter-spacing:2px;line-height:2.3;max-width:360px;margin:12px auto">降龍十八掌震天動地<br>獨孤九劍無招勝有招<br>小李飛刀例不虛發<br>你的傳奇，由你書寫</p>
   <div class="decor"><span>◆</span></div>
-  <div style="margin-top:28px"><button class="btn-primary" onclick="showScreen('s-apikey')">踏入江湖</button></div>
-  <div style="margin-top:12px;color:rgba(200,180,140,.2);font-size:10px;letter-spacing:3px">金庸 · 古龍 · 溫瑞安 三大武俠世界</div>
+  <div style="margin-top:24px"><button class="btn-p" onclick="if(!checkLoadSave())showScreen('s-apikey')">踏入江湖</button>
+    <div style="margin-top:8px" id="load-btn-area"></div></div>
+  <div style="margin-top:10px;color:rgba(200,180,140,.18);font-size:10px;letter-spacing:3px">裝備系統 · 商店買賣 · AI奇遇 · 本門武學</div>
 </div>
 
 <!-- API KEY -->
 <div class="screen" id="s-apikey" style="text-align:center">
   <div style="max-width:420px;width:100%">
     <div style="font-size:36px;margin-bottom:12px">🗝️</div>
-    <h2>輸入 MiniMax API Key</h2>
+    <h2>MiniMax API Key</h2>
     <div class="decor"><span>◆</span></div>
-    <p style="color:var(--dim);font-size:12px;letter-spacing:1.5px;line-height:1.9;margin:12px 0">AI 動態劇情需要 MiniMax M2.5 API Key<br>Key 僅儲存於本機記憶體，不會上傳</p>
-    <div style="margin:20px 0">
-      <input type="password" id="api-key-input" placeholder="輸入你的 MiniMax API Key..." style="margin-bottom:10px">
+    <p style="color:var(--dim);font-size:12px;letter-spacing:1.5px;line-height:2;margin:12px 0">AI 奇遇劇情需要 MiniMax M2.5 API Key<br>Key 僅存於本機記憶體，不會上傳</p>
+    <div style="margin:18px 0">
+      <input type="password" id="api-key-input" placeholder="輸入你的 MiniMax API Key..." style="margin-bottom:8px">
       <input type="text" id="group-id-input" placeholder="Group ID（可選）">
     </div>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button class="btn-primary" onclick="saveApiKey()">確認，進入江湖 →</button>
-      <button class="btn-dim" onclick="skipApiKey()">跳過（無AI劇情）</button>
+      <button class="btn-p" onclick="saveApiKey()">確認，進入江湖 →</button>
+      <button class="btn-d" onclick="skipApiKey()">跳過（無AI劇情）</button>
     </div>
   </div>
 </div>
@@ -109,63 +103,63 @@ input:focus{border-color:var(--gold)}
 <div class="screen" id="s-birth">
   <div style="max-width:920px;width:100%">
     <h2>選擇出身</h2>
-    <p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin-bottom:14px">出身決定天賦與初始屬性</p>
+    <p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin-bottom:12px">出身決定天賦與初始屬性</p>
     <div class="decor"><span>◆</span></div>
-    <div class="grid4" style="margin-top:20px" id="birth-cards"></div>
-    <div style="text-align:center;margin-top:22px">
-      <button class="btn-primary" id="birth-confirm" style="display:none" onclick="showFactionScreen()">確定出身，選擇門派 →</button>
+    <div class="g4" style="margin-top:18px" id="birth-cards"></div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn-p" id="birth-confirm" style="display:none" onclick="showFactionScreen()">確定出身，選擇門派 →</button>
     </div>
   </div>
 </div>
 
 <!-- FACTION -->
 <div class="screen" id="s-faction">
-  <div style="max-width:1020px;width:100%">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-      <button class="btn-dim" onclick="showScreen('s-birth');renderBirthCards()">← 返回</button>
+  <div style="max-width:1060px;width:100%">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <button class="btn-d" onclick="showScreen('s-birth');renderBirthCards()">← 返回</button>
       <h2 style="flex:1">拜入門派</h2>
       <div style="width:60px"></div>
     </div>
-    <p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin-bottom:14px">門派決定武學方向與起始功法</p>
+    <p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin-bottom:12px">門派決定<b style="color:var(--goldl)">本門專屬武學</b>，其餘武學需奇遇或購買獲得</p>
     <div class="decor"><span>◆</span></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:11px;margin-top:20px" id="faction-cards"></div>
-    <div style="text-align:center;margin-top:22px">
-      <button class="btn-primary" id="faction-confirm" style="display:none" onclick="showMasterScreen()">選定門派，結識師父 →</button>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-top:18px" id="faction-cards"></div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn-p" id="faction-confirm" style="display:none" onclick="showMasterScreen()">選定門派，結識師父 →</button>
     </div>
   </div>
 </div>
 
-<!-- MASTER / NPC -->
+<!-- MASTER -->
 <div class="screen" id="s-master">
-  <div style="max-width:820px;width:100%">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-      <button class="btn-dim" onclick="showFactionScreen()">← 返回</button>
+  <div style="max-width:860px;width:100%">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <button class="btn-d" onclick="showFactionScreen()">← 返回</button>
       <h2 style="flex:1">結識江湖前輩</h2>
       <div style="width:60px"></div>
     </div>
-    <p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin-bottom:6px">師父將贈予你一門絕學，並影響 AI 劇情走向</p>
+    <p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin-bottom:4px">師父將贈予初始裝備，並影響 AI 劇情走向</p>
     <div class="decor"><span>◆</span></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:20px" id="master-cards"></div>
-    <div style="text-align:center;margin-top:22px">
-      <button class="btn-primary" id="master-confirm" style="display:none" onclick="startGame()">拜師學藝，踏入江湖 ✦</button>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px" id="master-cards"></div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn-p" id="master-confirm" style="display:none" onclick="startGame()">拜師學藝，踏入江湖 ✦</button>
     </div>
   </div>
 </div>
 
 <!-- MAIN -->
-<div class="screen" id="s-main" style="align-items:flex-start;padding:24px">
-  <div style="max-width:920px;width:100%;margin:0 auto">
+<div class="screen" id="s-main" style="align-items:flex-start;padding:20px">
+  <div style="max-width:940px;width:100%;margin:0 auto">
     <h2 style="margin-bottom:4px">⚔️ 江湖天地</h2>
     <div class="decor"><span>◆</span></div>
-    <div class="main-layout" style="margin-top:16px">
+    <div class="layout" style="margin-top:14px">
       <div class="sidebar" id="sidebar-stats"></div>
-      <div class="main-content">
-        <div class="grid2" style="margin-bottom:14px" id="action-grid"></div>
-        <div class="card">
-          <div style="color:var(--gold);font-size:12px;letter-spacing:2px;margin-bottom:8px">◆ 已習得功法</div>
-          <div id="learned-skills-display" style="color:var(--dim);font-size:11px;text-align:center;padding:10px 0">尚未習得任何武學</div>
+      <div class="main-c">
+        <div class="g2" style="margin-bottom:12px" id="action-grid"></div>
+        <div class="card" style="margin-bottom:12px">
+          <div style="color:var(--gold);font-size:11px;letter-spacing:2px;margin-bottom:8px">◆ 已習得功法</div>
+          <div id="learned-skills-display" style="color:var(--dim);font-size:11px;padding:4px 0">尚未習得任何武學</div>
         </div>
-        <div class="card" style="margin-top:12px" id="master-info-box"></div>
+        <div class="card" id="master-info-box"></div>
       </div>
     </div>
   </div>
@@ -173,197 +167,392 @@ input:focus{border-color:var(--gold)}
 
 <!-- EXPLORE -->
 <div class="screen" id="s-explore">
-  <div style="max-width:700px;width:100%">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-      <button class="btn-dim" onclick="showScreen('s-main');renderMain()">← 返回</button>
+  <div style="max-width:720px;width:100%">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <button class="btn-d" onclick="showScreen('s-main');renderMain()">← 返回</button>
       <h2 style="flex:1">江湖探索</h2>
       <div style="width:60px"></div>
     </div>
     <div class="decor"><span>◆</span></div>
-    <p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin:10px 0 6px">選擇地點類型</p>
-    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:18px;flex-wrap:wrap">
-      <button class="btn-dim" id="tab-free" onclick="switchExploreTab('free')" style="border-color:var(--gold);color:var(--goldl)">🗺️ 隨機探索</button>
-      <button class="btn-dim" id="tab-classic" onclick="switchExploreTab('classic')">📖 經典橋段</button>
+    <div style="display:flex;gap:8px;justify-content:center;margin:12px 0;flex-wrap:wrap">
+      <button class="tab-btn active" id="tab-free" onclick="switchTab('free')">🗺️ 隨機奇遇</button>
+      <button class="tab-btn" id="tab-classic" onclick="switchTab('classic')">📖 經典橋段</button>
     </div>
-    <div id="explore-free" style="display:grid;grid-template-columns:1fr 1fr;gap:14px"></div>
+    <div id="explore-free"></div>
     <div id="explore-classic" style="display:none"></div>
   </div>
 </div>
 
 <!-- STORY -->
 <div class="screen" id="s-story">
-  <div style="max-width:640px;width:100%">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-      <div style="width:60px" id="story-back-btn"></div>
-      <h2 style="flex:1;font-size:17px" id="story-title">地點</h2>
+  <div style="max-width:650px;width:100%">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <div id="story-back-btn" style="min-width:60px"></div>
+      <h2 style="flex:1;font-size:16px" id="story-title">地點</h2>
       <div style="width:60px"></div>
     </div>
     <div class="decor"><span>◆</span></div>
-    <div class="card" style="min-height:160px;margin:18px 0" id="story-content"></div>
+    <div class="card" style="min-height:150px;margin:16px 0" id="story-content"></div>
     <div id="story-choices"></div>
-    <div id="story-done-btns" style="display:none;text-align:center;margin-top:16px">
-      <button class="btn-primary" style="margin-right:10px" onclick="showScreen('s-explore');renderExplore()">繼續探索</button>
-      <button class="btn-dim" onclick="showScreen('s-main');renderMain()">回主頁</button>
+    <div id="story-done-btns" style="display:none;text-align:center;margin-top:14px">
+      <button class="btn-p" style="margin-right:10px" onclick="showScreen(&apos;s-explore&apos;);renderExplore()">繼續探索</button>
+      <button class="btn-d" onclick="showScreen('s-main');renderMain()">回主頁</button>
     </div>
   </div>
 </div>
 
 <!-- COMBAT -->
 <div class="screen" id="s-combat">
-  <div style="max-width:720px;width:100%">
+  <div style="max-width:740px;width:100%">
     <h2 style="margin-bottom:4px">⚔️ 戰鬥</h2>
     <div class="decor"><span>◆</span></div>
-    <div class="grid2" style="margin-top:16px;margin-bottom:14px">
+    <div class="g2" style="margin-top:14px;margin-bottom:12px">
       <div class="card">
-        <div style="text-align:center;margin-bottom:10px">
-          <div style="font-size:28px">🥷</div>
-          <div style="color:var(--gold);font-size:13px;letter-spacing:2px;margin:4px 0" id="c-player-name">俠客</div>
+        <div style="text-align:center;margin-bottom:8px">
+          <div style="font-size:26px">🥷</div>
+          <div style="color:var(--gold);font-size:12px;letter-spacing:2px;margin:3px 0" id="c-player-name">俠客</div>
         </div>
-        <div style="font-size:10px;color:var(--dim);margin-bottom:3px;display:flex;justify-content:space-between"><span>生命</span><span id="c-player-hp-text" style="color:#e05050">100/100</span></div>
-        <div class="hpbar-wrap" style="margin-bottom:8px"><div class="hpbar" id="c-player-hpbar" style="background:#c04020;width:100%"></div></div>
-        <div class="grid3">
-          <div class="stat-box"><div class="lbl">武力</div><div class="val" id="c-str" style="color:#e06040">-</div></div>
-          <div class="stat-box"><div class="lbl">內力</div><div class="val" id="c-qi" style="color:#4090e0">-</div></div>
-          <div class="stat-box"><div class="lbl">悟性</div><div class="val" id="c-wis" style="color:#9060d0">-</div></div>
+        <div style="font-size:10px;color:var(--dim);margin-bottom:2px;display:flex;justify-content:space-between"><span>生命</span><span id="c-php" style="color:#e05050">-</span></div>
+        <div class="hpbar-wrap" style="margin-bottom:4px"><div class="hpbar" id="c-phbar" style="background:#c04020;width:100%"></div></div>
+        <div style="font-size:10px;color:var(--dim);margin-bottom:2px;display:flex;justify-content:space-between"><span>內力</span><span id="c-pmp" style="color:#4090e0">-</span></div>
+        <div class="mpbar-wrap" style="margin-bottom:7px"><div class="hpbar" id="c-pmbar" style="background:var(--blue);width:100%"></div></div>
+        <div class="g3">
+          <div class="sbox"><div class="l">武力</div><div class="v" id="c-str" style="color:#e06040">-</div></div>
+          <div class="sbox"><div class="l">內功</div><div class="v" id="c-qi" style="color:#4090e0">-</div></div>
+          <div class="sbox"><div class="l">悟性</div><div class="v" id="c-wis" style="color:#9060d0">-</div></div>
         </div>
+        <div style="margin-top:6px;font-size:10px;color:var(--dim)" id="c-equip-bonus"></div>
       </div>
-      <div class="combat-enemy">
-        <div style="font-size:36px;margin-bottom:6px" id="c-enemy-icon">👹</div>
-        <div style="color:#e05050;font-size:14px;letter-spacing:2px;font-weight:bold;margin-bottom:4px" id="c-enemy-name">敵人</div>
-        <div style="color:var(--dim);font-size:10px;margin-bottom:8px" id="c-enemy-title"></div>
-        <div style="font-size:10px;color:var(--dim);margin-bottom:3px;display:flex;justify-content:space-between"><span>生命</span><span id="c-enemy-hp-text" style="color:#e05050">100/100</span></div>
-        <div class="hpbar-wrap"><div class="hpbar" id="c-enemy-hpbar" style="background:#c04020;width:100%"></div></div>
+      <div style="background:rgba(100,0,0,.2);border:1px solid rgba(180,40,40,.3);border-radius:8px;padding:14px;text-align:center">
+        <div style="font-size:34px;margin-bottom:4px" id="c-eicon">👹</div>
+        <div style="color:#e05050;font-size:13px;letter-spacing:2px;font-weight:bold;margin-bottom:2px" id="c-ename">敵人</div>
+        <div style="color:var(--dim);font-size:10px;margin-bottom:6px" id="c-etitle"></div>
+        <div style="font-size:10px;color:var(--dim);margin-bottom:2px;display:flex;justify-content:space-between"><span>生命</span><span id="c-ehp" style="color:#e05050">-</span></div>
+        <div class="hpbar-wrap"><div class="hpbar" id="c-ehbar" style="background:#c04020;width:100%"></div></div>
+        <div style="margin-top:8px;font-size:11px;color:#e08060" id="c-estatus"></div>
       </div>
     </div>
     <div class="log-area" id="combat-log"></div>
-    <div style="margin-top:12px">
-      <div style="color:var(--dim);font-size:10px;letter-spacing:2px;margin-bottom:8px">選擇出招：</div>
-      <div class="combat-skill-grid" id="combat-skill-grid"></div>
+    <div style="margin-top:10px">
+      <div style="color:var(--dim);font-size:10px;letter-spacing:2px;margin-bottom:7px">選擇出招：</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px" id="combat-skill-grid"></div>
     </div>
-    <div id="combat-done-btns" style="display:none;text-align:center;margin-top:16px">
-      <button class="btn-primary" style="margin-right:10px" onclick="beginCombat()">再戰一場</button>
-      <button class="btn-dim" onclick="showScreen('s-main');renderMain()">回主頁</button>
+    <div id="combat-done-btns" style="display:none;text-align:center;margin-top:14px">
+      <button class="btn-p" style="margin-right:10px" onclick="beginCombat()">再戰一場</button>
+      <button class="btn-d" onclick="showScreen('s-main');renderMain()">回主頁</button>
     </div>
   </div>
 </div>
 
 <!-- SKILLS -->
 <div class="screen" id="s-skills">
-  <div style="max-width:720px;width:100%">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-      <button class="btn-dim" onclick="showScreen('s-main');renderMain()">← 返回</button>
+  <div style="max-width:740px;width:100%">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <button class="btn-d" onclick="showScreen('s-main');renderMain()">← 返回</button>
       <h2 style="flex:1">修煉武學</h2>
-      <div style="background:rgba(180,100,20,.12);border:1px solid var(--border);border-radius:4px;padding:5px 12px;font-size:12px;color:var(--goldl)" id="sp-display">修煉點 0</div>
+      <div style="background:rgba(180,100,20,.12);border:1px solid var(--border);border-radius:4px;padding:4px 12px;font-size:12px;color:var(--goldl)" id="sp-display">修煉點 0</div>
+    </div>
+    <p style="text-align:center;color:var(--dim);font-size:11px;letter-spacing:1px;margin-bottom:8px">只可修煉本門武學 · 其餘武學需奇遇或購買獲得</p>
+    <div class="decor"><span>◆</span></div>
+    <div id="skill-tree-container" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<!-- EQUIPMENT -->
+<div class="screen" id="s-equip">
+  <div style="max-width:780px;width:100%">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <button class="btn-d" onclick="showScreen('s-main');renderMain()">← 返回</button>
+      <h2 style="flex:1">裝備管理</h2>
+      <div style="width:60px"></div>
     </div>
     <div class="decor"><span>◆</span></div>
-    <div id="skill-tree-container" style="margin-top:16px"></div>
+    <div class="g2" style="margin-top:14px">
+      <!-- Equipped slots -->
+      <div>
+        <div style="color:var(--gold);font-size:11px;letter-spacing:2px;margin-bottom:10px">◆ 裝備欄位</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="equip-slots"></div>
+        <div style="margin-top:12px;color:var(--gold);font-size:11px;letter-spacing:2px;margin-bottom:8px">◆ 裝備加成</div>
+        <div id="equip-bonus-display" class="card" style="font-size:11px;line-height:2"></div>
+      </div>
+      <!-- Inventory -->
+      <div>
+        <div style="color:var(--gold);font-size:11px;letter-spacing:2px;margin-bottom:10px">◆ 背包裝備</div>
+        <div id="inventory-list" style="max-height:420px;overflow-y:auto"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SHOP -->
+<div class="screen" id="s-shop">
+  <div style="max-width:780px;width:100%">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <button class="btn-d" onclick="showScreen('s-main');renderMain()">← 返回</button>
+      <h2 style="flex:1">🏮 江湖市集</h2>
+      <div style="color:var(--goldl);font-size:13px;font-weight:bold" id="shop-gold-display">0兩</div>
+    </div>
+    <div class="decor"><span>◆</span></div>
+    <div style="display:flex;gap:8px;justify-content:center;margin:10px 0;flex-wrap:wrap">
+      <button class="tab-btn active" id="stab-weapon" onclick="switchShopTab('weapon')">⚔️ 兵器</button>
+      <button class="tab-btn" id="stab-armor" onclick="switchShopTab('armor')">🛡️ 護甲</button>
+      <button class="tab-btn" id="stab-accessory" onclick="switchShopTab('accessory')">💍 飾品</button>
+      <button class="tab-btn" id="stab-consumable" onclick="switchShopTab('consumable')">🍶 藥品</button>
+      <button class="tab-btn" id="stab-sell" onclick="switchShopTab('sell')">💰 典當</button>
+    </div>
+    <div id="shop-content"></div>
+    <div style="margin-top:10px;color:var(--dim);font-size:10px;text-align:center;letter-spacing:1px">每次進城商品不同 · 稀有物品可遇不可求</div>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // DATA
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+
 const BIRTHS=[
-  {id:'scholar',name:'書香門第',icon:'📚',desc:'飽讀詩書，天資聰穎，悟性絕倫',stats:{str:8,qi:12,wis:18},hp:85,trait:'博覽群書',traitDesc:'修煉速度 +30%'},
-  {id:'military',name:'將門之後',icon:'⚔️',desc:'自幼習武，力大無窮，百戰不殆',stats:{str:18,qi:12,wis:8},hp:120,trait:'鐵血戰魂',traitDesc:'戰鬥傷害 +20%'},
-  {id:'merchant',name:'商賈之家',icon:'🏮',desc:'見多識廣，財富充裕，廣結善緣',stats:{str:10,qi:15,wis:12},hp:100,trait:'廣結善緣',traitDesc:'金錢獲取 +50%'},
-  {id:'orphan',name:'江湖孤兒',icon:'🌙',desc:'命途多舛，磨礪心志，潛力無窮',stats:{str:12,qi:12,wis:12},hp:110,trait:'天煞孤星',traitDesc:'逆境全屬性 +15%'},
+  {id:'scholar',name:'書香門第',icon:'📚',desc:'飽讀詩書，悟性絕倫',stats:{str:8,qi:12,wis:18},hp:85,mp:100,trait:'博覽群書',traitDesc:'修煉速度 +30%'},
+  {id:'military',name:'將門之後',icon:'⚔️',desc:'自幼習武，力大無窮',stats:{str:18,qi:12,wis:8},hp:120,mp:70,trait:'鐵血戰魂',traitDesc:'戰鬥傷害 +20%'},
+  {id:'merchant',name:'商賈之家',icon:'🏮',desc:'廣結善緣，財富充裕',stats:{str:10,qi:14,wis:13},hp:100,mp:85,trait:'廣結善緣',traitDesc:'商店折扣 -20%'},
+  {id:'orphan',name:'江湖孤兒',icon:'🌙',desc:'命途多舛，潛力無窮',stats:{str:12,qi:12,wis:12},hp:110,mp:90,trait:'天煞孤星',traitDesc:'奇遇加成 +30%'},
 ];
 
+// Each faction has its own UNIQUE skill tree branch
 const FACTIONS=[
-  {id:'beggar',name:'丐幫',icon:'🏚️',desc:'天下第一大幫，降龍十八掌震古鑠今',skill:'打狗棒法',novel:'金庸',color:'#2a1a05',accent:'#b07020'},
-  {id:'wudang',name:'武當派',icon:'🌀',desc:'太極陰陽，以柔克剛，內力深厚',skill:'太極拳劍',novel:'金庸',color:'#0e1f38',accent:'#2878c0'},
-  {id:'quanzhen',name:'全真教',icon:'☯️',desc:'天罡北斗陣，道法自然，剛正不阿',skill:'全真劍法',novel:'金庸',color:'#1a2810',accent:'#50a030'},
-  {id:'mingjiao',name:'明教',icon:'🔥',desc:'乾坤大挪移，光明頂上，傲視武林',skill:'乾坤大挪移',novel:'金庸',color:'#2a0808',accent:'#d04020'},
-  {id:'gutomb',name:'古墓派',icon:'🌸',desc:'玉女心經，超凡脫俗，飄逸如仙',skill:'玉女劍法',novel:'金庸',color:'#201030',accent:'#c060c0'},
-  {id:'xiaoyao',name:'逍遙派',icon:'🍃',desc:'北冥神功，吸星大法，廣博無涯',skill:'北冥神功',novel:'金庸',color:'#0c2010',accent:'#208840'},
-  {id:'chuliu',name:'楚留香門下',icon:'🦋',desc:'盜帥傳人，輕功絕頂，風流倜儻',skill:'移花接木',novel:'古龍',color:'#0a1525',accent:'#3080c0'},
-  {id:'xiaoli',name:'小李飛刀傳人',icon:'🗡️',desc:'例不虛發，天下無雙，一刀定勝負',skill:'小李飛刀',novel:'古龍',color:'#1a0a00',accent:'#c08030'},
-  {id:'siming',name:'神侯府',icon:'🏯',desc:'四大名捕，奉公守法，維護江湖正道',skill:'追命腿法',novel:'溫瑞安',color:'#100020',accent:'#8050c0'},
-  {id:'wanderer',name:'江湖散人',icon:'🌾',desc:'無門無派，自學成才，不拘一格',skill:'自創奇功',novel:'通用',color:'#101010',accent:'#888888'},
+  {id:'beggar',name:'丐幫',icon:'🏚️',novel:'金庸',color:'#2a1a05',accent:'#b07020',
+   desc:'天下第一大幫，降龍十八掌震古鑠今',
+   skills:[
+     {id:'bg1',name:'打狗棒法',icon:'🪵',cost:1,req:null,effect:{type:'atk',val:22},desc:'丐幫絕學，以棍克敵，靈活多變'},
+     {id:'bg2',name:'降龍十八掌',icon:'🐉',cost:2,req:'bg1',effect:{type:'atk',val:48,tag:'撼地'},desc:'丐幫至高神功，剛猛無儔'},
+     {id:'bg3',name:'九指神丐',icon:'🤌',cost:3,req:'bg2',effect:{type:'drain',val:40,tag:'化骨'},desc:'洪七公真傳，吸取敵人內力'},
+   ]},
+  {id:'wudang',name:'武當派',icon:'🌀',novel:'金庸',color:'#0e1f38',accent:'#2878c0',
+   desc:'太極陰陽，以柔克剛，內力深厚',
+   skills:[
+     {id:'wd1',name:'武當長拳',icon:'👊',cost:1,req:null,effect:{type:'atk',val:18},desc:'武當基礎拳法，剛柔並濟'},
+     {id:'wd2',name:'太極劍法',icon:'⚔️',cost:2,req:'wd1',effect:{type:'passive',dodge:0.3,counter:true},desc:'以柔克剛，閃避後反擊'},
+     {id:'wd3',name:'純陽無極功',icon:'☯️',cost:3,req:'wd2',effect:{type:'atk',val:55,tag:'純陽'},desc:'武當內功至高境界'},
+   ]},
+  {id:'quanzhen',name:'全真教',icon:'☯️',novel:'金庸',color:'#1a2810',accent:'#50a030',
+   desc:'天罡北斗陣，道法自然，剛正不阿',
+   skills:[
+     {id:'qz1',name:'全真劍法',icon:'🗡️',cost:1,req:null,effect:{type:'atk',val:20},desc:'全真正宗劍法，穩健精準'},
+     {id:'qz2',name:'天罡北斗陣',icon:'⭐',cost:2,req:'qz1',effect:{type:'stun',val:2},desc:'合力布陣，震懾敵人兩回合'},
+     {id:'qz3',name:'先天功',icon:'🌿',cost:3,req:'qz2',effect:{type:'heal',val:60,regen:true},desc:'每回合自動回復內力'},
+   ]},
+  {id:'mingjiao',name:'明教',icon:'🔥',novel:'金庸',color:'#2a0808',accent:'#d04020',
+   desc:'乾坤大挪移，光明頂上，傲視武林',
+   skills:[
+     {id:'mj1',name:'聖火令法',icon:'🔥',cost:1,req:null,effect:{type:'atk',val:24,tag:'灼燒'},desc:'明教聖火之力，灼傷敵人'},
+     {id:'mj2',name:'乾坤大挪移',icon:'🌀',cost:2,req:'mj1',effect:{type:'drain',val:35},desc:'化敵之力為己用'},
+     {id:'mj3',name:'七傷拳',icon:'💥',cost:3,req:'mj2',effect:{type:'atk',val:70,pierce:true,tag:'傷己'},desc:'傷敵七分，傷己三分，大威力穿甲拳'},
+   ]},
+  {id:'gutomb',name:'古墓派',icon:'🌸',novel:'金庸',color:'#201030',accent:'#c060c0',
+   desc:'玉女心經，超凡脫俗，飄逸如仙',
+   skills:[
+     {id:'gt1',name:'玉女劍法',icon:'🌸',cost:1,req:null,effect:{type:'passive',dodge:0.28},desc:'輕靈飄逸，閃避無雙'},
+     {id:'gt2',name:'玉女心經',icon:'💮',cost:2,req:'gt1',effect:{type:'passive',dodge:0.45,counter:true},desc:'以弱勝強，閃避後必反擊'},
+     {id:'gt3',name:'天羅地網',icon:'🌐',cost:3,req:'gt2',effect:{type:'atk',val:50,tag:'困敵'},desc:'輕功極致，困住敵人無處可逃'},
+   ]},
+  {id:'xiaoyao',name:'逍遙派',icon:'🍃',novel:'金庸',color:'#0c2010',accent:'#208840',
+   desc:'北冥神功，吸星大法，廣博無涯',
+   skills:[
+     {id:'xy1',name:'小無相功',icon:'🌬️',cost:1,req:null,effect:{type:'atk',val:20,tag:'幻化'},desc:'萬法皆可仿效，克制專一功法'},
+     {id:'xy2',name:'北冥神功',icon:'🌑',cost:2,req:'xy1',effect:{type:'drain',val:38,tag:'大量'},desc:'吸取天下內力，為己所用'},
+     {id:'xy3',name:'凌波微步',icon:'🌊',cost:3,req:'xy2',effect:{type:'passive',dodge:0.55,omnistrike:true},desc:'天下第一步法，閃避後多次攻擊'},
+   ]},
+  {id:'chuliu',name:'楚留香門下',icon:'🦋',novel:'古龍',color:'#0a1525',accent:'#3080c0',
+   desc:'盜帥傳人，輕功絕頂，風流倜儻',
+   skills:[
+     {id:'cl1',name:'移花接木',icon:'🌺',cost:1,req:null,effect:{type:'passive',dodge:0.3,reflect:true},desc:'借力打力，反彈敵人攻擊'},
+     {id:'cl2',name:'香帥輕功',icon:'🦋',cost:2,req:'cl1',effect:{type:'passive',dodge:0.48,counter:true},desc:'盜帥絕頂輕功，難以捕捉'},
+     {id:'cl3',name:'血海飄香',icon:'💐',cost:3,req:'cl2',effect:{type:'atk',val:52,tag:'毒'},desc:'暗器帶毒，令敵持續損血'},
+   ]},
+  {id:'xiaoli',name:'小李飛刀',icon:'🗡️',novel:'古龍',color:'#1a0a00',accent:'#c08030',
+   desc:'例不虛發，天下無雙，一刀定勝負',
+   skills:[
+     {id:'xl1',name:'飛刀基礎',icon:'🗡️',cost:1,req:null,effect:{type:'atk',val:26,pierce:true},desc:'小李飛刀入門，精準必中'},
+     {id:'xl2',name:'小李飛刀',icon:'⚡',cost:2,req:'xl1',effect:{type:'atk',val:55,pierce:true,tag:'必中'},desc:'例不虛發，穿透一切防禦'},
+     {id:'xl3',name:'一刀封喉',icon:'💀',cost:3,req:'xl2',effect:{type:'atk',val:90,pierce:true,tag:'即死'},desc:'李尋歡絕學，一擊致命'},
+   ]},
+  {id:'siming',name:'神侯府',icon:'🏯',novel:'溫瑞安',color:'#100020',accent:'#8050c0',
+   desc:'四大名捕，奉公守法，正義之師',
+   skills:[
+     {id:'sm1',name:'追命腿法',icon:'💨',cost:1,req:null,effect:{type:'atk',val:22,tag:'連環'},desc:'四大名捕追命，天下第一腿'},
+     {id:'sm2',name:'神侯擒拿',icon:'🤲',cost:2,req:'sm1',effect:{type:'stun',val:2},desc:'諸葛小花擒拿手，敵人難逃'},
+     {id:'sm3',name:'鐵手無情',icon:'🦾',cost:3,req:'sm2',effect:{type:'atk',val:60,pierce:true,tag:'折骨'},desc:'四大名捕鐵手，穿甲折骨'},
+   ]},
+  {id:'wanderer',name:'江湖散人',icon:'🌾',novel:'通用',color:'#101010',accent:'#888',
+   desc:'無門無派，自學成才，不拘一格',
+   skills:[
+     {id:'wn1',name:'野路子拳',icon:'👊',cost:1,req:null,effect:{type:'atk',val:20},desc:'雜學旁收，出招難以預料'},
+     {id:'wn2',name:'江湖百技',icon:'🎭',cost:2,req:'wn1',effect:{type:'passive',dodge:0.25,counter:true},desc:'見招拆招，隨機應變'},
+     {id:'wn3',name:'自創奇功',icon:'🌟',cost:3,req:'wn2',effect:{type:'drain',val:38,tag:'自創'},desc:'無師自通，集百家之長'},
+   ]},
+];
+
+// 其他門派武學（奇遇/購買獲得，非本門無法修煉）
+const EXTRA_SKILLS=[
+  {id:'jiuyang',name:'九陽神功',icon:'☀️',novel:'金庸',rarity:'史詩',effect:{type:'atk',val:42,tag:'純陽'},desc:'倚天至寶，百毒不侵，天下至陽'},
+  {id:'dugu',name:'獨孤九劍',icon:'⚡',novel:'金庸',rarity:'傳說',effect:{type:'passive',dodge:0.4,counter:true,omnistrike:true},desc:'無招勝有招，令狐沖絕學'},
+  {id:'xixing',name:'吸星大法',icon:'🌑',novel:'金庸',rarity:'史詩',effect:{type:'drain',val:60,tag:'大量'},desc:'任我行絕學，吸盡天下內力'},
+  {id:'anran',name:'黯然銷魂掌',icon:'💔',novel:'金庸',rarity:'傳說',effect:{type:'atk',val:80,tag:'神鵰'},desc:'越悲傷越強，楊過神鵰俠絕學'},
+  {id:'feidao',name:'小李飛刀',icon:'🗡️',novel:'古龍',rarity:'史詩',effect:{type:'atk',val:55,pierce:true,tag:'必中'},desc:'例不虛發，李尋歡絕世飛刀'},
+  {id:'kongque',name:'孔雀翎',icon:'🦚',novel:'古龍',rarity:'稀有',effect:{type:'atk',val:45,pierce:true,tag:'暗器'},desc:'陸小鳳天下第一暗器'},
+  {id:'qiankun',name:'乾坤大挪移',icon:'🔄',novel:'金庸',rarity:'史詩',effect:{type:'drain',val:40},desc:'明教至寶，化敵力為己用'},
 ];
 
 const MASTERS=[
-  {id:'guojing',name:'郭靖',title:'大俠',icon:'🦅',novel:'金庸·射鵰',
-   desc:'為國為民，俠之大者。傳授你降龍十八掌，剛猛無儔。',
-   gift:'降龍十八掌',giftId:'jianglong',
-   quote:'俠之大者，為國為民',novelCtx:'射鵰英雄傳'},
-  {id:'linghu',name:'令狐沖',title:'大俠',icon:'🍷',novel:'金庸·笑傲',
-   desc:'笑傲江湖，無拘無束。傳授獨孤九劍，無招勝有招。',
-   gift:'獨孤九劍',giftId:'dugu',
-   quote:'有酒今朝醉，無劍天下行',novelCtx:'笑傲江湖'},
-  {id:'zhangwuji',name:'張無忌',title:'教主',icon:'☀️',novel:'金庸·倚天',
-   desc:'明教教主，武功蓋世。傳授九陽神功，純陽無敵。',
-   gift:'九陽神功',giftId:'jiuyang',
-   quote:'乾坤大挪移，明教威天下',novelCtx:'倚天屠龍記'},
-  {id:'yanguo',name:'楊過',title:'神鵰俠',icon:'🦅',novel:'金庸·神鵰',
-   desc:'神鵰大俠，黯然銷魂掌。傳授玄鐵重劍之法。',
-   gift:'黯然銷魂掌',giftId:'anran',
-   quote:'問世間情是何物，直教人生死相許',novelCtx:'神鵰俠侶'},
-  {id:'chuliu',name:'楚留香',title:'盜帥',icon:'🦋',novel:'古龍',
-   desc:'風流倜儻，盜帥無雙。傳授移花接木之術，輕靈飄逸。',
-   gift:'移花接木',giftId:'yihua',
-   quote:'人在江湖，身不由己',novelCtx:'楚留香傳奇'},
-  {id:'lixunhuan',name:'李尋歡',title:'小李飛刀',icon:'🗡️',novel:'古龍',
-   desc:'小李飛刀，例不虛發，天下無雙。一刀封喉，神鬼難逃。',
-   gift:'小李飛刀',giftId:'feidao',
-   quote:'小李飛刀成絕響，人間不見楚留香',novelCtx:'多情劍客無情劍'},
-  {id:'zhuge',name:'諸葛小花',title:'神侯',icon:'🏯',novel:'溫瑞安',
-   desc:'四大名捕之首，智謀無雙。傳授擒拿與輕功絕技。',
-   gift:'神侯秘技',giftId:'shenhou',
-   quote:'正義或許會遲到，但絕不會缺席',novelCtx:'四大名捕'},
-  {id:'dugu',name:'獨孤求敗',title:'劍魔',icon:'⚡',novel:'金庸·傳說',
-   desc:'劍魔獨孤求敗，縱橫江湖三十載，求一敗而不可得。傳授無劍勝有劍之道。',
-   gift:'無劍之境',giftId:'wujian',
-   quote:'飛劍傷人，重劍無鋒，木劍制敵，無劍勝有劍',novelCtx:'神鵰俠侶'},
+  {id:'guojing',name:'郭靖',title:'俠之大者',icon:'🦅',novel:'金庸·射鵰',gift:'玄鐵重劍',giftType:'weapon',quote:'俠之大者，為國為民'},
+  {id:'linghu',name:'令狐沖',title:'笑傲江湖',icon:'🍷',novel:'金庸·笑傲',gift:'辟邪劍譜（殘本）',giftType:'accessory',quote:'有酒今朝醉，無劍天下行'},
+  {id:'zhangwuji',name:'張無忌',title:'明教教主',icon:'☀️',novel:'金庸·倚天',gift:'乾坤一氣袋',giftType:'accessory',quote:'乾坤大挪移，明教威天下'},
+  {id:'yanguo',name:'楊過',title:'神鵰大俠',icon:'🦅',novel:'金庸·神鵰',gift:'玄鐵劍（碎片）',giftType:'weapon',quote:'問世間情是何物，直教人生死相許'},
+  {id:'chuliu',name:'楚留香',title:'盜帥',icon:'🦋',novel:'古龍',gift:'香帥護身符',giftType:'accessory',quote:'人在江湖，身不由己'},
+  {id:'lixunhuan',name:'李尋歡',title:'小李飛刀',icon:'🗡️',novel:'古龍',gift:'飛刀匣（空）',giftType:'accessory',quote:'小李飛刀成絕響，人間不見楚留香'},
+  {id:'zhuge',name:'諸葛小花',title:'神侯',icon:'🏯',novel:'溫瑞安',gift:'神侯令牌',giftType:'accessory',quote:'正義或許遲到，但絕不缺席'},
+  {id:'dugu',name:'獨孤求敗',title:'劍魔',icon:'⚡',novel:'金庸·傳說',gift:'無名石劍',giftType:'weapon',quote:'無劍勝有劍，無招勝有招'},
 ];
 
-// 技能樹 - 全換成小說武學
-const SKILL_TREE={
-  str:{label:'外功絕學',color:'#c04020',icon:'⚔️',skills:[
-    {id:'jianglong',name:'降龍十八掌',icon:'🐉',cost:1,req:null,
-     effect:{type:'atk',val:38},desc:'丐幫鎮幫之寶，剛猛無比（金庸·射鵰）',novel:'金庸'},
-    {id:'feidao',name:'小李飛刀',icon:'🗡️',cost:2,req:'jianglong',
-     effect:{type:'atk',val:55,pierce:true,tag:'必中'},desc:'例不虛發，天下無雙（古龍·飛刀）',novel:'古龍'},
-    {id:'anran',name:'黯然銷魂掌',icon:'💔',cost:3,req:'feidao',
-     effect:{type:'atk',val:80,tag:'心神俱損'},desc:'神鵰俠獨創，越悲傷越強（金庸·神鵰）',novel:'金庸'},
-  ]},
-  qi:{label:'內功心法',color:'#2878c0',icon:'💧',skills:[
-    {id:'jiuyang',name:'九陽神功',icon:'☀️',cost:1,req:null,
-     effect:{type:'atk',val:42,tag:'純陽'},desc:'天下至陽之氣，百毒不侵（金庸·倚天）',novel:'金庸'},
-    {id:'qiankun',name:'乾坤大挪移',icon:'🌀',cost:2,req:'jiuyang',
-     effect:{type:'drain',val:38},desc:'吸取敵力化為己用（金庸·倚天）',novel:'金庸'},
-    {id:'xixing',name:'吸星大法',icon:'🌑',cost:3,req:'qiankun',
-     effect:{type:'drain',val:65,tag:'大量吸取'},desc:'任我行絕學，吸盡天下內力（金庸·笑傲）',novel:'金庸'},
-  ]},
-  wis:{label:'輕功劍法',color:'#8040c0',icon:'👁️',skills:[
-    {id:'dugu',name:'獨孤九劍',icon:'⚡',cost:1,req:null,
-     effect:{type:'passive',dodge:0.3,counter:true},desc:'無招勝有招，見招拆招（金庸·笑傲）',novel:'金庸'},
-    {id:'yihua',name:'移花接木',icon:'🌸',cost:2,req:'dugu',
-     effect:{type:'passive',dodge:0.45,reflect:true},desc:'借力打力，將敵攻化為己用（古龍·楚留香）',novel:'古龍'},
-    {id:'wujian',name:'無劍之境',icon:'🌟',cost:3,req:'yihua',
-     effect:{type:'passive',dodge:0.65,omnistrike:true},desc:'獨孤求敗最高境界，無劍勝有劍（金庸·傳說）',novel:'金庸'},
-  ]},
-  special:{label:'名捕絕技',color:'#806000',icon:'🏯',skills:[
-    {id:'zhuiming',name:'追命腿法',icon:'💨',cost:1,req:null,
-     effect:{type:'atk',val:30,tag:'連環腿'},desc:'四大名捕·追命，天下第一腿（溫瑞安）',novel:'溫瑞安'},
-    {id:'shenhou',name:'神侯擒拿',icon:'🤲',cost:2,req:'zhuiming',
-     effect:{type:'stun'},desc:'諸葛小花擒拿手，令敵無法動彈（溫瑞安）',novel:'溫瑞安'},
-    {id:'kongque',name:'孔雀翎',icon:'🦚',cost:3,req:'shenhou',
-     effect:{type:'atk',val:70,pierce:true,tag:'暗器'},desc:'天下第一暗器，百步穿楊（古龍·陸小鳳）',novel:'古龍'},
-  ]},
+// EQUIPMENT DATABASE
+const EQUIP_DB={
+  weapon:[
+    {id:'w1',name:'鐵劍',icon:'⚔️',rarity:'普通',slot:'weapon',price:80,stats:{atk:5},desc:'普通鐵劍，堅固耐用'},
+    {id:'w2',name:'魚腸劍',icon:'🗡️',rarity:'精良',slot:'weapon',price:180,stats:{atk:10,crit:8},desc:'古代名劍，輕盈鋒利'},
+    {id:'w3',name:'倚天劍',icon:'⚔️',rarity:'稀有',slot:'weapon',price:500,stats:{atk:18,crit:12},desc:'削鐵如泥，武林至寶'},
+    {id:'w4',name:'玄鐵重劍',icon:'🗡️',rarity:'史詩',slot:'weapon',price:0,stats:{atk:28,str:5},desc:'重劍無鋒，大巧不工'},
+    {id:'w5',name:'木劍',icon:'🪵',rarity:'傳說',slot:'weapon',price:0,stats:{atk:40,wis:10},desc:'獨孤求敗晚年所用，無劍之境'},
+    {id:'w6',name:'屠龍刀',icon:'🔪',rarity:'史詩',slot:'weapon',price:0,stats:{atk:25,qi:8},desc:'武林至尊，寶刀屠龍'},
+    {id:'w7',name:'狼牙棒',icon:'🏏',rarity:'精良',slot:'weapon',price:150,stats:{atk:12},desc:'江湖常見重型兵器'},
+  ],
+  armor:[
+    {id:'a1',name:'布衣',icon:'👘',rarity:'普通',slot:'armor',price:50,stats:{def:3},desc:'普通布衣，略有防護'},
+    {id:'a2',name:'皮甲',icon:'🧥',rarity:'普通',slot:'armor',price:120,stats:{def:7},desc:'皮革製成，輕便耐用'},
+    {id:'a3',name:'鐵甲',icon:'🦺',rarity:'精良',slot:'armor',price:280,stats:{def:14,hp:20},desc:'鐵製護甲，防禦優異'},
+    {id:'a4',name:'鎖子甲',icon:'🛡️',rarity:'稀有',slot:'armor',price:500,stats:{def:22,hp:40},desc:'精鋼鎖環編製，刀劍難傷'},
+    {id:'a5',name:'寒冰蠶絲衣',icon:'🧊',rarity:'史詩',slot:'armor',price:0,stats:{def:18,hp:30,dodge:10},desc:'冰蠶所吐，水火不侵'},
+    {id:'a6',name:'軟猬甲',icon:'🦔',rarity:'稀有',slot:'armor',price:420,stats:{def:16,reflect:5},desc:'反傷攻擊者，以攻為守'},
+  ],
+  accessory:[
+    {id:'ac1',name:'玉佩',icon:'🪬',rarity:'普通',slot:'accessory',price:60,stats:{qi:3},desc:'普通玉佩，略助內功'},
+    {id:'ac2',name:'金絲手環',icon:'📿',rarity:'精良',slot:'accessory',price:160,stats:{wis:4,dodge:5},desc:'提升輕功悟性'},
+    {id:'ac3',name:'乾坤一氣袋',icon:'💫',rarity:'稀有',slot:'accessory',price:0,stats:{mp:30,qi:6},desc:'增加內力上限'},
+    {id:'ac4',name:'辟邪劍譜殘本',icon:'📜',rarity:'史詩',slot:'accessory',price:0,stats:{wis:10,crit:15},desc:'劍魔真傳，提升悟性與爆擊'},
+    {id:'ac5',name:'神侯令牌',icon:'🏅',rarity:'稀有',slot:'accessory',price:0,stats:{str:4,def:4},desc:'神侯府象徵，提升正道聲望'},
+    {id:'ac6',name:'蛤蟆功護腕',icon:'🐸',rarity:'精良',slot:'accessory',price:200,stats:{hp:25,def:6},desc:'歐陽鋒傳人所製，增加體力'},
+  ],
+  consumable:[
+    {id:'c1',name:'普通丹藥',icon:'💊',rarity:'普通',price:30,effect:{hp:40},desc:'恢復40點生命'},
+    {id:'c2',name:'大還丹',icon:'🔴',rarity:'精良',price:80,effect:{hp:100},desc:'恢復100點生命'},
+    {id:'c3',name:'九花玉露丸',icon:'🌸',rarity:'稀有',price:200,effect:{hp:200,mp:50},desc:'恢復大量生命與內力'},
+    {id:'c4',name:'內力回復丸',icon:'💙',rarity:'普通',price:40,effect:{mp:40},desc:'恢復40點內力'},
+    {id:'c5',name:'培元固本丸',icon:'💛',rarity:'精良',price:100,effect:{mp:120},desc:'恢復120點內力'},
+    {id:'c6',name:'虎豹雷音丸',icon:'🟠',rarity:'稀有',price:250,effect:{tempStr:10,rounds:5},desc:'5回合內武力+10'},
+    {id:'c7',name:'醍醐灌頂丹',icon:'🟣',rarity:'史詩',price:500,effect:{wis:3,permanent:true},desc:'永久提升悟性3點'},
+  ],
 };
 
+// 奇遇 — 可獲得稀有武學或裝備
+const QIYUS=[
+  {id:'q1',title:'古洞秘笈',icon:'📜',
+   story:'你在深山探索時，發現一處隱蔽石洞。洞中塵封著一本泛黃的武學秘笈，封面寫著四個字：《九陽真經》。石洞入口刻有機關，稍有不慎便會觸發...',
+   choices:[
+     {text:'小心拆解機關取書',risk:'中',reward:{type:'skill',id:'jiuyang'},outcome:'機關複雜，費時費力，但終究取得秘笈！'},
+     {text:'強行衝入',risk:'高',reward:{type:'multi',items:[{type:'skill',id:'jiuyang'},{type:'hp',val:-40}]},outcome:'觸發機關受傷，但也搶到了秘笈！'},
+     {text:'守株待兔，等待真正的主人',risk:'低',reward:{type:'exp',val:80},outcome:'等待半日，無人前來，你在等待中領悟了一些道理。'},
+   ]},
+  {id:'q2',title:'俠盜遺物',icon:'🦋',
+   story:'江邊蘆葦叢中，你發現一個精緻的木匣，散發著淡淡香氣——這是楚留香的標誌。匣中有一把精巧的暗器與一封書信：「有緣者得之，願你行俠仗義。」',
+   choices:[
+     {text:'取用暗器與書信',risk:'低',reward:{type:'equip',id:'ac6'},outcome:'得到了楚留香贈予的護身之物！'},
+     {text:'深入調查是否有陷阱',risk:'中',reward:{type:'multi',items:[{type:'skill',id:'kongque'},{type:'gold',val:-20}]},outcome:'確認安全後，另發現了隱藏的孔雀翎！'},
+     {text:'原物奉還，尋找原主',risk:'低',reward:{type:'multi',items:[{type:'exp',val:120},{type:'gold',val:80}]},outcome:'楚香帥大為感動，以金銀相謝！'},
+   ]},
+  {id:'q3',title:'名劍出世',icon:'⚔️',
+   story:'集市一角，一位落魄老者正以極低價格售出一把古劍，旁人皆視為廢鐵。你觀其劍氣隱約，似有不凡之處。老者說：「識貨者得之。」',
+   choices:[
+     {text:'以三十兩購入',risk:'低',reward:{type:'equip',id:'w2'},outcome:'果然是魚腸名劍，撿了大便宜！'},
+     {text:'砍價到十兩',risk:'中',reward:{type:'multi',items:[{type:'equip',id:'w1'},{type:'gold',val:10}]},outcome:'老者不悅，只給了把普通劍便離去。'},
+     {text:'義助老者，不求回報',risk:'低',reward:{type:'multi',items:[{type:'equip',id:'w3'},{type:'exp',val:60}]},outcome:'老者感激，贈你倚天劍並告知其真實身份！'},
+   ]},
+  {id:'q4',title:'獨孤劍冢',icon:'⚡',
+   story:'深山之中，你誤入一處劍冢。四把石劍插於土中：利劍、重劍、木劍、無劍。石碑上刻著：「悟者可取，不悟者雖取亦無用。」',
+   choices:[
+     {text:'取重劍，以力勝天',risk:'低',reward:{type:'equip',id:'w4'},outcome:'玄鐵重劍到手，沉重但威力無窮！'},
+     {text:'取木劍，悟無劍之道',risk:'高',reward:{type:'skill',id:'dugu'},outcome:'大悟獨孤九劍之道，武學境界大提升！'},
+     {text:'在劍冢中打坐頓悟',risk:'中',reward:{type:'multi',items:[{type:'exp',val:200},{type:'wis',val:5}]},outcome:'在劍氣薰陶下，悟性大進！'},
+   ]},
+  {id:'q5',title:'光明頂密道',icon:'🔥',
+   story:'你發現明教遺址的一條密道，深入其中，赫然見到一座石室。石壁上刻著乾坤大挪移心法，旁邊有個石台，台上放著一套明教護法神衣。',
+   choices:[
+     {text:'潛心修習壁上心法',risk:'中',reward:{type:'skill',id:'qiankun'},outcome:'習得乾坤大挪移第一層！'},
+     {text:'取走護法神衣',risk:'低',reward:{type:'equip',id:'a5'},outcome:'寒冰蠶絲衣到手，刀劍難傷！'},
+     {text:'兩者皆要，快速記憶後離去',risk:'高',reward:{type:'multi',items:[{type:'skill',id:'qiankun'},{type:'equip',id:'a5'},{type:'hp',val:-50}]},outcome:'觸發警報受傷，但兩樣都帶走了！'},
+   ]},
+  {id:'q6',title:'李尋歡的最後一刀',icon:'🗡️',
+   story:'酒館之中，你見到一名青衫落魄的男子，他把玩著一把小飛刀，眼神中有無盡滄桑。他是李尋歡。「你想學飛刀？」他問，「但你要先過我一關。」',
+   choices:[
+     {text:'接受考驗，與之過招',risk:'高',reward:{type:'skill',id:'feidao'},outcome:'雖敗猶榮，李大俠傳授了飛刀心法！'},
+     {text:'以誠相待，傾訴心聲',risk:'低',reward:{type:'multi',items:[{type:'exp',val:100},{type:'equip',id:'w1'}]},outcome:'李尋歡感懷身世，贈劍相別。'},
+     {text:'以酒相邀，共飲一杯',risk:'中',reward:{type:'multi',items:[{type:'skill',id:'feidao'},{type:'gold',val:-30}]},outcome:'把酒言歡後，他傳授了飛刀訣竅！'},
+   ]},
+];
+
+const CLASSIC_EVENTS=[
+  {id:'ce1',title:'華山論劍',novel:'金庸·射鵰',icon:'⛰️',
+   desc:'五絕相聚，東邪西毒南帝北丐中神通，論天下武功高下。',
+   story:'華山之巔，寒風呼嘯，雲海翻騰。你輾轉來到論劍聖地，五位絕頂高手正激烈交鋒，劍氣縱橫，掌風如雷。郭靖見你氣度不凡，眼神堅毅，點頭示意。洪七公哈哈大笑：「小子，有點意思！老叫化子今日高興，傳你幾招如何？」黃蓉卻在旁暗中打量，似乎在評估你的根骨...',
+   choices:[
+     {text:'請教郭靖降龍掌法',reward:{str:4,exp:100}},
+     {text:'向洪七公討教打狗棒',reward:{str:3,qi:2,exp:90}},
+     {text:'與黃蓉論及機關算法',reward:{wis:5,exp:100}},
+   ]},
+  {id:'ce2',title:'光明頂決戰',novel:'金庸·倚天',icon:'🔥',
+   desc:'六大門派圍攻明教，張無忌橫空出世，以九陽神功力抗群雄。',
+   story:'光明頂上殺氣沖天，六大門派數百弟子黑壓壓圍成一圈。危急關頭，一名青年從地道衝出，九陽神功護體，金光閃閃。他就是張無忌。「讓我來！」他的聲音沉穩卻有無盡力量。敵眾奮力圍攻，你站在一旁，心跳加速，是袖手旁觀還是挺身而出？',
+   choices:[
+     {text:'與張無忌並肩作戰',reward:{qi:4,exp:120}},
+     {text:'趁亂進入明教藏典閣',reward:{wis:4,exp:100,gold:50}},
+     {text:'靜觀其變，見機行事',reward:{str:2,wis:3,exp:100}},
+   ]},
+  {id:'ce3',title:'梅莊奇遇',novel:'金庸·笑傲',icon:'🍷',
+   story:'梅莊地牢幽暗潮濕，你誤陷其中。牢房另一端，令狐沖靠著牆壁，懷中抱著酒壺，神情懶散。「又來了個倒霉鬼。」他笑著說。琴聲從遠處傳來，那是任盈盈在演奏，旋律中帶著無盡的情意。令狐沖忽然正色：「你想學獨孤九劍？說真的，我可以教你幾式...但你得先讓我出去。」',
+   choices:[
+     {text:'與令狐沖合作謀劃逃脫',reward:{wis:4,exp:110}},
+     {text:'請他傳授獨孤九劍破劍式',reward:{wis:5,exp:90}},
+     {text:'靜聽任盈盈的琴音療傷',reward:{hp:60,mp:40,exp:60}},
+   ]},
+  {id:'ce4',title:'香帥月夜',novel:'古龍·楚留香',icon:'🦋',
+   story:'夜如流水，江南煙雨樓的燈光在水中搖曳。白衣男子憑欄而立，手持一壺酒，望著江面若有所思——正是名震天下的楚留香。他聽到你的腳步聲，轉身微笑：「有趣，這麼晚了還在江邊遊蕩，你有故事。」他將酒遞過來：「說說看，你在追什麼，還是在逃什麼？」',
+   choices:[
+     {text:'與他把酒言歡，交流江湖見聞',reward:{wis:3,exp:90,gold:40}},
+     {text:'請他協助調查一樁武林密案',reward:{exp:150,gold:70}},
+     {text:'提出比試輕功的邀約',reward:{wis:5,exp:110}},
+   ]},
+  {id:'ce5',title:'四大名捕追緝',novel:'溫瑞安·四大名捕',icon:'🏯',
+   story:'官道黃塵，你正趕路，忽聽得身後風聲大作。一道人影如鬼魅般掠至眼前，正是四大名捕之一的追命。「站住！」他的聲音清冽如冰，「一宗命案，三個疑點，你是第四個。跑？」他微微笑了，「我追命的名號，不是白叫的。」遠處，無情坐在輪椅上，冷眼旁觀。',
+   choices:[
+     {text:'坦然相對，配合調查',reward:{str:3,exp:100}},
+     {text:'全力奔逃，考驗追命',reward:{wis:4,exp:110}},
+     {text:'主動提供線索破案',reward:{exp:140,gold:100}},
+   ]},
+  {id:'ce6',title:'生死飛刀',novel:'古龍·多情劍客',icon:'🗡️',
+   story:'荒野客棧，烈酒入喉。鄰桌一名落魄書生，衣著簡樸，眉宇間藏著無盡滄桑。三名黑衣殺手從暗處衝出，刀光霍霍。書生緩緩放下酒杯，手指輕輕一彈——刀光電閃，三人應聲倒地，血花四濺。「我叫李尋歡，」他平靜地說，「抱歉，打擾到你用餐了。」',
+   choices:[
+     {text:'拜李尋歡為師學習飛刀',reward:{str:5,exp:120}},
+     {text:'與他探討武學與人生哲理',reward:{wis:5,exp:120}},
+     {text:'合力追查幕後黑手',reward:{str:2,qi:2,wis:2,exp:130,gold:80}},
+   ]},
+];
+
 const ENEMIES=[
-  {name:'山賊頭目',icon:'🗡️',title:'',hp:70,atk:10,def:3,exp:25,gold:20},
-  {name:'官府捕快',icon:'⚖️',title:'',hp:92,atk:14,def:6,exp:35,gold:28},
-  {name:'星宿派弟子',icon:'👁️',title:'（丁春秋門下）',hp:110,atk:16,def:7,exp:45,gold:35},
-  {name:'日月神教教眾',icon:'🌙',title:'（任我行舊部）',hp:128,atk:20,def:9,exp:58,gold:48},
-  {name:'武林敗類',icon:'💀',title:'',hp:118,atk:19,def:9,exp:52,gold:43},
-  {name:'蒙古武士',icon:'🏹',title:'（忽必烈部下）',hp:140,atk:23,def:11,exp:68,gold:55},
-  {name:'邪門高手',icon:'🔮',title:'',hp:160,atk:27,def:14,exp:85,gold:70},
-  {name:'四大惡人黨羽',icon:'☠️',title:'（段延慶餘黨）',hp:180,atk:32,def:16,exp:110,gold:95},
+  {name:'山賊頭目',icon:'🗡️',title:'',hp:65,atk:10,def:3,exp:22,gold:18},
+  {name:'官府捕快',icon:'⚖️',title:'',hp:88,atk:13,def:5,exp:32,gold:26},
+  {name:'星宿派弟子',icon:'👁️',title:'（丁春秋門下）',hp:105,atk:16,def:7,exp:44,gold:35},
+  {name:'日月神教教眾',icon:'🌙',title:'（任我行舊部）',hp:120,atk:19,def:8,exp:56,gold:46},
+  {name:'蒙古武士',icon:'🏹',title:'（忽必烈部下）',hp:138,atk:22,def:11,exp:68,gold:55},
+  {name:'邪門高手',icon:'🔮',title:'',hp:158,atk:26,def:14,exp:85,gold:70},
+  {name:'四大惡人黨羽',icon:'☠️',title:'（段延慶餘黨）',hp:180,atk:31,def:16,exp:110,gold:95},
+  {name:'西域神僧',icon:'🧘',title:'（少林密宗）',hp:200,atk:28,def:18,exp:130,gold:110},
 ];
 
 const LOCATIONS=[
@@ -372,622 +561,904 @@ const LOCATIONS=[
   {id:'guangmingtop',name:'光明頂',icon:'🔥',desc:'明教聖地，倚天屠龍之爭',novel:'金庸·倚天'},
   {id:'shaolin',name:'少林藏經閣',icon:'📜',desc:'天下武學之源，秘笈無數',novel:'金庸'},
   {id:'jiangnan',name:'江南煙雨樓',icon:'🌧️',desc:'楚留香常駐之地，風流韻事',novel:'古龍·楚留香'},
-  {id:'sifu',name:'神侯府',icon:'🏯',desc:'四大名捕總部，正義之所',novel:'溫瑞安·四大名捕'},
+  {id:'sifu',name:'神侯府',icon:'🏯',desc:'四大名捕總部，正義之所',novel:'溫瑞安'},
 ];
 
-// 經典橋段固定劇情
-const CLASSIC_EVENTS=[
-  {
-    id:'ce1',title:'華山論劍',novel:'金庸·射鵰英雄傳',icon:'⛰️',
-    desc:'五絕相聚華山之巔，東邪、西毒、南帝、北丐、中神通，論天下武功高下。',
-    story:'華山之巔，寒風呼嘯。你輾轉來到論劍之地，卻見五位絕頂高手正激烈交鋒。郭靖見你氣度不凡，邀你旁觀，並傳授你一招降龍十八掌的精髓...',
-    choices:[
-      {text:'虛心請教郭靖大俠',result:'郭靖傳授你「亢龍有悔」精髓，武力大增！',reward:{str:3,exp:80,gold:0}},
-      {text:'挑戰黃藥師見識東邪武功',result:'黃藥師展示彈指神通，你領悟到輕功奧秘，悟性提升！',reward:{wis:3,exp:80,gold:0}},
-      {text:'向洪七公學習打狗棒法',result:'洪七公傳授三招棒法精要，內力大漲！',reward:{qi:3,exp:80,gold:0}},
-    ]
-  },
-  {
-    id:'ce2',title:'光明頂決戰',novel:'金庸·倚天屠龍記',icon:'🔥',
-    desc:'六大門派圍攻光明頂，明教眾人浴血奮戰。張無忌橫空出世，以九陽神功力抗群雄。',
-    story:'光明頂上殺氣沖天，六大門派數百弟子將明教圍困。危急關頭，你見到一名青年以一己之力對抗群雄，內力深不可測——那正是習得九陰九陽的張無忌。',
-    choices:[
-      {text:'協助張無忌抵抗六派',result:'張無忌感激你的仗義，傳授乾坤大挪移第一層！',reward:{qi:4,exp:100,gold:0}},
-      {text:'趁亂進入明教藏典閣',result:'你在藏典閣發現九陽真經殘篇，悟性大增！',reward:{wis:4,exp:100,gold:50}},
-      {text:'靜觀其變，見機行事',result:'你冷靜觀察六派武功破綻，戰鬥技巧精進！',reward:{str:2,wis:2,exp:100,gold:0}},
-    ]
-  },
-  {
-    id:'ce3',title:'笑傲江湖·梅莊奇遇',novel:'金庸·笑傲江湖',icon:'🍷',
-    desc:'令狐沖被囚梅莊地牢，與任盈盈相識，習得吸星大法之精要。',
-    story:'你誤入梅莊地牢，與一位神秘女子相遇。她自稱任盈盈，琴聲中隱含療傷之法。令狐沖也被關押其中，他見你是有緣之人，願以獨孤九劍指點你一二...',
-    choices:[
-      {text:'請令狐沖指點獨孤九劍',result:'令狐沖傳你「破劍式」，劍法精進，悟性大增！',reward:{wis:4,exp:90,gold:0}},
-      {text:'聆聽任盈盈的琴音療傷',result:'瑤琴之聲療癒你的內傷，生命值恢復！',reward:{hp:50,exp:60,gold:0}},
-      {text:'設法逃出地牢',result:'你機智逃脫，獲得江湖歷練，銀兩與經驗俱增！',reward:{exp:120,gold:80}},
-    ]
-  },
-  {
-    id:'ce4',title:'楚留香·香帥奇遇',novel:'古龍·楚留香傳奇',icon:'🦋',
-    desc:'盜帥楚留香再現江湖，案中有案，謎中有謎，風流俠義兩不誤。',
-    story:'夜色如墨，你在江南水鄉偶遇一名白衣男子，氣質超凡，手持一壺酒，笑看天下。他自報家門——楚留香。「朋友，你的眼神告訴我，你也是個有故事的人。」',
-    choices:[
-      {text:'與楚留香把酒言歡',result:'楚香帥傳授移花接木心法，輕功大進！',reward:{wis:3,exp:85,gold:30}},
-      {text:'請他協助調查武林密案',result:'楚香帥提供重要線索，獲得大量江湖情報！',reward:{exp:150,gold:60}},
-      {text:'比試輕功',result:'雖敗於盜帥之下，但深受啟發，悟性提升！',reward:{wis:5,exp:100,gold:0}},
-    ]
-  },
-  {
-    id:'ce5',title:'四大名捕·追命追緝',novel:'溫瑞安·四大名捕',icon:'🏯',
-    desc:'四大名捕奉神侯諸葛小花之命，追緝江湖要犯。你身陷其中，無法置身事外。',
-    story:'官道之上，你突然被一道人影攔截。「站住！」對方腿法如風，三兩步便已到了面前——正是四大名捕之一的追命。「你跑得比我慢，那就老實回答我的問題。」',
-    choices:[
-      {text:'坦誠相對，配合調查',result:'追命認定你清白，甚至指點你腿法！',reward:{str:3,exp:90,gold:0}},
-      {text:'試圖以輕功逃脫',result:'你輕功精進，雖未能逃脫，但深受歷練！',reward:{wis:4,exp:100,gold:0}},
-      {text:'主動幫助名捕破案',result:'神侯諸葛小花親自嘉獎，賜予銀兩與武學心得！',reward:{exp:130,gold:100}},
-    ]
-  },
-  {
-    id:'ce6',title:'小李飛刀·生死一刻',novel:'古龍·多情劍客無情劍',icon:'🗡️',
-    desc:'李尋歡以飛刀縱橫江湖，例不虛發。一刀在手，天下無敵。',
-    story:'你在荒野客棧偶遇一名落魄書生，他衣衫簡樸，眼神卻深邃如海。突然，三名黑衣殺手從四面衝來——書生輕描淡寫地摸出一把小刀，刀光一閃，三人應聲倒地。「我叫李尋歡。」',
-    choices:[
-      {text:'拜李尋歡為師學習飛刀',result:'李大俠傳你飛刀絕技要訣，武力暴增！',reward:{str:5,exp:110,gold:0}},
-      {text:'與他探討武學哲理',result:'李尋歡的武學思想令你茅塞頓開，悟性大增！',reward:{wis:5,exp:110,gold:0}},
-      {text:'合力對付幕後黑手',result:'並肩作戰，獲得李大俠認可，全屬性提升！',reward:{str:2,qi:2,wis:2,exp:120,gold:80}},
-    ]
-  },
-];
-
-const allSkills=Object.values(SKILL_TREE).flatMap(b=>b.skills);
-const findSkill=id=>allSkills.find(s=>s.id===id);
-const expFor=lv=>Math.floor(100*Math.pow(1.4,lv-1));
-
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // STATE
-// ══════════════════════════════════════════
-let apiKey='', groupId='';
-let selBirth=null, selFaction=null, selMaster=null;
-let player=null, enemy=null, combatBusy=false;
+// ═══════════════════════════════════════════════════
+let apiKey='',groupId='';
+let selBirth=null,selFaction=null,selMaster=null;
+let player=null,enemy=null,combatBusy=false;
+let shopStock=[];
+// ═══════════════════════════════════════════════════
+// SAVE/LOAD SYSTEM
+// ═══════════════════════════════════════════════════
+const SAVE_KEY='wuxia_rpg_save';
+function saveGame(){
+  if(!player)return;
+  const data={player,selBirth,selFaction,selMaster,shopStock,savedAt:Date.now()};
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify(data));showNotice("💾 遊戲已儲存",'#60b060');}catch(e){showNotice("儲存失敗","'#e05050');}
+}
+function loadGame(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(!raw)return false;
+    const data=JSON.parse(raw);
+    if(data.player){player=data.player;selBirth=data.selBirth;selFaction=data.selFaction;selMaster=data.selMaster;shopStock=data.shopStock||[];}
+    return true;
+  }catch(e){return false;}
+}
+function hasSave(){return!!localStorage.getItem(SAVE_KEY);}
+function clearSave(){localStorage.removeItem(SAVE_KEY);showNotice("存檔已清除");}
+
+
+function getAllSkills(){return FACTIONS.flatMap(f=>f.skills).concat(EXTRA_SKILLS);}
+function findSkill(id){return getAllSkills().find(s=>s.id===id);}
+function expFor(lv){return Math.floor(100*Math.pow(1.4,lv-1));}
+function ncolor(n){
+  if(!n)return'rgba(120,120,120,0.5)';
+  if(n.includes('金庸'))return'rgba(180,120,20,0.7)';
+  if(n.includes('古龍'))return'rgba(40,100,160,0.7)';
+  if(n.includes('溫瑞安'))return'rgba(100,40,140,0.7)';
+  return'rgba(100,100,100,0.5)';
+}
+function rarityColor(r){const m={普通:'#aaa',精良:'#5aaa5a',稀有:'#5080e0',史詩:'#a060d0',傳說:'var(--goldl)'};return m[r]||'#aaa';}
 
 function makePlayer(birth,faction,master){
+  const maxMp=Math.floor(birth.mp||80);
   const p={birth,faction,master,level:1,exp:0,expNeeded:100,
-    hp:birth.hp,maxHp:birth.hp,
+    hp:birth.hp,maxHp:birth.hp,mp:maxMp,maxMp,
     str:birth.stats.str,qi:birth.stats.qi,wis:birth.stats.wis,
-    gold:100,sp:2,skills:[],kills:0,days:1};
-  // Give master's gift skill
-  if(master.giftId && findSkill(master.giftId)){
-    p.skills.push(master.giftId);
+    gold:150,sp:3,skills:[],kills:0,days:1,
+    equipped:{weapon:null,armor:null,accessory:null},
+    inventory:[],consumables:[],
+  };
+  // Give master's gift equipment
+  const giftPool={weapon:EQUIP_DB.weapon,armor:EQUIP_DB.armor,accessory:EQUIP_DB.accessory};
+  if(master.giftType && master.gift){
+    const match=giftPool[master.giftType]?.find(e=>e.name===master.gift||e.id.startsWith(master.giftType[0]));
+    // Give a themed starter item based on master
+    const starterEquips={
+      guojing:'w4',linghu:'ac4',zhangwuji:'ac3',yanguo:'w4',
+      chuliu:'ac1',lixunhuan:'ac1',zhuge:'ac5',dugu:'w5'
+    };
+    const sid=starterEquips[master.id];
+    const allE=[...EQUIP_DB.weapon,...EQUIP_DB.armor,...EQUIP_DB.accessory];
+    const item=allE.find(e=>e.id===sid);
+    if(item) p.inventory.push({...item,uid:Date.now()});
   }
+  // Starting potion
+  p.consumables.push({...EQUIP_DB.consumable[0],uid:Date.now()+1});
   return p;
 }
 
-// ══════════════════════════════════════════
+// Equipment bonuses
+function getEquipBonus(){
+  if(!player)return{atk:0,def:0,hp:0,mp:0,str:0,qi:0,wis:0,crit:0,dodge:0};
+  const b={atk:0,def:0,hp:0,mp:0,str:0,qi:0,wis:0,crit:0,dodge:0,reflect:0};
+  Object.values(player.equipped).forEach(item=>{
+    if(!item)return;
+    Object.entries(item.stats||{}).forEach(([k,v])=>{if(b[k]!==undefined)b[k]+=v;});
+  });
+  return b;
+}
+function effectiveStats(){
+  const b=getEquipBonus();
+  return{
+    str:player.str+b.str,qi:player.qi+b.qi,wis:player.wis+b.wis,
+    atk:b.atk,def:b.def,crit:b.crit,dodge:b.dodge,reflect:b.reflect
+  };
+}
+
+// ═══════════════════════════════════════════════════
 // UI HELPERS
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function showNotice(msg,color=null){
   const el=document.getElementById('notice');
-  el.textContent=msg;el.style.display='block';
-  el.style.color=color||'var(--gold)';el.style.borderColor=color||'var(--gold)';el.style.opacity='1';
+  el.textContent=msg;el.style.display='block';el.style.color=color||'var(--goldl)';
+  el.style.borderColor=color||'var(--gold)';el.style.opacity='1';
   clearTimeout(el._t);el._t=setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.style.display='none',300);},2800);
 }
-function hpPct(cur,max){return Math.max(0,Math.min(100,(cur/Math.max(1,max))*100))+'%'}
-function novelColor(novel){
-  if(!novel) return 'rgba(150,150,150,0.5)';
-  if(novel==='金庸') return 'rgba(180,120,20,0.7)';
-  if(novel==='古龍') return 'rgba(40,100,160,0.7)';
-  if(novel==='溫瑞安') return 'rgba(100,40,140,0.7)';
-  return 'rgba(100,100,100,0.5)';
-}
+function pct(c,m){return Math.max(0,Math.min(100,(c/Math.max(1,m))*100))+'%';}
 
 function renderSidebar(){
   if(!player)return;
+  const b=getEquipBonus();
   document.getElementById('sidebar-stats').innerHTML=`
-    <div style="text-align:center;margin-bottom:10px">
-      <div style="font-size:30px;margin-bottom:4px">🥷</div>
-      <div style="color:var(--gold);font-size:13px;font-weight:bold;letter-spacing:2px">${player.faction.name}弟子</div>
-      <div style="color:var(--dim);font-size:10px;margin-top:2px">出身 · ${player.birth.name}</div>
-      ${player.master?`<div style="color:var(--dim);font-size:10px">師父 · ${player.master.name}${player.master.title}</div>`:''}
+    <div style="text-align:center;margin-bottom:8px">
+      <div style="font-size:28px;margin-bottom:3px">🥷</div>
+      <div style="color:var(--gold);font-size:12px;font-weight:bold;letter-spacing:2px">${player.faction.name}弟子</div>
+      <div style="color:var(--dim);font-size:9px;margin-top:1px">出身·${player.birth.name} ${player.master?`· 師·${player.master.name}`:''}</div>
     </div>
     <div class="decor"><span>◆</span></div>
-    <div style="margin-bottom:7px">
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--dim);margin-bottom:3px"><span>生命</span><span style="color:#e05050">${player.hp}/${player.maxHp}</span></div>
-      <div class="hpbar-wrap"><div class="hpbar" style="background:#c04020;width:${hpPct(player.hp,player.maxHp)}"></div></div>
+    <div style="margin-bottom:5px">
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--dim);margin-bottom:2px"><span>生命</span><span style="color:#e05050">${player.hp}/${player.maxHp+(b.hp||0)}</span></div>
+      <div class="hpbar-wrap"><div class="hpbar" style="background:#c04020;width:${pct(player.hp,player.maxHp+(b.hp||0))}"></div></div>
     </div>
-    <div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--dim);margin-bottom:3px"><span>經驗</span><span style="color:var(--gold)">${player.exp}/${player.expNeeded}</span></div>
-      <div class="hpbar-wrap"><div class="hpbar" style="background:var(--gold);width:${hpPct(player.exp,player.expNeeded)}"></div></div>
+    <div style="margin-bottom:5px">
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--dim);margin-bottom:2px"><span>內力</span><span style="color:#4090e0">${player.mp}/${player.maxMp+(b.mp||0)}</span></div>
+      <div class="mpbar-wrap"><div class="hpbar" style="background:var(--blue);width:${pct(player.mp,player.maxMp+(b.mp||0))}"></div></div>
+    </div>
+    <div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--dim);margin-bottom:2px"><span>經驗</span><span style="color:var(--gold)">${player.exp}/${player.expNeeded}</span></div>
+      <div class="hpbar-wrap"><div class="hpbar" style="background:var(--gold);width:${pct(player.exp,player.expNeeded)}"></div></div>
     </div>
     <div class="decor"><span>◆</span></div>
-    <div class="grid2" style="gap:5px;margin-bottom:8px">
-      ${[['等級','Lv.'+player.level,'var(--goldl)'],['擊殺',player.kills+'人','var(--dim)'],['天數',player.days+'天','var(--dim)'],['銀兩',player.gold+'兩','#90d090']].map(([l,v,c])=>`<div class="stat-box"><div class="lbl">${l}</div><div class="val" style="color:${c}">${v}</div></div>`).join('')}
+    <div class="g2" style="gap:4px;margin-bottom:7px">
+      ${[['等級','Lv.'+player.level,'var(--goldl)'],['擊殺',player.kills+'人','var(--dim)'],['天數',player.days+'天','var(--dim)'],['銀兩',player.gold+'兩','#90d090']].map(([l,v,c])=>`<div class="sbox"><div class="l">${l}</div><div class="v" style="color:${c}">${v}</div></div>`).join('')}
     </div>
     <div class="decor"><span>◆</span></div>
-    <div class="grid3">
-      ${[['武力',player.str,'#e06040'],['內力',player.qi,'#4090e0'],['悟性',player.wis,'#9060d0']].map(([l,v,c])=>`<div class="stat-box"><div class="lbl">${l}</div><div class="val" style="color:${c};font-size:15px">${v}</div></div>`).join('')}
+    <div class="g3">
+      ${[['武力',player.str+(b.str||0),'#e06040'],['內功',player.qi+(b.qi||0),'#4090e0'],['悟性',player.wis+(b.wis||0),'#9060d0']].map(([l,v,c])=>`<div class="sbox"><div class="l">${l}</div><div class="v" style="color:${c};font-size:14px">${v}</div></div>`).join('')}
     </div>
-    ${player.sp>0?`<div style="margin-top:8px;background:rgba(180,140,20,.12);border:1px solid var(--border);border-radius:4px;padding:5px 8px;text-align:center"><span style="color:var(--goldl);font-size:11px">✦ 修煉點 ${player.sp}</span></div>`:''}
+    ${b.def||b.atk?`<div style="margin-top:5px;font-size:9px;color:var(--dim);text-align:center">${b.atk?`攻擊+${b.atk} `:''}${b.def?`防禦+${b.def}`:''}</div>`:''}
+    ${player.sp>0?`<div style="margin-top:7px;background:rgba(180,140,20,.12);border:1px solid var(--border);border-radius:4px;padding:4px 8px;text-align:center"><span style="color:var(--goldl);font-size:11px">✦ 修煉點 ${player.sp}</span></div>`:''}
   `;
 }
 
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // API KEY
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 function saveApiKey(){
   const k=document.getElementById('api-key-input').value.trim();
-  const g=document.getElementById('group-id-input').value.trim();
   if(!k){showNotice('請輸入 API Key','#e05050');return;}
-  apiKey=k;groupId=g;
+  apiKey=k;groupId=document.getElementById('group-id-input').value.trim();
   showScreen('s-birth');renderBirthCards();
 }
 function skipApiKey(){apiKey='';showScreen('s-birth');renderBirthCards();}
 
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // BIRTH
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 function renderBirthCards(){
   document.getElementById('birth-cards').innerHTML=BIRTHS.map(b=>`
-    <div class="card ${selBirth&&selBirth.id===b.id?'selected':''}" onclick="selectBirth('${b.id}')">
-      <div style="font-size:36px;margin-bottom:8px;text-align:center">${b.icon}</div>
-      <div style="color:var(--paper);font-size:15px;font-weight:bold;letter-spacing:2px;margin-bottom:5px;text-align:center">${b.name}</div>
-      <div style="color:var(--dim);font-size:11px;line-height:1.7;margin-bottom:10px;text-align:center">${b.desc}</div>
+    <div class="card ${selBirth?.id===b.id?'sel':''}" onclick="selBirth=BIRTHS.find(x=>x.id==='${b.id}');document.getElementById('birth-confirm').style.display='inline-block';renderBirthCards()">
+      <div style="font-size:34px;text-align:center;margin-bottom:7px">${b.icon}</div>
+      <div style="color:var(--paper);font-size:14px;font-weight:bold;letter-spacing:2px;text-align:center;margin-bottom:5px">${b.name}</div>
+      <div style="color:var(--dim);font-size:11px;line-height:1.7;text-align:center;margin-bottom:9px">${b.desc}</div>
       <div class="decor"><span>◆</span></div>
-      <div class="grid3" style="margin-bottom:10px">
-        ${[['武力',b.stats.str,'#e06040'],['內力',b.stats.qi,'#4090e0'],['悟性',b.stats.wis,'#9060d0']].map(([l,v,c])=>`<div class="stat-box"><div class="lbl">${l}</div><div class="val" style="color:${c}">${v}</div></div>`).join('')}
+      <div class="g3" style="margin-bottom:9px">
+        ${[['武力',b.stats.str,'#e06040'],['內力',b.stats.qi,'#4090e0'],['悟性',b.stats.wis,'#9060d0']].map(([l,v,c])=>`<div class="sbox"><div class="l">${l}</div><div class="v" style="color:${c}">${v}</div></div>`).join('')}
       </div>
-      <div style="background:rgba(180,100,20,.1);border:1px solid var(--border);border-radius:4px;padding:6px 8px;text-align:center">
-        <div style="color:var(--goldl);font-size:11px;margin-bottom:2px">✦ ${b.trait}</div>
+      <div style="background:rgba(180,100,20,.1);border:1px solid var(--border);border-radius:4px;padding:5px 8px;text-align:center">
+        <div style="color:var(--goldl);font-size:10px;margin-bottom:1px">✦ ${b.trait}</div>
         <div style="color:var(--dim);font-size:10px">${b.traitDesc}</div>
       </div>
     </div>`).join('');
 }
-function selectBirth(id){
-  selBirth=BIRTHS.find(b=>b.id===id);
-  document.getElementById('birth-confirm').style.display='inline-block';
-  renderBirthCards();
-}
 
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // FACTION
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 function showFactionScreen(){showScreen('s-faction');renderFactionCards();}
 function renderFactionCards(){
   document.getElementById('faction-cards').innerHTML=FACTIONS.map(f=>`
-    <div onclick="selectFaction('${f.id}')" style="
-      background:${selFaction&&selFaction.id===f.id?f.color+'ee':f.color+'44'};
-      border:${selFaction&&selFaction.id===f.id?'2px solid '+f.accent:'1px solid '+f.color+'88'};
-      border-radius:8px;padding:14px;cursor:pointer;text-align:center;transition:all .2s;
-      box-shadow:${selFaction&&selFaction.id===f.id?'0 0 22px '+f.color+'66':'none'}">
-      <div style="font-size:30px;margin-bottom:6px">${f.icon}</div>
-      <div style="color:var(--paper);font-size:14px;font-weight:bold;letter-spacing:2px;margin-bottom:4px">${f.name}</div>
-      <span class="novel-badge" style="background:${novelColor(f.novel)}">${f.novel}</span>
-      <div style="color:var(--dim);font-size:10px;line-height:1.6;margin:8px 0">${f.desc}</div>
-      <div style="background:rgba(0,0,0,.38);border-radius:4px;padding:5px 6px">
-        <div style="color:${f.accent};font-size:9px;margin-bottom:2px">起始武學</div>
-        <div style="color:var(--paper);font-weight:bold;font-size:11px">【${f.skill}】</div>
+    <div onclick="selFaction=FACTIONS.find(x=>x.id==='${f.id}');document.getElementById('faction-confirm').style.display='inline-block';renderFactionCards()" style="
+      background:${selFaction?.id===f.id?f.color+'ee':f.color+'44'};
+      border:${selFaction?.id===f.id?'2px solid '+f.accent:'1px solid '+f.color+'88'};
+      border-radius:8px;padding:13px;cursor:pointer;text-align:center;transition:all .2s">
+      <div style="font-size:28px;margin-bottom:5px">${f.icon}</div>
+      <div style="color:var(--paper);font-size:13px;font-weight:bold;letter-spacing:2px;margin-bottom:3px">${f.name}</div>
+      <span class="nbadge" style="background:${ncolor(f.novel)}">${f.novel}</span>
+      <div style="color:var(--dim);font-size:10px;line-height:1.6;margin:7px 0">${f.desc}</div>
+      <div style="background:rgba(0,0,0,.35);border-radius:4px;padding:4px 5px">
+        <div style="color:${f.accent};font-size:9px;margin-bottom:2px">本門三重武學</div>
+        <div style="color:var(--paper);font-size:10px">${f.skills.map(s=>s.name).join(' → ')}</div>
       </div>
     </div>`).join('');
 }
-function selectFaction(id){
-  selFaction=FACTIONS.find(f=>f.id===id);
-  document.getElementById('faction-confirm').style.display='inline-block';
-  renderFactionCards();
-}
 
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // MASTER
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 function showMasterScreen(){showScreen('s-master');renderMasterCards();}
 function renderMasterCards(){
   document.getElementById('master-cards').innerHTML=MASTERS.map(m=>`
-    <div class="npc-card ${selMaster&&selMaster.id===m.id?'selected':''}" onclick="selectMaster('${m.id}')">
-      <div style="font-size:36px;margin-bottom:8px">${m.icon}</div>
-      <div style="color:var(--paper);font-size:15px;font-weight:bold;letter-spacing:2px">${m.name}</div>
-      <div style="color:var(--dim);font-size:10px;margin:2px 0 6px">${m.title} · <span style="background:${novelColor(m.novel.split('·')[0].trim())};padding:1px 5px;border-radius:2px">${m.novel}</span></div>
-      <div style="color:var(--dim);font-size:11px;line-height:1.7;margin-bottom:10px">${m.desc}</div>
-      <div style="background:rgba(180,140,20,.1);border:1px solid var(--border);border-radius:4px;padding:7px">
-        <div style="color:var(--goldl);font-size:10px;margin-bottom:3px">贈予武學</div>
-        <div style="color:var(--paper);font-weight:bold;font-size:12px">【${m.gift}】</div>
+    <div class="card ${selMaster?.id===m.id?'sel':''}" onclick="selMaster=MASTERS.find(x=>x.id==='${m.id}');document.getElementById('master-confirm').style.display='inline-block';renderMasterCards()" style="text-align:center;cursor:pointer">
+      <div style="font-size:32px;margin-bottom:6px">${m.icon}</div>
+      <div style="color:var(--paper);font-size:14px;font-weight:bold;letter-spacing:2px">${m.name}</div>
+      <div style="color:var(--dim);font-size:10px;margin:2px 0 7px"><span class="nbadge" style="background:${ncolor(m.novel)}">${m.novel}</span> ${m.title}</div>
+      <div style="color:var(--dim);font-size:11px;line-height:1.7;margin-bottom:9px">${m.quote}</div>
+      <div style="background:rgba(180,140,20,.1);border:1px solid var(--border);border-radius:4px;padding:6px">
+        <div style="color:var(--goldl);font-size:9px;margin-bottom:2px">贈予初始裝備</div>
+        <div style="color:var(--paper);font-size:11px;font-weight:bold">【${m.gift}】</div>
       </div>
-      <div style="margin-top:8px;color:rgba(200,180,140,.4);font-size:10px;font-style:italic">「${m.quote}」</div>
     </div>`).join('');
 }
-function selectMaster(id){
-  selMaster=MASTERS.find(m=>m.id===id);
-  document.getElementById('master-confirm').style.display='inline-block';
-  renderMasterCards();
+
+// ═══════════════════════════════════════════════════
+// GAME START
+// ═══════════════════════════════════════════════════
+// Check for save and ask to load
+function checkLoadSave(){
+  if(hasSave()){
+    if(confirm("發現已有存檔，是否載入？")){
+      loadGame();showScreen(""s-main"");renderMain();return true;
+    }else{clearSave();}
+  }
+  return false;
 }
 
-// ══════════════════════════════════════════
-// GAME START
-// ══════════════════════════════════════════
 function startGame(){
   if(!selBirth||!selFaction||!selMaster)return;
   player=makePlayer(selBirth,selFaction,selMaster);
-  showScreen('s-main');
-  renderMain();
+  generateShopStock();
+  showScreen('s-main');renderMain();
 }
 
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // MAIN
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 function renderMain(){
   renderSidebar();
   const actions=[
-    {icon:'🗺️',label:'江湖探索',sub:'AI劇情 · 經典橋段',action:"showScreen('s-explore');renderExplore()",bg:'#0a1a0a'},
+    {icon:'🗺️',label:'江湖探索',sub:'奇遇 · AI劇情 · 經典橋段',action:"showScreen('s-explore');renderExplore()",bg:'#0a1a0a'},
     {icon:'⚔️',label:'闖蕩江湖',sub:'隨機遭遇戰鬥',action:'beginCombat()',bg:'#1a0a0a'},
-    {icon:'📖',label:'修煉武學',sub:`小說武學秘笈${player.sp>0?` (${player.sp}點)`:''}`,action:"showScreen('s-skills');renderSkillTree()",bg:'#0a0a1a',badge:player.sp},
-    {icon:'🌙',label:'打坐休息',sub:'恢復40%生命，過一天',action:'doRest()',bg:'#111009'},
+    {icon:'📖',label:'本門修煉',sub:`修煉${player.faction.name}武學${player.sp>0?` (${player.sp}點)`:''}`,action:"showScreen('s-skills');renderSkillTree()",bg:'#0a0a1a',badge:player.sp},
+    {icon:'🛡️',label:'裝備管理',sub:'查看裝備、切換配置',action:"showScreen('s-equip');renderEquip()",bg:'#101a10'},
+    {icon:'🏮',label:'江湖市集',sub:'購買兵器、藥品、秘笈',action:"showScreen('s-shop');renderShop()",bg:'#1a1000'},
+    {icon:'🌙',label:'打坐休息',sub:'恢復生命內力，過一天',action:'doRest();saveGame()',bg:'#111009'},
+    {icon:'💾',label:'儲存進度',sub:'手動儲存遊戲',action:'saveGame()',bg:'#101018'},
   ];
-  document.getElementById('action-grid').innerHTML=actions.map(a=>`
-    <div class="action-card" style="background:${a.bg}" onclick="${a.action}">
-      ${(a.badge||0)>0?`<div style="position:absolute;top:8px;right:8px;background:var(--red);color:#fff;border-radius:50%;width:19px;height:19px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold">${a.badge}</div>`:''}
-      <div style="font-size:34px;margin-bottom:6px">${a.icon}</div>
-      <div style="color:var(--paper);font-weight:bold;font-size:13px;letter-spacing:2px;margin-bottom:4px">${a.label}</div>
-      <div style="color:var(--dim);font-size:10px;line-height:1.5">${a.sub}</div>
-    </div>`).join('');
+  document.getElementById('action-grid').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+    ${actions.map(a=>`<div class="acard" style="background:${a.bg}" onclick="${a.action}">
+      ${(a.badge||0)>0?`<div style="position:absolute;top:7px;right:7px;background:var(--red);color:#fff;border-radius:50%;width:17px;height:17px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:bold">${a.badge}</div>`:''}
+      <div style="font-size:28px;margin-bottom:5px">${a.icon}</div>
+      <div style="color:var(--paper);font-weight:bold;font-size:12px;letter-spacing:1px;margin-bottom:3px">${a.label}</div>
+      <div style="color:var(--dim);font-size:9px;line-height:1.4">${a.sub}</div>
+    </div>`).join('')}
+  </div>`;
+  // Skills display
   const ls=document.getElementById('learned-skills-display');
-  if(player.skills.length===0){
-    ls.innerHTML='<span style="color:var(--dim);font-size:11px">尚未習得任何武學</span>';
-  }else{
-    ls.innerHTML=player.skills.map(sid=>{
-      const sk=findSkill(sid);
-      return sk?`<span class="tag" style="margin:3px">${sk.icon} ${sk.name}<span class="novel-badge" style="background:${novelColor(sk.novel)}">${sk.novel||''}</span></span>`:''
-    }).join('');
-  }
-  // Master info box
+  ls.innerHTML=player.skills.length===0?'<span style="color:var(--dim);font-size:10px">尚未習得任何武學</span>':
+    player.skills.map(id=>{const sk=findSkill(id);return sk?`<span class="tag" style="margin:2px;font-size:10px">${sk.icon}${sk.name}<span class="nbadge" style="background:${ncolor(sk.novel||'')};margin-left:4px">${sk.novel||''}</span></span>`:''}).join('');
+  // Master box
   if(player.master){
     document.getElementById('master-info-box').innerHTML=`
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="font-size:28px">${player.master.icon}</div>
-        <div>
-          <div style="color:var(--gold);font-size:12px;letter-spacing:2px">師父 · ${player.master.name}${player.master.title}</div>
-          <div style="color:var(--dim);font-size:10px;line-height:1.7;margin-top:3px">「${player.master.quote}」</div>
-          <div style="color:rgba(200,180,140,.4);font-size:9px;margin-top:2px">${player.master.novel}</div>
-        </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:24px">${player.master.icon}</div>
+        <div><div style="color:var(--gold);font-size:11px;letter-spacing:2px">師父 · ${player.master.name} ${player.master.title}</div>
+        <div style="color:rgba(200,180,140,.45);font-size:10px;margin-top:2px;font-style:italic">「${player.master.quote}」</div></div>
       </div>`;
   }
 }
 function doRest(){
   const h=Math.floor(player.maxHp*0.4);
+  const m=Math.floor(player.maxMp*0.6);
   player.hp=Math.min(player.maxHp,player.hp+h);
+  player.mp=Math.min(player.maxMp,player.mp+m);
   player.days++;
-  showNotice(`打坐一夜，恢復 ${h} 點生命`);
+  showNotice(`打坐一夜，恢復 ${h} 生命、${m} 內力`);
   renderMain();
 }
 
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // EXPLORE
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 let exploreTab='free';
-function renderExplore(){
-  switchExploreTab(exploreTab);
+function renderExplore(){switchTab(exploreTab);}
+function switchTab(t){
+  exploreTab=t;
+  ['free','classic'].forEach(x=>{
+    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+    document.getElementById('explore-'+x).style.display=x===t?'block':'none';
+  });
+  if(t==='free')renderFree();else renderClassic();
 }
-function switchExploreTab(tab){
-  exploreTab=tab;
-  document.getElementById('tab-free').style.borderColor=tab==='free'?'var(--gold)':'var(--border)';
-  document.getElementById('tab-free').style.color=tab==='free'?'var(--goldl)':'var(--dim)';
-  document.getElementById('tab-classic').style.borderColor=tab==='classic'?'var(--gold)':'var(--border)';
-  document.getElementById('tab-classic').style.color=tab==='classic'?'var(--goldl)':'var(--dim)';
-  document.getElementById('explore-free').style.display=tab==='free'?'grid':'none';
-  document.getElementById('explore-classic').style.display=tab==='classic'?'block':'none';
-  if(tab==='free') renderFreeLocations();
-  else renderClassicEvents();
+
+function renderFree(){
+  const el=document.getElementById('explore-free');
+  const qSample=[...QIYUS].sort(()=>Math.random()-.5).slice(0,3);
+  let html='<div style="color:var(--gold);font-size:11px;letter-spacing:2px;margin-bottom:10px">◆ 奇遇事件</div>';
+  qSample.forEach(q=>{
+    html+='<div class="cecard" data-qiyu="'+q.id+'" style="cursor:pointer">';
+    html+='<div style="display:flex;align-items:center;gap:10px">';
+    html+='<span style="font-size:26px">'+q.icon+'</span>';
+    html+='<div><div style="color:var(--paper);font-size:13px;font-weight:bold;letter-spacing:1px">'+q.title+'</div>';
+    html+='<div style="color:var(--dim);font-size:10px;margin-top:3px">'+q.story.slice(0,50)+'...</div></div></div></div>';
+  });
+  html+='<div style="color:var(--gold);font-size:11px;letter-spacing:2px;margin:14px 0 10px">◆ AI 隨機探索地點</div>';
+  html+='<div class="g2">';
+  LOCATIONS.forEach(loc=>{
+    html+='<div class="loc-card" data-loc="'+loc.id+'" style="background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:18px 14px;cursor:pointer;text-align:center;transition:background .2s">';
+    html+='<div style="font-size:34px;margin-bottom:7px">'+loc.icon+'</div>';
+    html+='<div style="color:var(--paper);font-size:13px;font-weight:bold;letter-spacing:2px;margin-bottom:4px">'+loc.name+'</div>';
+    html+='<div style="color:var(--dim);font-size:10px;margin-bottom:5px">'+loc.desc+'</div>';
+    html+='<span class="nbadge" style="background:'+ncolor(loc.novel)+'">'+loc.novel+'</span>';
+    html+='</div>';
+  });
+  html+='</div>';
+  el.innerHTML=html;
+  // Bind events after setting innerHTML
+  el.querySelectorAll('[data-qiyu]').forEach(div=>{
+    div.addEventListener('click',()=>doQiyu(div.dataset.qiyu));
+  });
+  el.querySelectorAll('.loc-card').forEach(div=>{
+    div.addEventListener('mouseenter',()=>div.style.background='rgba(180,140,20,.08)');
+    div.addEventListener('mouseleave',()=>div.style.background='rgba(255,255,255,.025)');
+    div.addEventListener('click',()=>exploreAI(div.dataset.loc));
+  });
 }
-function renderFreeLocations(){
-  document.getElementById('explore-free').innerHTML=LOCATIONS.map(loc=>`
-    <div onclick="exploreLocation('${loc.id}')" style="background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:22px 16px;cursor:pointer;text-align:center;transition:background .2s"
-      onmouseenter="this.style.background='rgba(180,140,20,.09)'" onmouseleave="this.style.background='rgba(255,255,255,.025)'">
-      <div style="font-size:38px;margin-bottom:8px">${loc.icon}</div>
-      <div style="color:var(--paper);font-size:15px;font-weight:bold;letter-spacing:3px;margin-bottom:5px">${loc.name}</div>
-      <div style="color:var(--dim);font-size:10px;margin-bottom:6px">${loc.desc}</div>
-      <span class="novel-badge" style="background:${novelColor(loc.novel.split('·')[0].trim())}">${loc.novel}</span>
-    </div>`).join('');
-}
-function renderClassicEvents(){
+
+function renderClassic(){
   document.getElementById('explore-classic').innerHTML=CLASSIC_EVENTS.map(ev=>`
-    <div class="event-card" onclick="doClassicEvent('${ev.id}')">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-        <span style="font-size:28px">${ev.icon}</span>
-        <div>
-          <div style="color:var(--paper);font-size:14px;font-weight:bold;letter-spacing:2px">${ev.title}</div>
-          <span class="novel-badge" style="background:${novelColor(ev.novel.split('·')[0].trim())}">${ev.novel}</span>
-        </div>
+    <div class="cecard" onclick="doClassic('${ev.id}')">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <span style="font-size:24px">${ev.icon}</span>
+        <div><div style="color:var(--paper);font-size:13px;font-weight:bold;letter-spacing:1px">${ev.title}</div>
+        <span class="nbadge" style="background:${ncolor(ev.novel)}">${ev.novel}</span></div>
       </div>
-      <div style="color:var(--dim);font-size:12px;line-height:1.8">${ev.desc}</div>
+      <div style="color:var(--dim);font-size:11px;line-height:1.7">${ev.desc}</div>
     </div>`).join('');
 }
 
-// 固定劇情
-function doClassicEvent(evId){
-  const ev=CLASSIC_EVENTS.find(e=>e.id===evId);
+// ─── QIYU ───
+function doQiyu(id){
+  const q=QIYUS.find(x=>x.id===id);
   showScreen('s-story');
-  document.getElementById('story-title').textContent=`${ev.icon} ${ev.title}`;
-  document.getElementById('story-back-btn').innerHTML='<button class="btn-dim" onclick="showScreen(\'s-explore\');renderExplore()">← 返回</button>';
+  document.getElementById('story-title').textContent=`${q.icon} ${q.title}`;
+  document.getElementById('story-back-btn').innerHTML=`<button class="btn-d" onclick="showScreen(&apos;s-explore&apos;);renderExplore()">← 返回</button>`;
   document.getElementById('story-done-btns').style.display='none';
-  document.getElementById('story-content').innerHTML=`
-    <span class="novel-badge" style="background:${novelColor(ev.novel.split('·')[0].trim())};margin-bottom:10px;display:inline-block">${ev.novel}</span>
-    <p style="color:var(--paper);line-height:2.1;font-size:15px;letter-spacing:1px">${ev.story}</p>`;
-  document.getElementById('story-choices').innerHTML=ev.choices.map((c,i)=>`
-    <button class="choice-btn" onclick="doClassicChoice(${JSON.stringify(ev.choices).replace(/"/g,'&quot;')},${i})">
-      <span style="color:var(--gold);font-weight:bold;margin-right:8px">${i+1}.</span>${c.text}
+  document.getElementById('story-content').innerHTML=`<p style="color:var(--paper);line-height:2.1;font-size:14px;letter-spacing:1px">${q.story}</p>`;
+  const riskColor={'高':'#e05050','中':'var(--goldl)','低':'#60b060'};
+  document.getElementById('story-choices').innerHTML=q.choices.map((c,i)=>`
+    <button class="choice-btn" onclick="resolveQiyu(${JSON.stringify(q.choices).replace(/"/g,'&quot;')},${i})">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span><span style="color:var(--gold);font-weight:bold;margin-right:7px">${i+1}.</span>${c.text}</span>
+        <span style="font-size:9px;color:${riskColor[c.risk]||'var(--dim)'};border:1px solid currentColor;padding:1px 6px;border-radius:3px">風險${c.risk}</span>
+      </div>
     </button>`).join('');
 }
-function doClassicChoice(choices,idx){
+
+function resolveQiyu(choices,idx){
   const c=choices[idx];
-  const r=c.reward||{};
-  if(r.str){player.str+=r.str;}
-  if(r.qi){player.qi+=r.qi;}
-  if(r.wis){player.wis+=r.wis;}
-  if(r.hp){player.hp=Math.min(player.maxHp,player.hp+(r.hp||0));}
-  if(r.exp){player.exp+=(r.exp||0);checkLevelUp();}
-  if(r.gold){player.gold+=(r.gold||0);}
+  const r=c.reward;
+  let gained=[];
+  function applyReward(rw){
+    if(rw.type==='skill'){
+      if(!player.skills.includes(rw.id)){player.skills.push(rw.id);const sk=findSkill(rw.id);gained.push(`習得武學【${sk?.name||rw.id}】！`);}
+      else gained.push('武學已習得，改以經驗補償');player.exp+=100;
+    }else if(rw.type==='equip'){
+      const allE=[...EQUIP_DB.weapon,...EQUIP_DB.armor,...EQUIP_DB.accessory];
+      const item=allE.find(e=>e.id===rw.id);
+      if(item){player.inventory.push({...item,uid:Date.now()+Math.random()});gained.push(`獲得裝備【${item.name}】！`);}
+    }else if(rw.type==='gold'){player.gold=Math.max(0,player.gold+(rw.val||0));if(rw.val>0)gained.push(`獲得${rw.val}兩銀子`);else gained.push(`損失${Math.abs(rw.val)}兩銀子`);}
+    else if(rw.type==='exp'){player.exp+=(rw.val||0);gained.push(`獲得${rw.val}點經驗`);}
+    else if(rw.type==='hp'){player.hp=Math.max(1,Math.min(player.maxHp,player.hp+(rw.val||0)));gained.push(rw.val>0?`恢復${rw.val}生命`:`受傷損失${Math.abs(rw.val)}生命`);}
+    else if(rw.type==='wis'){player.wis+=(rw.val||0);gained.push(`悟性永久+${rw.val}`);}
+    else if(rw.type==='multi'){(rw.items||[]).forEach(applyReward);}
+  }
+  applyReward(r);
+  const lv=checkLevelUp();if(lv)gained.push(`升至 ${player.level} 級！`);
   const sc=document.getElementById('story-content');
-  sc.innerHTML+=`<div class="decor" style="margin:14px 0"><span>◆</span></div>
-    <p style="color:var(--goldl);line-height:1.9;font-size:14px;letter-spacing:1px">${c.result}</p>
-    ${Object.keys(r).filter(k=>k!=='hp'||r.hp>0).length>0?`<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px">
-      ${r.str?`<span style="background:rgba(180,60,20,.2);border:1px solid rgba(180,60,20,.4);border-radius:4px;padding:3px 8px;font-size:11px;color:#e06040">武力 +${r.str}</span>`:''}
-      ${r.qi?`<span style="background:rgba(40,100,180,.2);border:1px solid rgba(40,100,180,.4);border-radius:4px;padding:3px 8px;font-size:11px;color:#4090e0">內力 +${r.qi}</span>`:''}
-      ${r.wis?`<span style="background:rgba(120,50,180,.2);border:1px solid rgba(120,50,180,.4);border-radius:4px;padding:3px 8px;font-size:11px;color:#9060d0">悟性 +${r.wis}</span>`:''}
-      ${r.exp?`<span style="background:rgba(180,140,20,.2);border:1px solid rgba(180,140,20,.4);border-radius:4px;padding:3px 8px;font-size:11px;color:var(--goldl)">經驗 +${r.exp}</span>`:''}
-      ${r.gold?`<span style="background:rgba(40,140,40,.2);border:1px solid rgba(40,140,40,.4);border-radius:4px;padding:3px 8px;font-size:11px;color:#90d090">銀兩 +${r.gold}</span>`:''}
-      ${r.hp?`<span style="background:rgba(180,40,20,.2);border:1px solid rgba(180,40,20,.4);border-radius:4px;padding:3px 8px;font-size:11px;color:#e05050">生命 +${r.hp}</span>`:''}
-    </div>`:''}`;
+  sc.innerHTML+=`<div class="decor" style="margin:12px 0"><span>◆</span></div>
+    <p style="color:var(--goldl);line-height:1.9;font-size:13px">${c.outcome}</p>
+    <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:5px">
+      ${gained.map(g=>`<span style="background:rgba(180,140,20,.15);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:10px;color:var(--goldl)">${g}</span>`).join('')}
+    </div>`;
   document.getElementById('story-choices').innerHTML='';
   document.getElementById('story-done-btns').style.display='block';
 }
 
-// AI 隨機探索
-async function exploreLocation(locId){
+// ─── CLASSIC ───
+function doClassic(id){
+  const ev=CLASSIC_EVENTS.find(e=>e.id===id);
+  showScreen('s-story');
+  document.getElementById('story-title').textContent=`${ev.icon} ${ev.title}`;
+  document.getElementById('story-back-btn').innerHTML=`<button class="btn-d" onclick="showScreen(&apos;s-explore&apos;);renderExplore()">← 返回</button>`;
+  document.getElementById('story-done-btns').style.display='none';
+  document.getElementById('story-content').innerHTML=`
+    <span class="nbadge" style="background:${ncolor(ev.novel)};margin-bottom:10px;display:inline-block">${ev.novel}</span>
+    <p style="color:var(--paper);line-height:2.2;font-size:14px;letter-spacing:1px;margin-top:8px">${ev.story}</p>`;
+  document.getElementById('story-choices').innerHTML=ev.choices.map((c,i)=>`
+    <button class="choice-btn" onclick="resolveClassic(${JSON.stringify(ev.choices).replace(/"/g,'&quot;')},${i})">
+      <span style="color:var(--gold);font-weight:bold;margin-right:7px">${i+1}.</span>${c.text}
+    </button>`).join('');
+}
+function resolveClassic(choices,idx){
+  const c=choices[idx];const r=c.reward||{};
+  if(r.str)player.str+=r.str;if(r.qi)player.qi+=r.qi;if(r.wis)player.wis+=r.wis;
+  if(r.hp)player.hp=Math.min(player.maxHp,player.hp+r.hp);
+  if(r.exp){player.exp+=r.exp;checkLevelUp();}
+  if(r.gold)player.gold+=r.gold;
+  const tags=[];
+  if(r.str)tags.push(`武力+${r.str}`);if(r.qi)tags.push(`內力+${r.qi}`);if(r.wis)tags.push(`悟性+${r.wis}`);
+  if(r.exp)tags.push(`經驗+${r.exp}`);if(r.gold)tags.push(`銀兩+${r.gold}`);if(r.hp)tags.push(`生命+${r.hp}`);
+  document.getElementById('story-content').innerHTML+=`<div class="decor" style="margin:12px 0"><span>◆</span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">${tags.map(t=>`<span style="background:rgba(180,140,20,.15);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:10px;color:var(--goldl)">${t}</span>`).join('')}</div>`;
+  document.getElementById('story-choices').innerHTML='';
+  document.getElementById('story-done-btns').style.display='block';
+}
+
+// ─── AI EXPLORE ───
+async function exploreAI(locId){
   const loc=LOCATIONS.find(l=>l.id===locId);
   showScreen('s-story');
   document.getElementById('story-title').textContent=`${loc.icon} ${loc.name}`;
   document.getElementById('story-back-btn').innerHTML='';
   document.getElementById('story-done-btns').style.display='none';
   document.getElementById('story-choices').innerHTML='';
-  document.getElementById('story-content').innerHTML='<div style="text-align:center;padding:40px 0"><div class="spinner"></div><div style="color:var(--dim);font-size:12px;letter-spacing:3px;margin-top:12px">AI 正在生成劇情...</div></div>';
+  document.getElementById('story-content').innerHTML=`<div style="text-align:center;padding:36px 0"><div class="spinner"></div><div style="color:var(--dim);font-size:11px;letter-spacing:3px;margin-top:10px">江湖正在展開...</div></div>`;
+  const sk=player.skills.map(id=>findSkill(id)?.name||'').join('、')||'無';
+  const eqp=Object.entries(player.equipped).map(([s,e])=>e?`${s}:${e.name}`:'').filter(Boolean).join('、')||'無';
+  const prompt=`你是頂級武俠小說作者，融合金庸、古龍、溫瑞安筆法。請生成一段充滿張力的武俠遭遇。
 
-  const masterCtx=player.master?`師父是${player.master.name}（${player.master.novel}），名言：「${player.master.quote}」`:'';
-  const prompt=`你是武俠故事敘述者，請用繁體中文生成遭遇事件。
-玩家：${player.faction.name}弟子（出身：${player.birth.name}，${player.level}級）
-${masterCtx}
-地點：${loc.name}（${loc.desc}，出自${loc.novel}）
-請在劇情中自然融入以下武俠世界的人物或元素：${loc.novel}
-生成一段武俠遭遇（90-120字），可能遇到小說中的人物，及3個行動選項。
-輸出純JSON，不含任何markdown：
-{"story":"事件描述","choices":[{"id":1,"text":"選項","outcome":"結果提示"},{"id":2,"text":"選項","outcome":"結果提示"},{"id":3,"text":"選項","outcome":"結果提示"}]}`;
+【玩家】${player.faction.name}弟子（${player.birth.name}出身，${player.level}級）
+師父：${player.master?.name||'無'} · 武學：${sk} · 裝備：${eqp}
+生命：${player.hp}/${player.maxHp} · 內力：${player.mp}/${player.maxMp}
 
+【場景】${loc.name}——${loc.desc}（出自${loc.novel}）
+
+【要求】
+1. 必須出現${loc.novel}的具名人物，用其真實個性行事說話
+2. 開頭必須有場景氛圍描寫（天氣/聲音/氣味）
+3. 中段有衝突或懸念（不能純屬好事）
+4. 三個選項風險差異明顯，至少一個高風險高報酬
+5. 故事130-160字，選項各12字以內
+
+輸出純JSON，不含markdown：
+{"story":"故事","choices":[{"id":1,"text":"選項","outcome":"後果提示","risk":"高/中/低"},{"id":2,"text":"選項","outcome":"後果提示","risk":"高/中/低"},{"id":3,"text":"選項","outcome":"後果提示","risk":"高/中/低"}]}`;
   try{
-    document.getElementById('story-content').innerHTML=`<div style="margin-bottom:4px"><span class="novel-badge" style="background:${novelColor(loc.novel.split('·')[0].trim())}">${loc.novel}</span></div><p id="stream-text" style="color:var(--paper);line-height:2.1;font-size:15px;letter-spacing:1px"></p>`;
-    let buffer='';
-    const full=await callMiniMaxStream([{role:'user',content:prompt}],delta=>{
-      buffer+=delta;
-      try{const j=JSON.parse(buffer.replace(/```json|```/g,'').trim());if(j.story)document.getElementById('stream-text').textContent=j.story;}catch{}
-    });
+    document.getElementById('story-content').innerHTML=`<span class="nbadge" style="background:${ncolor(loc.novel)};margin-bottom:10px;display:inline-block">${loc.novel}</span><p id="stxt" style="color:var(--paper);line-height:2.2;font-size:14px;letter-spacing:1px;margin-top:8px"></p>`;
+    let buf='';
+    const full=await callStream([{role:'user',content:prompt}],d=>{buf+=d;try{const j=JSON.parse(buf.replace(/```json|```/g,'').trim());if(j.story)document.getElementById('stxt').textContent=j.story;}catch{}});
     const p=JSON.parse(full.replace(/```json|```/g,'').trim());
-    document.getElementById('story-content').innerHTML=`<div style="margin-bottom:8px"><span class="novel-badge" style="background:${novelColor(loc.novel.split('·')[0].trim())}">${loc.novel}</span></div><p style="color:var(--paper);line-height:2.1;font-size:15px;letter-spacing:1px">${p.story}</p>`;
+    const rc={'高':'#e05050','中':'var(--goldl)','低':'#60b060'};
+    document.getElementById('story-content').innerHTML=`<span class="nbadge" style="background:${ncolor(loc.novel)};margin-bottom:10px;display:inline-block">${loc.novel}</span><p style="color:var(--paper);line-height:2.2;font-size:14px;letter-spacing:1px;margin-top:8px">${p.story}</p>`;
     document.getElementById('story-choices').innerHTML=p.choices.map(c=>`
-      <button class="choice-btn" onclick="makeAIChoice('${encodeURIComponent(JSON.stringify(c))}','${encodeURIComponent(loc.novel)}')">
-        <span style="color:var(--gold);font-weight:bold;margin-right:8px">${c.id}.</span>${c.text}
+      <button class="choice-btn" onclick="aiChoice('${encodeURIComponent(JSON.stringify(c))}','${encodeURIComponent(loc.novel)}')">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span><span style="color:var(--gold);font-weight:bold;margin-right:7px">${c.id}.</span>${c.text}</span>
+          ${c.risk?`<span style="font-size:9px;color:${rc[c.risk]||'var(--dim)'};border:1px solid currentColor;padding:1px 5px;border-radius:3px">${c.risk}險</span>`:''}
+        </div>
+        ${c.outcome?`<div style="color:var(--dim);font-size:9px;margin-top:3px">${c.outcome}</div>`:''}
       </button>`).join('');
-  }catch{
-    document.getElementById('story-content').innerHTML=`<div style="margin-bottom:8px"><span class="novel-badge" style="background:${novelColor(loc.novel.split('·')[0].trim())}">${loc.novel}</span></div><p style="color:var(--paper);line-height:2.1;font-size:15px;letter-spacing:1px">${loc.name}中風雲突變，一股殺氣悄然逼近。你警覺地握緊劍柄，靜候來者...</p>`;
-    document.getElementById('story-choices').innerHTML=[{id:1,text:'拔劍應戰',outcome:'迎面而上'},{id:2,text:'靜觀其變',outcome:'沉著應對'},{id:3,text:'悄然撤離',outcome:'識時務者為俊傑'}]
-      .map(c=>`<button class="choice-btn" onclick="makeAIChoice('${encodeURIComponent(JSON.stringify(c))}','${encodeURIComponent(loc.novel)}')"><span style="color:var(--gold);font-weight:bold;margin-right:8px">${c.id}.</span>${c.text}</button>`).join('');
+  }catch(err){
+    const novel=loc.novel;
+    document.getElementById('story-content').innerHTML='<p style="color:var(--paper);line-height:2.2;font-size:14px;margin-top:8px">'+loc.name+'中風雲突變，一股殺氣悄然逼近。你握緊兵器，靜候來者...</p>';
+    const fbChoices=[{id:1,text:'拔劍應戰',outcome:'直面危機',risk:'高'},{id:2,text:'靜觀其變',outcome:'等待時機',risk:'中'},{id:3,text:'悄然撤離',outcome:'明哲保身',risk:'低'}];
+    let fbHtml='';
+    fbChoices.forEach(ch=>{fbHtml+='<button class="choice-btn" data-c="'+encodeURIComponent(JSON.stringify(ch))+'" data-n="'+encodeURIComponent(novel)+'"><span style="color:var(--gold);font-weight:bold;margin-right:7px">'+ch.id+'.</span>'+ch.text+'</button>';});
+    document.getElementById('story-choices').innerHTML=fbHtml;
+    document.getElementById('story-choices').querySelectorAll('button').forEach(b=>{b.addEventListener('click',()=>aiChoice(b.dataset.c,b.dataset.n));});
+    const bb=document.createElement('button');bb.className='btn-d';bb.textContent='← 返回';bb.onclick=()=>{showScreen('s-explore');renderExplore();};document.getElementById('story-back-btn').innerHTML='';document.getElementById('story-back-btn').appendChild(bb);
   }
 }
+}
 
-async function makeAIChoice(encoded, novelEnc){
-  const choice=JSON.parse(decodeURIComponent(encoded));
-  const novel=decodeURIComponent(novelEnc);
-  document.getElementById('story-choices').innerHTML='<div style="text-align:center;padding:16px 0"><div class="spinner"></div></div>';
-  const prompt=`玩家選擇「${choice.text}」（${choice.outcome}）
-玩家：${player.faction.name}弟子，${player.level}級，師父${player.master?.name||'無'}
-武俠世界：${novel}
-描述結果（60-80字），可帶入${novel}的人物反應，給出合理獎懲。
-輸出純JSON：{"result":"結果描述","reward":{"gold":0,"exp":0,"hp":0}}`;
+async function aiChoice(enc,novEnc){
+  const c=JSON.parse(decodeURIComponent(enc));
+  const nov=decodeURIComponent(novEnc);
+  document.getElementById('story-choices').innerHTML='<div style="text-align:center;padding:14px 0"><div class="spinner"></div></div>';
+  const sk=player.skills.map(id=>findSkill(id)?.name||'').join('、')||'無';
+  const prompt=`玩家選擇「${c.text}」，風險${c.risk||'中'}
+玩家：${player.faction.name}弟子 ${player.level}級，師父${player.master?.name||'無'}，武學：${sk}
+世界：${nov}
+
+請描述結果（80-110字）：
+- 必須帶入${nov}具名人物的具體反應與對話
+- 風險${c.risk==='高'?'高：三成機率有重大損失（hp或gold負值），但成功獎勵豐厚':c.risk==='中'?'中：結果五五開，略有波折':'低：相對平安，但獎勵有限'}
+- 語言要有武俠文學感，不能白話
+
+獎懲範圍：exp 20-180，gold -80~120，hp -50~60（負為損失）
+輸出純JSON：{"result":"結果描述","reward":{"gold":0,"exp":0,"hp":0},"quote":"一句點睛名言"}`;
   try{
     const sc=document.getElementById('story-content');
-    sc.innerHTML+=`<div class="decor" style="margin:14px 0"><span>◆</span></div><p id="stream-result" style="color:var(--goldl);line-height:1.9;font-size:14px;letter-spacing:1px"></p>`;
-    let buffer='';
-    const full=await callMiniMaxStream([{role:'user',content:prompt}],delta=>{
-      buffer+=delta;
-      try{const j=JSON.parse(buffer.replace(/```json|```/g,'').trim());if(j.result)document.getElementById('stream-result').textContent=j.result;}catch{}
-    });
+    sc.innerHTML+=`<div class="decor" style="margin:12px 0"><span>◆</span></div><p id="sres" style="color:var(--goldl);line-height:2;font-size:13px;letter-spacing:1px"></p>`;
+    let buf='';
+    const full=await callStream([{role:'user',content:prompt}],d=>{buf+=d;try{const j=JSON.parse(buf.replace(/```json|```/g,'').trim());if(j.result)document.getElementById('sres').textContent=j.result;}catch{}});
     const p=JSON.parse(full.replace(/```json|```/g,'').trim());
     if(p.reward){
       player.gold=Math.max(0,player.gold+(p.reward.gold||0));
-      player.hp=Math.min(player.maxHp,player.hp+(p.reward.hp||0));
+      player.hp=Math.min(player.maxHp,Math.max(1,player.hp+(p.reward.hp||0)));
       player.exp+=(p.reward.exp||0);checkLevelUp();
     }
-    document.getElementById('stream-result').textContent=p.result||choice.outcome;
+    document.getElementById('sres').textContent=p.result||c.outcome;
+    if(p.quote)sc.innerHTML+=`<div style="margin-top:10px;color:rgba(200,180,140,.4);font-size:10px;text-align:right;font-style:italic">——「${p.quote}」</div>`;
   }catch{
     const sc=document.getElementById('story-content');
-    sc.innerHTML+=`<div class="decor" style="margin:14px 0"><span>◆</span></div><p style="color:var(--goldl);line-height:1.9;font-size:14px;letter-spacing:1px">${choice.outcome}</p>`;
+    sc.innerHTML+=`<div class="decor" style="margin:12px 0"><span>◆</span></div><p style="color:var(--goldl);line-height:2;font-size:13px">${c.outcome}</p>`;
   }
   document.getElementById('story-choices').innerHTML='';
-  document.getElementById('story-back-btn').innerHTML='<button class="btn-dim" onclick="showScreen(\'s-explore\');renderExplore()">← 返回</button>';
+  document.getElementById('story-back-btn').innerHTML=`<button class="btn-d" onclick="showScreen(&apos;s-explore&apos;);renderExplore()">← 返回</button>`;
   document.getElementById('story-done-btns').style.display='block';
 }
 
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // COMBAT
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+const MP_COST={1:16,2:26,3:40};
 function beginCombat(){
-  const lv=player?player.level:1;
-  const pool=ENEMIES.slice(0,Math.min(ENEMIES.length,Math.max(2,Math.ceil(lv/1.5))));
+  const lv=player.level;
+  const pool=ENEMIES.slice(0,Math.min(ENEMIES.length,Math.max(2,Math.ceil(lv/1.4))));
   const base=pool[Math.floor(Math.random()*pool.length)];
-  const sc=1+(lv-1)*0.12;
-  enemy={...base,hp:Math.floor(base.hp*sc),maxHp:Math.floor(base.hp*sc),atk:Math.floor(base.atk*sc),def:Math.floor(base.def*sc),stunned:false};
+  const sc=1+(lv-1)*0.13;
+  enemy={...base,hp:Math.floor(base.hp*sc),maxHp:Math.floor(base.hp*sc),
+    atk:Math.floor(base.atk*sc),def:Math.floor(base.def*sc),stunned:0,bleed:0,burn:0};
   combatBusy=false;
   showScreen('s-combat');
   document.getElementById('combat-log').innerHTML='';
   document.getElementById('combat-done-btns').style.display='none';
   renderCombat();
-  addLog(`⚔️ 遭遇了【${enemy.name}】${enemy.title}！準備戰鬥！`);
-}
-function renderCombat(){
-  if(!player||!enemy)return;
-  document.getElementById('c-player-name').textContent=`${player.faction.name}弟子 Lv.${player.level}`;
-  document.getElementById('c-player-hp-text').textContent=`${player.hp}/${player.maxHp}`;
-  document.getElementById('c-player-hpbar').style.width=hpPct(player.hp,player.maxHp);
-  document.getElementById('c-str').textContent=player.str;
-  document.getElementById('c-qi').textContent=player.qi;
-  document.getElementById('c-wis').textContent=player.wis;
-  document.getElementById('c-enemy-icon').textContent=enemy.icon;
-  document.getElementById('c-enemy-name').textContent=enemy.name;
-  document.getElementById('c-enemy-title').textContent=enemy.title;
-  document.getElementById('c-enemy-hp-text').textContent=`${enemy.hp}/${enemy.maxHp}`;
-  document.getElementById('c-enemy-hpbar').style.width=hpPct(enemy.hp,enemy.maxHp);
-  const disabled=combatBusy||enemy.hp<=0||player.hp<=0;
-  document.getElementById('combat-skill-grid').innerHTML=
-    `<button class="combat-skill-btn" ${disabled?'disabled':''} onclick="doAttack(null)">👊 普通攻擊</button>`+
-    player.skills.map(sid=>{const sk=findSkill(sid);return sk?`<button class="combat-skill-btn" ${disabled?'disabled':''} onclick="doAttack('${sid}')">${sk.icon} ${sk.name}</button>`:''}).join('');
-}
-function addLog(msg){
-  const log=document.getElementById('combat-log');
-  const p=document.createElement('p');
-  p.textContent=msg;
-  p.style.color=msg.startsWith('💀')||msg.startsWith('💔')?'#e05050':msg.startsWith('🎁')||msg.startsWith('🎉')?'var(--goldl)':msg.startsWith('你')?'var(--paper)':'#e08060';
-  log.appendChild(p);log.scrollTop=log.scrollHeight;
-}
-function checkLevelUp(){
-  let gained=false;
-  while(player.exp>=player.expNeeded){
-    player.exp-=player.expNeeded;player.level++;player.expNeeded=expFor(player.level);
-    player.sp+=2;player.str++;player.qi++;player.wis++;player.maxHp+=8;gained=true;
-  }
-  return gained;
-}
-function doAttack(skillId){
-  if(combatBusy||!enemy||enemy.hp<=0||!player||player.hp<=0)return;
-  combatBusy=true;
-  const sk=skillId?findSkill(skillId):null;
-  let dmgToEnemy=0,healToPlayer=0,willStun=false;
-  if(!sk){
-    dmgToEnemy=Math.max(1,Math.floor(player.str*1.2+Math.random()*8)-enemy.def);
-    addLog(`你發動普通攻擊，造成 ${dmgToEnemy} 點傷害！`);
-  }else if(sk.effect.type==='heal'){
-    healToPlayer=sk.effect.val+Math.floor(player.qi/4);
-    addLog(`你施展【${sk.name}】，恢復 ${healToPlayer} 點生命！`);
-  }else if(sk.effect.type==='atk'){
-    dmgToEnemy=sk.effect.pierce?Math.max(1,sk.effect.val+Math.floor(player.qi/5)):Math.max(1,sk.effect.val+Math.floor(player.qi/5)-enemy.def);
-    addLog(`你施展【${sk.name}】${sk.effect.tag?`（${sk.effect.tag}）`:''}，造成 ${dmgToEnemy} 點傷害！`);
-  }else if(sk.effect.type==='drain'){
-    dmgToEnemy=Math.max(1,sk.effect.val+Math.floor(player.qi/5)-enemy.def);
-    healToPlayer=Math.floor(dmgToEnemy*0.5);
-    addLog(`你施展【${sk.name}】，吸取 ${healToPlayer} 生命，造成 ${dmgToEnemy} 傷害！`);
-  }else if(sk.effect.type==='stun'){
-    willStun=true;addLog(`你施展【${sk.name}】，敵人被震懾！`);
-  }else if(sk.effect.type==='passive'){
-    dmgToEnemy=Math.max(1,Math.floor(player.str+Math.random()*6)-enemy.def);
-    addLog(`你施展【${sk.name}】，迅捷攻擊造成 ${dmgToEnemy} 點傷害！`);
-  }
-  enemy.hp=Math.max(0,enemy.hp-dmgToEnemy);
-  player.hp=Math.min(player.maxHp,player.hp+healToPlayer);
-  if(enemy.hp<=0){
-    const expGain=enemy.exp+player.level*5;
-    const goldGain=player.birth.id==='merchant'?Math.floor(enemy.gold*1.5):enemy.gold;
-    addLog(`💀 【${enemy.name}】被擊倒！`);
-    addLog(`🎁 獲得 ${expGain} 點經驗、${goldGain} 兩銀子！`);
-    player.exp+=expGain;player.gold+=goldGain;player.kills++;
-    if(checkLevelUp())addLog(`🎉 升至 ${player.level} 級！獲得 2 修煉點！`);
-    combatBusy=false;renderCombat();
-    document.getElementById('combat-done-btns').style.display='block';
-    return;
-  }
-  enemy.stunned=willStun||enemy.stunned;
-  setTimeout(()=>{
-    if(enemy.stunned){addLog(`【${enemy.name}】被震懾，無法行動！`);enemy.stunned=false;}
-    else{
-      const dodgeChance=player.skills.reduce((best,id)=>{const s=findSkill(id);return s?.effect.dodge&&s.effect.dodge>best?s.effect.dodge:best;},0);
-      const hasCounter=player.skills.some(id=>{const s=findSkill(id);return s?.effect.counter||s?.effect.reflect||s?.effect.omnistrike;});
-      if(Math.random()<dodgeChance){
-        addLog(`【${enemy.name}】出招！你輕巧閃過！`);
-        if(hasCounter){const cdmg=Math.max(1,Math.floor(player.wis*0.9)-enemy.def);enemy.hp=Math.max(0,enemy.hp-cdmg);addLog(`你順勢反擊，造成 ${cdmg} 點傷害！`);}
-      }else{
-        const dmg=Math.max(0,enemy.atk-Math.floor(player.wis/7)+Math.floor(Math.random()*5));
-        player.hp=Math.max(0,player.hp-dmg);
-        addLog(`【${enemy.name}】攻擊你，造成 ${dmg} 點傷害！`);
-      }
-    }
-    if(player.hp<=0){addLog('💔 力竭倒地，你敗了...');player.gold=Math.max(0,Math.floor(player.gold*0.8));player.hp=1;document.getElementById('combat-done-btns').style.display='block';}
-    combatBusy=false;renderCombat();
-  },750);
+  addLog(`⚔️ 遭遇了【${enemy.name}】${enemy.title}！`);
 }
 
-// ══════════════════════════════════════════
-// SKILL TREE
-// ══════════════════════════════════════════
+function renderCombat(){
+  if(!player||!enemy)return;
+  const b=getEquipBonus();
+  document.getElementById('c-player-name').textContent=`${player.faction.name}弟子 Lv.${player.level}`;
+  document.getElementById('c-php').textContent=`${player.hp}/${player.maxHp+(b.hp||0)}`;
+  document.getElementById('c-phbar').style.width=pct(player.hp,player.maxHp+(b.hp||0));
+  document.getElementById('c-pmp').textContent=`${player.mp}/${player.maxMp+(b.mp||0)}`;
+  document.getElementById('c-pmbar').style.width=pct(player.mp,player.maxMp+(b.mp||0));
+  document.getElementById('c-str').textContent=player.str+(b.str||0);
+  document.getElementById('c-qi').textContent=player.qi+(b.qi||0);
+  document.getElementById('c-wis').textContent=player.wis+(b.wis||0);
+  document.getElementById('c-equip-bonus').textContent=`${b.def?'防禦+'+b.def+' ':''}${b.atk?'攻擊+'+b.atk:''}`;
+  document.getElementById('c-eicon').textContent=enemy.icon;
+  document.getElementById('c-ename').textContent=enemy.name;
+  document.getElementById('c-etitle').textContent=enemy.title;
+  document.getElementById('c-ehp').textContent=`${enemy.hp}/${enemy.maxHp}`;
+  document.getElementById('c-ehbar').style.width=pct(enemy.hp,enemy.maxHp);
+  const statuses=[];if(enemy.stunned>0)statuses.push(`震懾${enemy.stunned}回`);if(enemy.bleed>0)statuses.push(`流血${enemy.bleed}`);if(enemy.burn>0)statuses.push(`灼燒${enemy.burn}`);
+  document.getElementById('c-estatus').textContent=statuses.join(' · ');
+  const dis=combatBusy||enemy.hp<=0||player.hp<=0;
+  document.getElementById('combat-skill-grid').innerHTML=
+    `<button class="cbtn" ${dis?'disabled':''} onclick="doAtk(null)" style="min-width:90px">👊普通攻擊<br><span style="font-size:9px;color:#90d090">+8內力</span></button>`+
+    player.skills.map(id=>{
+      const sk=findSkill(id);if(!sk)return'';
+      const cost=MP_COST[sk.cost]||20;const nomp=player.mp<cost;
+      return`<button class="cbtn" ${(dis||nomp)?'disabled':''} onclick="doAtk('${id}')" style="min-width:90px;${nomp?'opacity:.35':''}">
+        ${sk.icon}${sk.name}<br><span style="font-size:9px;color:${nomp?'#e05050':'#4090e0'}">內力-${cost}</span></button>`;
+    }).join('')+
+    player.consumables.map((item,i)=>`<button class="cbtn" ${dis?'disabled':''} onclick="usePot(${i})" style="min-width:90px;border-color:rgba(40,140,40,.4)">
+      ${item.icon}${item.name}<br><span style="font-size:9px;color:#90d090">使用</span></button>`).join('');
+}
+
+function addLog(msg){
+  const el=document.getElementById('combat-log');
+  const p=document.createElement('p');p.textContent=msg;
+  p.style.color=msg.startsWith('💀')||msg.startsWith('💔')?'#e05050':msg.startsWith('🎁')||msg.startsWith('🎉')?'var(--goldl)':msg.startsWith('你')?'var(--paper)':'#e08060';
+  el.appendChild(p);el.scrollTop=el.scrollHeight;
+}
+function checkLevelUp(){
+  let g=false;
+  while(player.exp>=player.expNeeded){
+    player.exp-=player.expNeeded;player.level++;player.expNeeded=expFor(player.level);
+    player.sp+=2;player.str++;player.qi++;player.wis++;player.maxHp+=8;player.maxMp+=10;
+    player.hp=player.maxHp;player.mp=player.maxMp;g=true;
+  }
+  return g;
+}
+function usePot(idx){
+  if(combatBusy)return;
+  const item=player.consumables[idx];if(!item)return;
+  if(item.effect.hp){player.hp=Math.min(player.maxHp,player.hp+item.effect.hp);addLog(`🍶 使用【${item.name}】，恢復 ${item.effect.hp} 生命！`);}
+  if(item.effect.mp){player.mp=Math.min(player.maxMp,player.mp+item.effect.mp);addLog(`🍶 使用【${item.name}】，恢復 ${item.effect.mp} 內力！`);}
+  player.consumables.splice(idx,1);
+  renderCombat();
+}
+function doAtk(skillId){
+  if(combatBusy||!enemy||enemy.hp<=0||!player||player.hp<=0)return;
+  const sk=skillId?findSkill(skillId):null;
+  if(sk){const cost=MP_COST[sk.cost]||20;if(player.mp<cost){showNotice(`內力不足！需要 ${cost} 點`,'#4090e0');return;}player.mp=Math.max(0,player.mp-cost);}
+  combatBusy=true;
+  const es=effectiveStats();
+  let dmg=0,heal=0,stun=0,selfHurt=0;
+  if(!sk){
+    // Normal attack scales with str, level, equipment
+    dmg=Math.max(1,Math.floor((es.str+es.atk)*(0.8+player.level*0.03)+Math.random()*(3+player.level))-enemy.def);
+    player.mp=Math.min(player.maxMp,player.mp+8);
+    addLog(`你發動普通攻擊，造成 ${dmg} 傷害，恢復8內力。`);
+  }else if(sk.effect.type==='atk'){
+    // Damage scales with: skill base * level factor + str + qi + level * tier bonus
+    const lvFactor=0.6+player.level*0.04;
+    const statBonus=Math.floor(es.str*0.35+es.qi*0.22+es.atk*0.5+player.level*sk.cost*1.2);
+    const base=Math.floor(sk.effect.val*lvFactor)+statBonus;
+    const crit=Math.random()*100<(es.crit||0);
+    dmg=sk.effect.pierce?Math.max(1,base):Math.max(1,base-enemy.def);
+    if(crit){dmg=Math.floor(dmg*1.75);addLog('⚡ 會心一擊！');}
+    if(sk.effect.tag==='流血')enemy.bleed=Math.max(enemy.bleed,3);
+    if(sk.effect.tag==='灼燒')enemy.burn=Math.max(enemy.burn,3);
+    if(sk.effect.tag==='傷己'){selfHurt=Math.floor(dmg*0.25);addLog('七傷拳傷己 '+selfHurt+' 點！');}
+    addLog('你施展【'+sk.name+'】'+(sk.effect.tag?'（'+sk.effect.tag+'）':'')+`，造成 ${dmg} 傷害！`);
+  }else if(sk.effect.type==='heal'){
+    // Heal scales with qi and level
+    heal=Math.floor(sk.effect.val*0.5+es.qi*0.5+player.level*2);
+    if(sk.effect.regen){player.mp=Math.min(player.maxMp,player.mp+Math.floor(player.maxMp*0.18));addLog('【'+sk.name+'】自然恢復內力！');}
+    addLog(`你施展【${sk.name}】，恢復 ${heal} 生命！`);
+  }else if(sk.effect.type==='drain'){
+    // Drain scales with qi and level
+    const lvFactor=0.6+player.level*0.04;
+    const statBonus=Math.floor(es.qi*0.4+es.str*0.2+player.level*sk.cost*1.0);
+    dmg=Math.max(1,Math.floor(sk.effect.val*lvFactor)+statBonus-enemy.def);
+    heal=Math.floor(dmg*0.5);
+    addLog(`你施展【${sk.name}】，吸取 ${heal} 生命，造成 ${dmg} 傷害！`);
+  }else if(sk.effect.type==='stun'){
+    stun=sk.effect.val||1;
+    addLog(`你施展【${sk.name}】，敵人被震懾 ${stun} 回合！`);
+  }else if(sk.effect.type==='passive'){
+    // Passive strike scales with wis + str + level
+    const lvFactor=0.6+player.level*0.04;
+    const statBonus=Math.floor(es.wis*0.35+es.str*0.3+player.level*sk.cost*1.0);
+    dmg=Math.max(1,Math.floor((sk.effect.val||30)*lvFactor)+statBonus-enemy.def);
+    if(sk.effect.omnistrike){const extra=Math.floor(dmg*0.5);dmg+=extra;addLog('凌波微步多重攻擊追加 '+extra+' 傷害！');}
+    addLog(`你施展【${sk.name}】，造成 ${dmg} 傷害！`);
+  }
+  enemy.hp=Math.max(0,enemy.hp-dmg);
+  player.hp=Math.min(player.maxHp,Math.max(1,player.hp+heal-selfHurt));
+  if(stun>0)enemy.stunned=stun;
+  // Victory check
+  if(enemy.hp<=0){
+    const expG=enemy.exp+player.level*5;
+    const goldG=player.birth.id==='merchant'?Math.floor(enemy.gold*1.5):enemy.gold;
+    addLog(`💀 【${enemy.name}】被擊倒！`);
+    addLog(`🎁 獲得 ${expG} 經驗、${goldG} 兩銀子！`);
+    player.exp+=expG;player.gold+=goldG;player.kills++;
+    // Random drop
+    maybeDropEquip();
+    const lv=checkLevelUp();if(lv)addLog(`🎉 升至 ${player.level} 級！生命內力全滿！`);
+    combatBusy=false;renderCombat();
+    document.getElementById('combat-done-btns').style.display='block';return;
+  }
+  // Enemy turn
+  setTimeout(()=>{
+    // DoT effects
+    if(enemy.bleed>0){const bd=Math.floor(8+Math.random()*5);enemy.hp=Math.max(0,enemy.hp-bd);enemy.bleed--;addLog(`🩸 流血造成 ${bd} 點傷害！`);if(enemy.hp<=0){addLog('💀 敵人因失血倒下！');player.exp+=enemy.exp;player.gold+=enemy.gold;player.kills++;checkLevelUp();combatBusy=false;renderCombat();document.getElementById('combat-done-btns').style.display='block';return;}}
+    if(enemy.burn>0){const fd=Math.floor(10+Math.random()*6);enemy.hp=Math.max(0,enemy.hp-fd);enemy.burn--;addLog(`🔥 灼燒造成 ${fd} 點傷害！`);if(enemy.hp<=0){addLog('💀 敵人被灼燒殲滅！');player.exp+=enemy.exp;player.gold+=enemy.gold;player.kills++;checkLevelUp();combatBusy=false;renderCombat();document.getElementById('combat-done-btns').style.display='block';return;}}
+    if(enemy.stunned>0){addLog(`【${enemy.name}】被震懾，無法行動！`);enemy.stunned--;combatBusy=false;renderCombat();return;}
+    // Reflect
+    const b=getEquipBonus();
+    const dodge=player.skills.reduce((best,id)=>{const s=findSkill(id);return s?.effect.dodge&&s.effect.dodge>best?s.effect.dodge:best;},0)+(b.dodge||0)/100;
+    const hasCounter=player.skills.some(id=>{const s=findSkill(id);return s?.effect.counter||s?.effect.omnistrike;});
+    const hasReflect=player.skills.some(id=>findSkill(id)?.effect.reflect)||(b.reflect||0)>0;
+    if(Math.random()<dodge){
+      addLog(`【${enemy.name}】出招！你輕巧閃過！`);
+      if(hasCounter){const cd=Math.max(1,Math.floor((player.wis+(b.wis||0))*0.9+(b.atk||0))-enemy.def);enemy.hp=Math.max(0,enemy.hp-cd);addLog(`你順勢反擊，造成 ${cd} 傷害！`);}
+    }else{
+      let ed=Math.max(0,enemy.atk-Math.floor((player.wis+(b.wis||0))/8)-(b.def||0)+Math.floor(Math.random()*5));
+      if(hasReflect&&Math.random()<0.35){const ref=Math.floor(ed*0.4);enemy.hp=Math.max(0,enemy.hp-ref);addLog(`軟猬甲反傷 ${ref} 點！`);ed=Math.floor(ed*0.6);}
+      player.hp=Math.max(1,player.hp-ed);
+      addLog(`【${enemy.name}】攻擊你，造成 ${ed} 傷害！`);
+    }
+    if(enemy.hp<=0){addLog('💀 敵人因反傷倒下！');player.exp+=enemy.exp;player.gold+=enemy.gold;player.kills++;checkLevelUp();combatBusy=false;renderCombat();document.getElementById('combat-done-btns').style.display='block';return;}
+    if(player.hp<=1){addLog('💔 力竭倒地，你敗了...');player.gold=Math.max(0,Math.floor(player.gold*0.8));document.getElementById('combat-done-btns').style.display='block';}
+    combatBusy=false;renderCombat();
+  },780);
+}
+
+function maybeDropEquip(){
+  const chance=0.22+player.level*0.02;
+  if(Math.random()>chance)return;
+  const all=[...EQUIP_DB.weapon,...EQUIP_DB.armor,...EQUIP_DB.accessory].filter(e=>['普通','精良'].includes(e.rarity));
+  const item=all[Math.floor(Math.random()*all.length)];
+  player.inventory.push({...item,uid:Date.now()+Math.random()});
+  addLog(`✨ 敵人掉落了【${item.name}】！`);
+}
+
+// ═══════════════════════════════════════════════════
+// SKILLS — FACTION ONLY
+// ═══════════════════════════════════════════════════
 function renderSkillTree(){
   document.getElementById('sp-display').textContent=`修煉點 ${player.sp}`;
-  document.getElementById('skill-tree-container').innerHTML=Object.entries(SKILL_TREE).map(([key,branch])=>`
-    <div class="skill-branch">
-      <div style="color:${branch.color};font-size:14px;font-weight:bold;letter-spacing:3px;margin-bottom:12px">${branch.icon} ${branch.label}</div>
-      ${branch.skills.map(sk=>{
+  const branch=player.faction.skills;
+  document.getElementById('skill-tree-container').innerHTML=`
+    <div class="card" style="margin-bottom:14px">
+      <div style="color:${player.faction.accent};font-size:13px;font-weight:bold;letter-spacing:2px;margin-bottom:12px">${player.faction.icon} ${player.faction.name}武學</div>
+      ${branch.map(sk=>{
         const learned=player.skills.includes(sk.id);
         const reqOk=!sk.req||player.skills.includes(sk.req);
-        const canLearn=!learned&&reqOk&&player.sp>=sk.cost;
-        return `<div class="skill-node ${learned?'learned':reqOk?'available':'locked'}">
+        const can=!learned&&reqOk&&player.sp>=sk.cost;
+        return`<div class="card" style="margin-bottom:8px;cursor:${can?'pointer':'default'};${learned?'background:rgba(40,120,40,.18);border-color:rgba(60,160,60,.4)':!reqOk?'opacity:.4':''}" ${can?`onclick="learnSkill('${sk.id}')"`:''}>>
           <div style="display:flex;align-items:center;gap:10px">
-            <span style="font-size:24px">${sk.icon}</span>
+            <span style="font-size:22px">${sk.icon}</span>
             <div style="flex:1">
               <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px">
                 <span style="color:var(--paper);font-weight:bold;font-size:13px">${sk.name}</span>
-                <div style="display:flex;gap:4px;align-items:center">
-                  <span class="novel-badge" style="background:${novelColor(sk.novel)}">${sk.novel}</span>
-                  <span style="color:${learned?'#60b060':'var(--dim)'};font-size:10px">${learned?'✓ 已習得':`需 ${sk.cost} 點`}</span>
-                </div>
+                <span style="color:${learned?'#60b060':'var(--dim)'};font-size:10px">${learned?'✓ 已習得':`需 ${sk.cost} 修煉點`}</span>
               </div>
               <div style="color:var(--dim);font-size:11px;margin-top:3px">${sk.desc}</div>
-              ${sk.req?`<div style="color:rgba(200,180,140,.35);font-size:10px;margin-top:2px">前置：${findSkill(sk.req)?.name||sk.req}</div>`:''}
+              ${sk.req?`<div style="color:rgba(200,180,140,.35);font-size:10px;margin-top:2px">前置：${player.faction.skills.find(x=>x.id===sk.req)?.name||''}</div>`:''}
+              ${can?`<div style="margin-top:7px"><span style="color:var(--gold);font-size:10px;border:1px solid var(--border);padding:2px 10px;border-radius:3px">點擊修煉</span></div>`:''}
             </div>
           </div>
-          ${canLearn?`<div style="margin-top:8px;text-align:right"><span onclick="learnSkill('${sk.id}')" style="color:var(--gold);font-size:10px;border:1px solid var(--border);padding:2px 10px;border-radius:3px;cursor:pointer">點擊修煉</span></div>`:''}
         </div>`;
       }).join('')}
-    </div>`).join('');
+    </div>
+    <div style="background:rgba(180,140,20,.07);border:1px solid var(--border);border-radius:8px;padding:14px">
+      <div style="color:var(--gold);font-size:11px;letter-spacing:2px;margin-bottom:8px">◆ 其他門派武學（已習得）</div>
+      ${player.skills.filter(id=>!player.faction.skills.find(s=>s.id===id)).length===0
+        ?`<div style="color:var(--dim);font-size:11px">尚未習得其他門派武學<br><span style="font-size:10px;opacity:.7">可透過奇遇、商店獲得</span></div>`
+        :player.skills.filter(id=>!player.faction.skills.find(s=>s.id===id)).map(id=>{const sk=findSkill(id);return sk?`<span class="tag" style="margin:3px;font-size:11px">${sk.icon}${sk.name} <span class="nbadge" style="background:${ncolor(sk.novel||'')}">奇遇</span></span>`:''}).join('')}
+    </div>`;
 }
 function learnSkill(id){
-  const sk=findSkill(id);
+  const sk=player.faction.skills.find(s=>s.id===id);
   if(!sk||player.skills.includes(id)||player.sp<sk.cost)return;
   if(sk.req&&!player.skills.includes(sk.req)){showNotice('需要先習得前置武功','#e05050');return;}
   player.skills.push(id);player.sp-=sk.cost;
-  showNotice(`習得【${sk.name}】！${sk.novel}武學在身！`);
-  renderSkillTree();
+  showNotice(`習得【${sk.name}】！`);renderSkillTree();
 }
 
-// ══════════════════════════════════════════
-// MINIMAX API（串流）
-// ══════════════════════════════════════════
-async function callMiniMax(messages){
-  if(!apiKey)throw new Error('no key');
-  const body={model:'MiniMax-M2.5',messages,max_tokens:600};
-  if(groupId)body.group_id=groupId;
-  const res=await fetch('https://api.minimax.io/v1/text/chatcompletion_v2',{method:'POST',headers:{'Authorization':`Bearer ${apiKey}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
-  if(!res.ok)throw new Error(await res.text());
-  const data=await res.json();
-  return data.choices[0].message.content;
+// ═══════════════════════════════════════════════════
+// EQUIPMENT
+// ═══════════════════════════════════════════════════
+const SLOT_META={weapon:{label:'兵器',icon:'⚔️'},armor:{label:'護甲',icon:'🛡️'},accessory:{label:'飾品',icon:'💍'}};
+function renderEquip(){
+  const slots=document.getElementById('equip-slots');
+  slots.innerHTML=Object.entries(SLOT_META).map(([slot,meta])=>{
+    const e=player.equipped[slot];
+    return`<div class="equip-slot ${e?'filled':''}" onclick="openSlotMenu('${slot}')">
+      <div style="color:var(--dim);font-size:9px;letter-spacing:1px;margin-bottom:4px">${meta.icon} ${meta.label}</div>
+      ${e?`<div style="color:var(--paper);font-size:12px;font-weight:bold">${e.icon}${e.name}</div>
+        <div style="color:${rarityColor(e.rarity)};font-size:9px">${e.rarity}</div>
+        <div style="color:var(--dim);font-size:9px;margin-top:2px">${Object.entries(e.stats||{}).map(([k,v])=>`${k}+${v}`).join(' ')}</div>`
+        :`<div style="color:var(--dim);font-size:11px;margin-top:8px">空</div>`}
+    </div>`;
+  }).join('');
+  // Bonus display
+  const b=getEquipBonus();
+  document.getElementById('equip-bonus-display').innerHTML=Object.entries(b).filter(([,v])=>v>0).map(([k,v])=>`<span style="margin-right:12px">⬆️ ${k} +${v}</span>`).join('')||'<span style="color:var(--dim)">暫無裝備加成</span>';
+  // Inventory
+  const inv=document.getElementById('inventory-list');
+  if(player.inventory.length===0){inv.innerHTML=`<div style="color:var(--dim);font-size:11px;text-align:center;padding:20px">背包空空如也</div>`;return;}
+  inv.innerHTML=player.inventory.map((item,i)=>`
+    <div class="shop-item" style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">
+        <div><span style="font-size:18px;margin-right:6px">${item.icon}</span><span style="color:var(--paper);font-weight:bold;font-size:12px">${item.name}</span>
+        <span style="color:${rarityColor(item.rarity)};font-size:9px;margin-left:5px">【${item.rarity}】</span></div>
+        <div style="display:flex;gap:6px">
+          <button class="btn-d" onclick="equipItem(${i})" style="font-size:10px;padding:3px 8px">裝備</button>
+          ${player.equipped[item.slot]?`<button class="btn-d" onclick="swapEquip(${i})" style="font-size:10px;padding:3px 8px;color:var(--goldl)">替換</button>`:''}
+        </div>
+      </div>
+      <div style="color:var(--dim);font-size:10px;margin-bottom:4px">${item.desc}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">${Object.entries(item.stats||{}).map(([k,v])=>`<span style="background:rgba(180,140,20,.1);border:1px solid var(--border);border-radius:3px;padding:1px 6px;font-size:9px;color:var(--goldl)">${k}+${v}</span>`).join('')}</div>
+    </div>`).join('');
 }
-async function callMiniMaxStream(messages,onChunk){
+function equipItem(i){
+  const item=player.inventory[i];if(!item)return;
+  const old=player.equipped[item.slot];
+  if(old)player.inventory.push(old);
+  player.equipped[item.slot]=item;
+  player.inventory.splice(i,1);
+  showNotice(`裝備了【${item.name}】！`);renderEquip();
+}
+function swapEquip(i){equipItem(i);}
+function openSlotMenu(slot){
+  const e=player.equipped[slot];
+  if(e){player.inventory.push(e);player.equipped[slot]=null;showNotice(`卸下了【${e.name}】`);renderEquip();}
+}
+
+// ═══════════════════════════════════════════════════
+// SHOP
+// ═══════════════════════════════════════════════════
+let shopTab='weapon';
+function generateShopStock(){
+  shopStock={
+    weapon:pickRandom(EQUIP_DB.weapon,4),
+    armor:pickRandom(EQUIP_DB.armor,4),
+    accessory:pickRandom(EQUIP_DB.accessory,4),
+    consumable:pickRandom(EQUIP_DB.consumable,5),
+  };
+  // Chance for rare extra skill scroll
+  if(Math.random()<0.35){
+    const sk=EXTRA_SKILLS[Math.floor(Math.random()*EXTRA_SKILLS.length)];
+    shopStock.accessory.push({id:'scroll_'+sk.id,name:sk.name+'秘笈',icon:'📜',rarity:sk.rarity,slot:'scroll',price:skillScrollPrice(sk),stats:{},desc:sk.desc,skillId:sk.id});
+  }
+}
+function skillScrollPrice(sk){const m={普通:150,精良:300,稀有:600,史詩:1200,傳說:2500};return m[sk.rarity]||500;}
+function pickRandom(arr,n){return [...arr].sort(()=>Math.random()-.5).slice(0,n);}
+
+function renderShop(){
+  document.getElementById('shop-gold-display').textContent=`${player.gold}兩`;
+  switchShopTab(shopTab);
+}
+function switchShopTab(t){
+  shopTab=t;
+  ['weapon','armor','accessory','consumable','sell'].forEach(x=>{
+    const el=document.getElementById('stab-'+x);if(el)el.classList.toggle('active',x===t);
+  });
+  const disc=player.birth.id==='merchant'?0.8:1;
+  const content=document.getElementById('shop-content');
+  if(t==='sell'){
+    const items=[...player.inventory,...(player.consumables||[])];
+    if(items.length===0){content.innerHTML=`<div style="color:var(--dim);text-align:center;padding:30px">背包空空，無物可典當</div>`;return;}
+    content.innerHTML=items.map((item,i)=>`
+      <div class="shop-item" style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <span style="font-size:16px;margin-right:6px">${item.icon}</span>
+          <span style="color:var(--paper);font-size:12px">${item.name}</span>
+          <span style="color:${rarityColor(item.rarity)};font-size:9px;margin-left:5px">【${item.rarity}】</span>
+        </div>
+        <button class="btn-d" onclick="sellItem(${i})" style="color:#90d090;border-color:rgba(40,140,40,.4)">典當 ${Math.floor((item.price||50)*0.5)}兩</button>
+      </div>`).join('');
+    return;
+  }
+  const items=shopStock[t]||[];
+  content.innerHTML=items.map((item,i)=>`
+    <div class="shop-item" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">
+        <div>
+          <span style="font-size:20px;margin-right:7px">${item.icon}</span>
+          <span style="color:var(--paper);font-weight:bold;font-size:13px">${item.name}</span>
+          <span style="color:${rarityColor(item.rarity)};font-size:9px;margin-left:5px">【${item.rarity}】</span>
+          ${item.skillId?`<span class="nbadge" style="background:rgba(180,100,20,.5);margin-left:5px">習得武學</span>`:''}
+        </div>
+        <button class="btn-g" onclick="buyItem('${t}',${i})" style="font-size:11px;padding:5px 12px">${Math.floor((item.price||100)*disc)}兩</button>
+      </div>
+      <div style="color:var(--dim);font-size:10px;margin-bottom:5px">${item.desc}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        ${Object.entries(item.stats||{}).filter(([,v])=>v).map(([k,v])=>`<span style="background:rgba(180,140,20,.1);border:1px solid var(--border);border-radius:3px;padding:1px 6px;font-size:9px;color:var(--goldl)">${k}+${v}</span>`).join('')}
+        ${item.effect?`<span style="background:rgba(40,140,40,.1);border:1px solid rgba(40,140,40,.3);border-radius:3px;padding:1px 6px;font-size:9px;color:#90d090">${Object.entries(item.effect).map(([k,v])=>`${k}+${v}`).join(' ')}</span>`:''}
+      </div>
+    </div>`).join('');
+}
+function buyItem(type,i){
+  const disc=player.birth.id==='merchant'?0.8:1;
+  const item=shopStock[type]?.[i];if(!item)return;
+  const price=Math.floor((item.price||100)*disc);
+  if(player.gold<price){showNotice('銀兩不足！','#e05050');return;}
+  player.gold-=price;
+  // Skill scroll
+  if(item.skillId){
+    if(player.skills.includes(item.skillId)){showNotice('已習得此武學！銀兩已退還');player.gold+=price;return;}
+    player.skills.push(item.skillId);
+    showNotice(`習得【${item.name.replace('秘笈','')}】！`);
+  }else if(type==='consumable'){
+    player.consumables.push({...item,uid:Date.now()});
+    showNotice(`購入【${item.name}】！`);
+  }else{
+    player.inventory.push({...item,uid:Date.now()});
+    showNotice(`購入【${item.name}】！前往裝備管理穿戴`);
+  }
+  document.getElementById('shop-gold-display').textContent=`${player.gold}兩`;
+}
+function sellItem(i){
+  const items=[...player.inventory,...(player.consumables||[])];
+  const item=items[i];if(!item)return;
+  const price=Math.floor((item.price||50)*0.5);
+  player.gold+=price;
+  if(i<player.inventory.length)player.inventory.splice(i,1);
+  else player.consumables.splice(i-player.inventory.length,1);
+  showNotice(`典當【${item.name}】獲得 ${price} 兩！`);
+  renderShop();
+}
+
+// ═══════════════════════════════════════════════════
+// MINIMAX API
+// ═══════════════════════════════════════════════════
+async function callStream(msgs,onChunk){
   if(!apiKey)throw new Error('no key');
-  const body={model:'MiniMax-M2.5',messages,max_tokens:700,stream:true};
+  const body={model:'MiniMax-M2.5',messages:msgs,max_tokens:700,stream:true};
   if(groupId)body.group_id=groupId;
-  const res=await fetch('https://api.minimax.io/v1/text/chatcompletion_v2',{method:'POST',headers:{'Authorization':`Bearer ${apiKey}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const res=await fetch('https://api.minimax.io/v1/text/chatcompletion_v2',{
+    method:'POST',headers:{'Authorization':`Bearer ${apiKey}`,'Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
   if(!res.ok)throw new Error(await res.text());
-  const reader=res.body.getReader();const decoder=new TextDecoder();let full='';
+  const reader=res.body.getReader();const dec=new TextDecoder();let full='';
   while(true){
     const{done,value}=await reader.read();if(done)break;
-    const chunk=decoder.decode(value,{stream:true});
-    const lines=chunk.split('\n').filter(l=>l.startsWith('data:'));
-    for(const line of lines){
+    const chunk=dec.decode(value,{stream:true});
+    for(const line of chunk.split('\n').filter(l=>l.startsWith('data:'))){
       const raw=line.slice(5).trim();if(raw==='[DONE]')break;
-      try{const j=JSON.parse(raw);const delta=j.choices?.[0]?.delta?.content||'';if(delta){full+=delta;onChunk(delta);}}catch{}
+      try{const j=JSON.parse(raw);const d=j.choices?.[0]?.delta?.content||'';if(d){full+=d;onChunk(d);}}catch{}
     }
   }
   return full;
 }
+
+// Show load button if save exists
+window.onload=function(){
+  if(document.getElementById("load-btn-area")){
+    if(hasSave()){
+      document.getElementById("load-btn-area").innerHTML = "<button class=\"btn-d\" onclick=\"checkLoadSave()\">載入進度</button>";
+    }
+  }
+};
 </script>
 </body>
 </html>
