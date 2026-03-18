@@ -63,6 +63,10 @@ input:focus{border-color:var(--gold)}
 .rarity-普通{color:#aaa}.rarity-精良{color:#5aaa5a}.rarity-稀有{color:#5080e0}.rarity-史詩{color:#a060d0}.rarity-傳說{color:var(--goldl)}
 .tab-btn{background:transparent;border:1px solid var(--border);color:var(--dim);padding:6px 16px;border-radius:4px;cursor:pointer;font-family:var(--font);font-size:11px;letter-spacing:1px;transition:all .2s}
 .tab-btn.active{border-color:var(--gold);color:var(--goldl)}
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+.log-area p { animation: slideIn 0.3s ease-out; }
 </style>
 </head>
 <body>
@@ -654,6 +658,8 @@ function effectiveStats(){
 // ═══════════════════════════════════════════════════
 // UI HELPERS
 // ═══════════════════════════════════════════════════
+.screen { display: none; animation: fadeIn 0.3s ease; }
+
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function showNotice(msg,color=null){
   const el=document.getElementById('notice');
@@ -1430,6 +1436,14 @@ function sellItem(i){
 // ═══════════════════════════════════════════════════
 // MINIMAX API
 // ═══════════════════════════════════════════════════
+// Robust JSON parser like GEMINI.html
+function parseAIJson(text){
+  try{
+    const match=text.match(/\{[\s\S]*\}/);
+    return JSON.parse(match?match[0]:text);
+  }catch(e){throw new Error("JSON_PARSE_ERROR");}
+}
+
 async function callStream(msgs,onChunk){
   if(!apiKey)throw new Error('no key');
   const body={model:'MiniMax-M2.5',messages:msgs,max_tokens:700,stream:true}
