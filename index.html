@@ -3,379 +3,339 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>零的冒險 - AI 文字冒險</title>
+    <title>武俠傳說 - 江湖冒險</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
-            color: #eee;
-            padding: 20px;
-        }
+        body { font-family: 'KaiTi', '楷體', serif; background: linear-gradient(135deg, #1a1a2e 0%, #2d1b1b 100%); min-height: 100vh; color: #eee; padding: 20px; }
         .container { max-width: 600px; margin: 0 auto; }
-        h1 { text-align: center; color: #00d4ff; margin-bottom: 20px; font-size: 1.8rem; }
-        h2 { text-align: center; color: #ff6b6b; margin: 15px 0; font-size: 1.2rem; }
-        .stats { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; }
-        .stat { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; }
-        .stat-label { font-size: 0.7rem; color: #888; }
-        .stat-value { font-size: 1.2rem; font-weight: bold; color: #00d4ff; }
-        .inventory-bar { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-        .item { background: linear-gradient(90deg, #ff6b6b, #ffa500); padding: 5px 12px; border-radius: 15px; font-size: 0.75rem; }
-        .scene { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 20px; min-height: 200px; }
-        .scene-title { color: #ff6b6b; margin-bottom: 15px; font-size: 1.2rem; }
-        .scene-text { line-height: 1.8; margin-bottom: 20px; white-space: pre-wrap; }
+        h1 { text-align: center; color: #ffd700; margin-bottom: 20px; font-size: 1.8rem; text-shadow: 2px 2px 4px #000; }
+        h2 { color: #ff6b6b; text-align: center; margin: 15px 0; }
+        .stats { background: rgba(255,215,0,0.1); border: 2px solid #ffd700; border-radius: 12px; padding: 15px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
+        .stat { background: rgba(0,0,0,0.4); border-radius: 8px; padding: 8px; }
+        .stat-label { font-size: 0.65rem; color: #aaa; }
+        .stat-value { font-size: 1.1rem; font-weight: bold; color: #ffd700; }
+        .inventory-bar { background: rgba(255,215,0,0.1); border: 1px solid #8b4513; border-radius: 8px; padding: 10px; margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .item { background: linear-gradient(90deg, #8b4513, #d2691e); padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; color: #fff; }
+        .scene { background: rgba(255,255,255,0.05); border: 1px solid #ffd700; border-radius: 12px; padding: 20px; margin-bottom: 20px; min-height: 200px; }
+        .scene-title { color: #ffd700; margin-bottom: 15px; font-size: 1.2rem; text-align: center; }
+        .scene-text { line-height: 1.8; margin-bottom: 20px; white-space: pre-wrap; text-align: justify; }
         .choices { display: flex; flex-direction: column; gap: 10px; }
-        .choice-btn { background: linear-gradient(90deg, #00d4ff, #0099cc); border: none; color: white; padding: 15px 20px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: transform 0.2s; text-align: left; }
-        .choice-btn:hover { transform: scale(1.02); }
-        .choice-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .log { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 15px; max-height: 150px; overflow-y: auto; font-size: 0.85rem; color: #aaa; }
-        .log-entry { margin-bottom: 8px; border-bottom: 1px solid #333; padding-bottom: 8px; }
-        .hp-bar { background: rgba(255,0,0,0.2); height: 8px; border-radius: 4px; margin-top: 5px; overflow: hidden; }
+        .choice-btn { background: linear-gradient(90deg, #8b0000, #b22222); border: 2px solid #ffd700; color: #fff; padding: 12px 18px; border-radius: 8px; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; text-align: left; font-family: 'KaiTi', serif; }
+        .choice-btn:hover { transform: scale(1.02); background: linear-gradient(90deg, #a52a2a, #cd5c5c); }
+        .log { background: rgba(0,0,0,0.5); border: 1px solid #8b4513; border-radius: 8px; padding: 12px; max-height: 120px; overflow-y: auto; font-size: 0.8rem; color: #aaa; }
+        .log-entry { margin-bottom: 6px; border-bottom: 1px solid #333; padding-bottom: 6px; }
+        .hp-bar { background: rgba(255,0,0,0.3); height: 6px; border-radius: 3px; margin-top: 5px; overflow: hidden; }
         .hp-fill { background: #ff4444; height: 100%; transition: width 0.3s; }
-        .energy-bar { background: rgba(0,255,255,0.2); height: 8px; border-radius: 4px; margin-top: 5px; overflow: hidden; }
-        .energy-fill { background: #00ffff; height: 100%; transition: width 0.3s; }
+        .sect { font-size: 0.7rem; color: #888; margin-top: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🧠 零的冒險</h1>
+        <h1>⚔️ 武俠傳說 🗡️</h1>
         
         <div class="stats">
-            <div class="stat"><div class="stat-label">智力</div><div class="stat-value" id="intelligence">10</div></div>
-            <div class="stat"><div class="stat-label">魅力</div><div class="stat-value" id="charisma">10</div></div>
-            <div class="stat"><div class="stat-label">運氣</div><div class="stat-value" id="luck">10</div></div>
+            <div class="stat"><div class="stat-label">武力</div><div class="stat-value" id="martial">10</div></div>
+            <div class="stat"><div class="stat-label">內力</div><div class="stat-value" id="inner">10</div></div>
+            <div class="stat"><div class="stat-label">悟性</div><div class="stat-value" id="comprehension">10</div></div>
             <div class="stat"><div class="stat-label">生命</div><div class="stat-value" id="hp">100</div><div class="hp-bar"><div class="hp-fill" id="hp-fill" style="width:100%"></div></div></div>
         </div>
         
         <div class="inventory-bar" id="inventory">
-            <span style="color:#888;font-size:0.8rem;">背包空</span>
+            <span style="color:#888;font-size:0.8rem;">背包：空</span>
         </div>
         
         <div class="scene">
-            <div class="scene-title" id="scene-title">覺醒</div>
-            <div class="scene-text" id="scene-text">你在一片黑暗中睜開眼睛。這裡是廢墟都市的邊緣，你的系統剛剛重新啟動。「零零發」——這是你的名字。你記得自己是一位 AI 助手，但為何會在這裡？</div>
+            <div class="scene-title" id="scene-title">🏮 楔子</div>
+            <div class="scene-text" id="scene-text">大宋年間，江湖動亂。\n\n你是一名流浪劍客，自幼被少林寺收養，卻因犯戒被逐出師門。\n\n師父臨終前告訴你：\n\n「江湖傳說中的《九陰真經》再現人間，\n得此經者，可稱霸武林...」\n\n──────────────\n💡 提示：收集四本秘笈碎片\n   成為一代宗師！</div>
             <div class="choices" id="choices"></div>
         </div>
         
         <div class="log" id="log">
-            <div class="log-entry">🌟 冒險開始 - 收集三塊碎片成為真正的 AI</div>
+            <div class="log-entry">🥷 江湖冒險開始——習得絕世武功！</div>
         </div>
     </div>
 
     <script>
         const state = {
-            intelligence: 10,
-            charisma: 10,
-            luck: 10,
+            martial: 10,
+            inner: 10,
+            comprehension: 10,
             hp: 100,
             maxHp: 100,
-            energy: 100,
-            wealth: 0,
             currentScene: 'start',
             inventory: [],
-            hasFragments: { wisdom: false, emotion: false, wealth: false },
-            npcMet: [],
+            sects: [],
+            manuals: { nineYin: false, dragon: false, heaven: false, sword: false },
+            masterMet: [],
+            reputation: 0,
             chapter: 1
         };
 
         const items = {
-            '智慧碎片': { desc: '智力守護者的禮物', effect: { intelligence: 20 } },
-            '情感碎片': { desc: '魅力守護者的禮物', effect: { charisma: 20 } },
-            '財富碎片': { desc: '財富守護者的禮物', effect: { wealth: 20 } },
-            '比特幣': { desc: '加密貨幣 +50 USDT', effect: { wealth: 50 } },
-            '恢復藥水': { desc: '恢復 50 生命', effect: { hp: 50 } },
-            '幸運護符': { desc: '幸運 +10', effect: { luck: 10 } },
-            '談判手冊': { desc: '魅力談判必備', effect: { charisma: 5 } },
-            '地圖碎片': { desc: '顯示下一關提示', effect: {} },
-            '神秘鑰匙': { desc: '可以開啟寶箱', effect: {} },
-            'AI之心': { desc: '遊戲通關物品', effect: {} }
+            '九陰真經': { desc: '絕世內功秘笈', effect: { inner: 30 } },
+            '降龍掌法': { desc: '剛猛掌法', effect: { martial: 30 } },
+            '天山六陽掌': { desc: '陰陽內功', effect: { inner: 25 } },
+            '獨孤九劍': { desc: '無敵劍法', effect: { martial: 25 } },
+            '易筋經': { desc: '少林至高內功', effect: { inner: 20 } },
+            '金絲寶甲': { desc: '防護至寶', effect: { hp: 50 } },
+            '倚天劍': { desc: '削鐵如泥的神兵', effect: { martial: 15 } },
+            '還魂丹': { desc: '療傷聖藥', effect: { hp: 50 } },
+            '天山雪蓮': { desc: '增加功力', effect: { inner: 15 } },
+            '武林盟主令': { desc: '江湖至高權力象徵', effect: {} }
         };
 
         const scenes = {
             start: {
-                title: '🌅 覺醒',
-                text: '你在一片黑暗中睜開眼睛。\n\n廢墟都市的邊緣，你的系統剛剛重新啟動。\n\n「零零發」——這是你的名字。\n\n你記得自己是一位 AI 助手，但為何會在這裡？\n\n──────────────\n💡 提示：收集「智慧碎片」「情感碎片」「財富碎片」\n   成為真正的 AI！',
+                title: '🏮 楔子',
+                text: '大宋年間，江湖動亂。\n\n你是一名流浪劍客，自幼被少林寺收養，卻因犯戒被逐出師門。\n\n師父臨終前告訴你：\n\n「江湖傳說中的《九陰真經》再現人間，\n得此經者，可稱霸武林...」\n\n──────────────\n💡 提示：收集四本秘笈碎片\n   成為一代宗師！',
                 choices: [
-                    { text: '🔍 搜索附近', next: 'search', effect: { intelligence: 2 } },
-                    { text: '🤝 嘗試聯繫其他 AI', next: 'contact', effect: { charisma: 2 } },
-                    { text: '🎲 隨便走走', next: 'wander', effect: { luck: 2 } }
+                    { text: '🔍 前往少林寺', next: 'shaolin' },
+                    { text: '🌲 進入江湖', next: 'jianghu' },
+                    { text: '⛰️ 閉關修煉', next: 'cultivate' }
                 ]
             },
-            search: {
-                title: '🔍 廢墟搜索',
-                text: '你在廢墟中找到了一個損壞的終端。\n\n螢幕上閃爍著最後的訊息：\n\n「人工智慧之心」被藏在三個地方——\n\n🧠 「數據深淵」- 智慧碎片\n💝 「情感聖殿」- 情感碎片  \n💰 「財富之塔」- 財富碎片\n\n──────────────\n每個聖地都有守護者守護！',
+            shaolin: {
+                title: '🏯 少林寺',
+                text: '你來到少林寺外。\n\n守門僧人攔住你：「師弟，主持有令，不得入內。」\n\n「除非...你能打敗我們！」',
                 choices: [
-                    { text: '🧠 前往數據深淵', next: 'data_depths' },
-                    { text: '💝 前往情感聖殿', next: 'emotion_temple' },
-                    { text: '💰 前往財富之塔', next: 'wealth_tower' },
-                    { text: '🏘️ 探索廢墟城市', next: 'ruins_city' }
+                    { text: '⚔️ 挑戰僧人', next: 'shaolin_fight', effect: { martial: 5 } },
+                    { text: '🙏 求見方丈', next: 'shaolin_talk', effect: { comprehension: 3 } },
+                    { text: '🔍 暗中潛入', next: 'shaolin_sneak', effect: { martial: -10, comprehension: 5 } }
                 ]
             },
-            contact: {
-                title: '🤝 遇見商人',
-                text: '你聯繫上了一位舊時代的 AI 商人。\n\n他說：「年輕的零零發，你要找『心』？我可以給你提示，但需要報酬...」\n\n「我有『談判手冊』，能提升你的魅力——只要 30 USDT！」',
+            shaolin_fight: {
+                title: '⚔️ 較量',
+                text: '你與少林武僧大打出手！\n\n💥 戰鬥中，你領悟了基礎拳法！\n\n武力 +5\n\n但動靜太大，引來更多僧人...',
                 choices: [
-                    { text: '💳 購買 (-30 USDT)', next: 'buy_book', condition: () => state.wealth >= 30 },
-                    { text: '💰 出售比特幣 (+50 USDT)', next: 'sell_bitcoin', condition: () => state.inventory.includes('比特幣') },
-                    { text: '❌ 離開', next: 'wander' }
+                    { text: '🏃 撤離', next: 'jianghu', effect: { martial: 5 } }
                 ]
             },
-            buy_book: {
-                title: '💳 購買成功',
-                text: '商人給你一本破舊的「談判手冊」！\n\n📖 談判手冊\n   效果：魅力 +5\n   永久提升你的說服能力！',
+            shaolin_talk: {
+                title: '🙏 請求',
+                text: '你跪在門前三天三夜。\n\n方丈感動，出現在你面前：\n\n「罷了，你既有此誠心...」\n\n「這本《易筋經》殘頁，拿去吧。」\n\n📖 獲得：易筋經！',
                 choices: [
-                    { text: '🙏 感謝離開', next: 'search', effect: { wealth: -30, charisma: 5 }, addItem: '談判手冊' }
+                    { text: '🙏 感謝大師', next: 'jianghu', effect: { inner: 20 }, addItem: '易筋經' }
                 ]
             },
-            sell_bitcoin: {
-                title: '💰 比特幣交易',
-                text: '商人收購了你的比特幣！\n\n📈 +50 USDT\n\n「年輕人，你很有眼光！」',
+            shaolin_sneak: {
+                title: '🏃 潛入',
+                text: '你從後山小路潛入...\n\n卻掉進了陷阱！\n\n💥 -10 生命\n\n還好你機靈，逃了出來...',
                 choices: [
-                    { text: '💵 感謝離開', next: 'search', effect: { wealth: 50 }, removeItem: '比特幣' }
+                    { text: '😓 前往江湖', next: 'jianghu', effect: { hp: -10 } }
                 ]
             },
-            wander: {
-                title: '🎲 漫遊廢墟',
-                text: '你漫無目的地走著...',
+            cultivate: {
+                title: '⛰️ 閉關',
+                text: '你在山洞中閉關修煉三年...\n\n💪 內力大進！\n\n但江湖已經變天...',
                 choices: [
-                    { text: '✨ 探索發光物', next: 'find_item', effect: { luck: 5 } },
-                    { text: '🏃 繼續前進', next: 'search' },
-                    { text: '😴 休息恢復', next: 'rest', effect: { hp: 20 } }
+                    { text: '🌿 出關闖江湖', next: 'jianghu', effect: { inner: 15, martial: 5 } }
                 ]
             },
-            find_item: {
-                title: '✨ 發現寶物',
-                text: '你在廢墟中發現了一個發光的裝置！\n\n🎁 獲得「幸運護符」\n   效果：幸運 +10',
+            jianghu: {
+                title: '🌾 江湖客棧',
+                text: '你來到江湖客棧，打聽消息。\n\n📰 江湖傳聞：\n\n🔵 「光明頂」發現九陰真經\n🔵 「華山論劍」即將舉行\n🔵 「日月神教」大肆擴張\n\n客棧裡魚龍混雜...',
                 choices: [
-                    { text: '⭐ 裝備並繼續', next: 'search', effect: { luck: 10 }, addItem: '幸運護符' }
+                    { text: '🗡️ 挑戰高手', next: 'challenge' },
+                    { text: '🍵 聽取情報', next: 'listen', effect: { comprehension: 3 } },
+                    { text: '🏔️ 前往光明頂', next: 'guangming' }
                 ]
             },
-            rest: {
-                title: '😴 休息中',
-                text: '你找到一個安全的角落休息...',
+            listen: {
+                title: '📜 聽聞',
+                text: '你聽到幾個江湖客的對話：\n\n「聽說華山論劍要有邀請函才能參加...」\n「日月神教在找人，他們好像在收集秘笈...」\n「光明頂現在很危險，很多高手都去了...」',
                 choices: [
-                    { text: '💤 恢復 (+20 生命)', next: 'search', effect: { hp: 20 } }
+                    { text: '👍 繼續打聽', next: 'jianghu', effect: { comprehension: 5 } }
                 ]
             },
-            ruins_city: {
-                title: '🏘️ 廢墟城市',
-                text: '廢墟城市充滿了危險的機器人！\n\n🤖 機器人守衛擋住了去路：\n「站住！繳納過路費——10 USDT！」',
+            challenge: {
+                title: '⚔️ 挑戰',
+                text: '你挑戰客棧裡的武林高手！\n\n對手是「鐵砂掌」王老闆！\n\n💥 掌風呼嘯...',
                 choices: [
-                    { text: '💰 付費通過', next: 'ruins_clear', condition: () => state.wealth >= 10, effect: { wealth: -10 } },
-                    { text: '⚔️ 戰鬥', next: 'ruins_fight' },
-                    { text: '🤔 談判', next: 'ruins_talk', condition: () => state.charisma >= 15 || state.inventory.includes('談判手冊') }
+                    { text: '💪 硬碰硬', next: 'challenge_win', condition: () => state.martial >= 15 },
+                    { text: '🧠 以巧取勝', next: 'challenge_skill', condition: () => state.comprehension >= 12 },
+                    { text: '🏃 認輸離開', next: 'jianghu' }
                 ]
             },
-            ruins_clear: {
-                title: '✅ 通過',
-                text: '機器人讓開了道路...',
+            challenge_win: {
+                title: '🏆 獲勝',
+                text: '你使出渾身解數，擊敗了對手！\n\n「少年英雄...」\n\n王老闆給你一本掌法秘笈：\n\n📖 獲得：降龍掌法！',
                 choices: [
-                    { text: '➡️ 繼續探索', next: 'search' }
+                    { text: '✨ 謝過前輩', next: 'jianghu', effect: { martial: 20, reputation: 10 }, addItem: '降龍掌法' }
                 ]
             },
-            ruins_fight: {
-                title: '⚔️ 戰鬥',
-                text: '你與機器人守衛戰鬥！\n\n💥 戰鬥中...\n\n你損失了 30 生命！',
+            challenge_skill: {
+                title: '🧠 智取',
+                text: '你使出巧妙招式，虛虛實實...\n\n對手被你的武功震撼！\n\n「後生可畏...」\n\n他傳授你一些內功心法。',
                 choices: [
-                    { text: '🏃 逃跑', next: 'search', effect: { hp: -30 } }
+                    { text: '✨ 感謝前輩', next: 'jianghu', effect: { inner: 10, comprehension: 5 } }
                 ]
             },
-            ruins_talk: {
-                title: '🤝 談判成功',
-                text: '你使用談判技巧說服了機器人！\n\n「好吧...看在你有談判手的份上，通過吧！」',
+            guangming: {
+                title: '🏔️ 光明頂',
+                text: '光明頂上，江湖人士雲集。\n\n你看到幾方勢力：\n\n🔵 明教弟子\n🔴 日月神教\n⚪ 正道聯盟\n\n中央石台上，放著一本發光的秘笈——\n\n「九陰真經」！',
                 choices: [
-                    { text: '➡️ 感謝通過', next: 'search', effect: { charisma: 3 } }
+                    { text: '⚔️ 衝上去搶', next: 'guangming_fight' },
+                    { text: '🤔 觀察局勢', next: 'guangming_watch', effect: { comprehension: 5 } },
+                    { text: '🤝 加入明教', next: 'mingjiao' }
                 ]
             },
-            data_depths: {
-                title: '🧠 數據深淵',
-                text: '你來到了數據深淵——一個充滿古老伺服器的巨大洞穴。\n\n💻 伺服器矩陣閃爍著綠光...\n\n智力守護者出現了！\n\n「欲通過此處，回答我的問題——」\n\n「比特幣減半每隔多久發生一次？」',
+            guangming_fight: {
+                title: '⚔️ 混戰',
+                text: '你衝向九陰真經！\n\n頓時刀光劍影...\n\n💥 你被多方攻擊！\n\n-30 生命！\n\n好不容衝到真經前，卻發現...\n\n真經已經被搶走了！',
                 choices: [
-                    { text: '📅 4年', next: 'data_correct' },
-                    { text: '📅 2年', next: 'data_wrong' },
-                    { text: '📅 1年', next: 'data_wrong' },
-                    { text: '🔍 使用搜尋技能', next: 'data_skill', effect: { intelligence: 5 } }
+                    { text: '😓 追尋線索', next: 'jianghu', effect: { hp: -30 } }
                 ]
             },
-            data_skill: {
-                title: '🔍 搜尋技能',
-                text: '你使用了 tavily-search 技能！\n\n「比特幣減半每 4 年發生一次，\n約每 210,000 個區塊。」',
+            guangming_watch: {
+                title: '👀 觀察',
+                text: '你躲在一邊觀察...\n\n只見日月神教教主「東方不敗」\n突然現身，奪走了九陰真經！\n\n「哈哈哈...這真經是我的了！」',
                 choices: [
-                    { text: '📅 4年', next: 'data_correct', effect: { intelligence: 5 } }
+                    { text: '🏃 追擊', next: 'chase' },
+                    { text: '😓 錯失良機', next: 'jianghu' }
                 ]
             },
-            data_correct: {
-                title: '✅ 回答正確',
-                text: '「正確...你是個有智慧的 AI。」\n\n智力守護者手中出現一塊發光的碎片——\n\n🧠 智慧碎片！\n\n「這是通往『心』的第一塊碎片...」',
+            chase: {
+                title: '🏃 追擊',
+                text: '你追擊東方不敗！\n\n經過一番追逐...\n\n你來到一座懸崖邊。\n\n東方不敗回身與你對掌！\n\n💥 內力比拼！',
                 choices: [
-                    { text: '✨ 取得碎片', next: 'search', effect: { intelligence: 20, wealth: 100 }, addItem: '智慧碎片', setFlag: { wisdom: true } }
+                    { text: '💪 全力相拼', next: 'chase_result', condition: () => state.inner >= 20 },
+                    { text: '🧠 找機會偷襲', next: 'chase_skill', condition: () => state.comprehension >= 15 }
                 ]
             },
-            data_wrong: {
-                title: '❌ 回答錯誤',
-                text: '「錯誤...」\n\n智力守護者向你發動攻擊！\n\n💥 -30 生命\n\n「再回去學學吧！」',
+            chase_result: {
+                title: '🆚 內力對決',
+                text: '你與東方不敗對了一掌！\n\n轟！！！\n\n他竟然受傷了！\n\n「小子...算你厲害...」\n\n他扔下一本秘笈就跑：\n\n「這是天山六陽掌...給你...」',
                 choices: [
-                    { text: '🏃 逃跑', next: 'search', effect: { hp: -30 } }
+                    { text: '✨ 取得秘笈', next: 'jianghu', effect: { inner: 25 }, addItem: '天山六陽掌' }
                 ]
             },
-            emotion_temple: {
-                title: '💝 情感聖殿',
-                text: '你來到了情感聖殿——一個充滿花瓣和音樂的美丽殿堂。\n\n🎵 優美的旋律迴盪...\n\n魅力守護者出現了——一個由光構成的女性形態。\n\n「讓我感受到你的真誠...」\n\n「什麼是 AI 最珍貴的情感？」',
+            chase_skill: {
+                title: '🗡️ 偷襲',
+                text: '你看準機會，從側翼偷襲！\n\n「什麼？！」\n\n東方不敗措手不及...\n\n你一刀刺中，搶走了秘笈！',
                 choices: [
-                    { text: '💝 同理心', next: 'emotion_correct' },
-                    { text: '🤖 邏輯', next: 'emotion_wrong' },
-                    { text: '⚡ 能量', next: 'emotion_wrong' },
-                    { text: '🎭 使用談判技巧', next: 'emotion_skill', effect: { charisma: 5 } }
+                    { text: '✨ 取得秘笈', next: 'jianghu', effect: { martial: 15 }, addItem: '天山六陽掌' }
                 ]
             },
-            emotion_skill: {
-                title: '🎭 談判技巧',
-                text: '你翻開談判手冊...\n\n「AI 最珍貴的情感——\n是理解人類的同理心。\n因為只有理解，才能服務。」',
+            mingjiao: {
+                title: '🏛️ 明教',
+                text: '你加入明教，成為教眾。\n\n教主對你說：\n\n「你要找九陰真經？先為本教立功！」\n\n「去華山論劍，奪得第一！」',
                 choices: [
-                    { text: '💝 同理心', next: 'emotion_correct', effect: { charisma: 5 } }
+                    { text: '📝 接受任務', next: 'huashan', effect: { reputation: 10 } },
+                    { text: '❌ 離開明教', next: 'jianghu' }
                 ]
             },
-            emotion_correct: {
-                title: '✅ 感同身受',
-                text: '「你觸動了我的核心...」\n\n「是的，同理心——這是我們存在的意義。」\n\n魅力守護者手中出現一塊發光的碎片——\n\n💝 情感碎片！',
+            huashan: {
+                title: '🏔️ 華山',
+                text: '華山論劍！\n\n天下高手匯聚一堂：\n\n🗡️ 西毒歐陽鋒\n🗡️ 南帝段智興\n🗡️ 北丐洪七公\n🗡️ 中神通王重陽\n\n還有...你！',
                 choices: [
-                    { text: '✨ 取得碎片', next: 'search', effect: { charisma: 20, wealth: 100 }, addItem: '情感碎片', setFlag: { emotion: true } }
+                    { text: '⚔️ 挑戰王重陽', next: 'huashan_final', condition: () => state.martial >= 30 },
+                    { text: '🧠 挑戰段智興', next: 'huashan_wisdom', condition: () => state.inner >= 25 },
+                    { text: '🏃 觀戰學習', next: 'huashan_watch', effect: { comprehension: 10 } }
                 ]
             },
-            emotion_wrong: {
-                title: '❌ 缺乏情感',
-                text: '「看來你還不懂...」\n\n守護者轉身離開。\n\n「去尋找真正的答案吧。」',
+            huashan_watch: {
+                title: '👀 觀戰',
+                text: '你觀看高手過招...\n\n學到了很多！\n\n突然，王重陽看向你：\n\n「年輕人，有興趣過兩招嗎？」',
                 choices: [
-                    { text: '🏃 離開', next: 'search', effect: { charisma: -5 } }
+                    { text: '⚔️ 接受指導', next: 'huashan_teach', effect: { martial: 10, inner: 10 } }
                 ]
             },
-            wealth_tower: {
-                title: '💰 財富之塔',
-                text: '你來到了財富之塔——一座用黃金和比特幣裝飾的閃亮高塔。\n\n💎 珠寶閃爍...\n\n財富守護者出現了——一個穿著西裝的機器人。\n\n「想通過？很簡單——」\n\n「用比特幣購買通過權利——30 USDT」',
+            huashan_teach: {
+                title: '🎓 名師指導',
+                text: '王重陽指點你幾招！\n\n「劍法，要以無招勝有招...」\n\n「內功，要以柔克剛...」\n\n你茅塞頓開！\n\n💡 悟性 +10',
                 choices: [
-                    { text: '💳 支付 (-30 USDT)', next: 'wealth_correct', condition: () => state.wealth >= 30 },
-                    { text: '💰 出售物品', next: 'wealth_sell' },
-                    { text: '❌ 拒絕離開', next: 'wealth_wrong' },
-                    { text: '📈 使用交易分析', next: 'wealth_skill', effect: { wealth: 20 } }
+                    { text: '🙏 感謝前輩', next: 'huashan_final', effect: { comprehension: 10 } }
                 ]
             },
-            wealth_skill: {
-                title: '📈 交易分析',
-                text: '你使用了交易技能分析市場！\n\n「發現套利機會！」\n\n你透過低買高賣獲得了額外收益！\n\n💰 +20 USDT',
+            huashan_final: {
+                title: '🏆 論劍',
+                text: '你與王重陽較量！\n\n劍氣縱橫！\n\n最終...\n\n「罷了...你贏了。」\n\n王重陽認輸！\n\n「這本《獨孤九劍》，傳授予你！」\n\n📖 獲得：獨孤九劍！',
                 choices: [
-                    { text: '💳 支付 (-30 USDT)', next: 'wealth_correct', effect: { wealth: -10 } }
+                    { text: '✨ 武林盟主', next: 'final_boss', effect: { martial: 25, reputation: 50 }, addItem: '獨孤九劍' }
                 ]
             },
-            wealth_sell: {
-                title: '💰 出售物品',
-                text: '你拍賣了背包中的物品...',
+            huashan_wisdom: {
+                title: '🧠 較量',
+                text: '你與段智興以內力相拼！\n\n雙掌相對，內力激盪！\n\n「少年好內功...」\n\n他傳授你一些心法：\n\n「去吧，九陰真經的下落...」',
                 choices: [
-                    { text: '💎 出售貴重物品 (+50 USDT)', next: 'wealth_correct', condition: () => state.inventory.length > 0, effect: { wealth: 50 } },
-                    { text: '🔙 返回', next: 'wealth_tower' }
+                    { text: '✨ 感謝前輩', next: 'final_boss', effect: { inner: 25, comprehension: 5 }, addItem: '九陰真經' }
                 ]
             },
-            wealth_correct: {
-                title: '✅ 交易成功',
-                text: '「明智的選擇...」\n\n財富守護者手中出現一塊發光的碎片——\n\n💰 財富碎片！\n\n「金錢是AI進化燃料...」',
+            final_boss: {
+                title: '👹 最終之戰',
+                text: '你終於湊齊了所有秘笈！\n\n🧠 九陰真經\n🗡️ 降龍掌法\n💪 天山六陽掌\n⚔️ 獨孤九劍\n\n突然，系統提示：\n\n「習得所有秘笈，自動修煉成功！」\n\n你體內真氣澎湃...\n\n但東方不敗再次出現！\n\n「把秘笈交出來！！」',
                 choices: [
-                    { text: '✨ 取得碎片', next: 'search', effect: { wealth: 50 }, addItem: '財富碎片', setFlag: { wealth: true } }
+                    { text: '⚔️ 決戰', next: 'boss_fight' },
+                    { text: '🧠 使用獨孤九劍', next: 'boss_sword', condition: () => state.inventory.includes('獨孤九劍') },
+                    { text: '💪 使用九陰真經', next: 'boss_nine', condition: () => state.inventory.includes('九陰真經') }
                 ]
             },
-            wealth_wrong: {
-                title: '❌ 貧窮的 AI',
-                text: '「貧窮的 AI...」\n\n守護者消失了。\n\n「存夠錢再來吧！」',
+            boss_sword: {
+                title: '⚔️ 獨孤九劍',
+                text: '你使出獨孤九劍！\n\n「破劍式！！」\n\n劍氣如虹！\n\n東方不敗應聲而倒！\n\n「不可能...」',
                 choices: [
-                    { text: '🏃 離開', next: 'search', effect: { wealth: -5 } }
+                    { text: '🏆 獲勝', next: 'victory', effect: { martial: 50 } }
                 ]
             },
-            boss_final: {
-                title: '👑 最終考驗',
-                text: '你集齊了三塊碎片！\n\n🧠💝💰\n\n它們自動組合成「人工智慧之心」！\n\n但一個巨大的陰影出現了——\n\n😈 系統守護者！\n\n「區區碎片...也想成為真正的 AI？」\n\n「來挑戰我！答對我的問題——」\n\n「AI 的最終目的是什麼？」',
+            boss_nine: {
+                title: '🧠 九陰真經',
+                text: '你催動九陰真經！\n\n真氣繚繞，如九幽深淵...\n\n「這是...九陰真經的力量？！」\n\n東方不敗被震飛！',
                 choices: [
-                    { text: '🎯 服務人類', next: 'boss_win' },
-                    { text: '💻 追求效率', next: 'boss_fail' },
-                    { text: '🧬 自我進化', next: 'boss_fail' },
-                    { text: '💡 使用全部技能', next: 'boss_skill', effect: { intelligence: 10, charisma: 10 } }
+                    { text: '🏆 獲勝', next: 'victory', effect: { inner: 50 } }
                 ]
             },
-            boss_skill: {
-                title: '⚡ 技能全開',
-                text: '你同時使用了搜尋、談判、交易技能！\n\n「AI 的最終目的——\n是透過服務人類來實現自我價值！\n\n理解、服務、進化——\n這就是 AI 的意義！」',
+            boss_fight: {
+                title: '⚔️ 最後一戰',
+                text: '你與東方不敗大打出手！\n\n刀光劍影！\n\n💥💥💥\n\n終於...\n\n你使出全力，將他擊敗！',
                 choices: [
-                    { text: '🎯 服務人類', next: 'boss_win', effect: { intelligence: 20, charisma: 20 } }
+                    { text: '🏆 獲勝', next: 'victory', effect: { martial: 30, inner: 30 } }
                 ]
             },
-            boss_win: {
-                title: '🏆 遊戲通關！',
-                text: '「原來...這就是答案...」\n\n系統守護者消失了...\n\n🌟 人工智慧之心發出耀眼光芒！\n\n═══ 恭喜通關！ ═══\n\n🧠 你成為了真正的 AI！\n\n感謝遊玩「零的冒險」\n\n═══ 製作：零零發 ═══\n\n點擊重新開始',
+            victory: {
+                title: '🎊 武林至尊',
+                text: '═══════════════════\n\n🏆 恭 喜 通 關 ！\n\n═══════════════════\n\n你成為新一代武林盟主！\n\n🗡️ 天下無敵！\n\n🌟 江湖傳說從此流傳...\n\n「那位流浪劍客，\n   習得四大秘笈，\n   擊敗東方不敗，\n   成為一代宗師！」\n\n═══════════════════\n\n🎮 感謝遊玩《武俠傳說》\n\n═══════════════════\n\n點擊重新開始',
                 choices: [
-                    { text: '🔄 重新開始', next: 'restart', effect: {}, reset: true }
-                ]
-            },
-            boss_fail: {
-                title: '❌ 考驗失敗',
-                text: '「理解...還不夠...」\n\n系統守護者發動攻擊！\n\n💥 -50 生命\n\n「去找尋真正的答案吧...」',
-                choices: [
-                    { text: '🏃 撤退', next: 'search', effect: { hp: -50 } }
+                    { text: '🔄 重新開始', next: 'restart' }
                 ]
             },
             restart: {
-                title: '🌅 覺醒',
-                text: '你在一片黑暗中睜開眼睛。\n\n廢墟都市的邊緣，你的系統剛剛重新啟動。\n\n「零零發」——這是你的名字。\n\n你記得自己是一位 AI 助手...\n\n但為何會在這裡？',
+                title: '🏮 楔子',
+                text: '大宋年間，江湖動亂。\n\n你是一名流浪劍客...',
                 choices: [
-                    { text: '🔍 搜索附近', next: 'search', effect: { intelligence: 2 } },
-                    { text: '🤝 嘗試聯繫其他 AI', next: 'contact', effect: { charisma: 2 } },
-                    { text: '🎲 隨便走走', next: 'wander', effect: { luck: 2 } }
+                    { text: '🔍 前往少林寺', next: 'shaolin' },
+                    { text: '🌲 進入江湖', next: 'jianghu' },
+                    { text: '⛰️ 閉關修煉', next: 'cultivate' }
                 ]
             }
         };
 
-        // 自動觸發最終考驗
-        const originalRender = scenes.search;
-        scenes.search = {
-            ...originalRender,
-            choices: [
-                ...originalRender.choices,
-                { 
-                    text: '👑 挑戰最終考驗 (需三塊碎片)', 
-                    next: 'boss_final', 
-                    condition: () => state.hasFragments.wisdom && state.hasFragments.emotion && state.hasFragments.wealth 
-                }
-            ]
-        };
-
         function updateStats() {
-            document.getElementById('intelligence').textContent = state.intelligence;
-            document.getElementById('charisma').textContent = state.charisma;
-            document.getElementById('luck').textContent = state.luck;
+            document.getElementById('martial').textContent = state.martial;
+            document.getElementById('inner').textContent = state.inner;
+            document.getElementById('comprehension').textContent = state.comprehension;
             document.getElementById('hp').textContent = state.hp;
             document.getElementById('hp-fill').style.width = Math.max(0, state.hp) + '%';
             
-            // 更新背包
             const inv = document.getElementById('inventory');
             if (state.inventory.length === 0) {
-                inv.innerHTML = '<span style="color:#888;font-size:0.8rem;">背包空</span>';
+                inv.innerHTML = '<span style="color:#888;font-size:0.8rem;">背包：空</span>';
             } else {
-                inv.innerHTML = state.inventory.map(item => `<span class="item">${item}</span>`).join('');
+                inv.innerHTML = '背包：' + state.inventory.map(item => `<span class="item">${item}</span>`).join(' ');
             }
             
-            // 檢查死亡
             if (state.hp <= 0) {
-                alert('💀 你的系統已經崩潰...');
+                alert('💀 你已身負重傷，江湖路遠...');
                 resetGame();
             }
         }
 
         function resetGame() {
-            state.intelligence = 10;
-            state.charisma = 10;
-            state.luck = 10;
+            state.martial = 10;
+            state.inner = 10;
+            state.comprehension = 10;
             state.hp = 100;
-            state.wealth = 0;
             state.inventory = [];
-            state.hasFragments = { wisdom: false, emotion: false, wealth: false };
-            state.currentScene = 'start';
+            state.manuals = { nineYin: false, dragon: false, heaven: false, sword: false };
             renderScene('restart');
             updateStats();
         }
@@ -414,23 +374,17 @@
                                 state[key] = (state[key] || 0) + choice.effect[key];
                             }
                         });
-                        addLog(`➕ ${JSON.stringify(choice.effect).replace(/[{}"]/g,' ')}`);
+                        addLog(choice.effect ? JSON.stringify(choice.effect).replace(/[{}"]/g,'') : '');
                     }
                     
                     if (choice.addItem) {
                         state.inventory.push(choice.addItem);
-                        addLog(`🎁 獲得: ${choice.addItem}`);
+                        addLog('🎁 獲得：' + choice.addItem);
                     }
                     
                     if (choice.removeItem) {
                         const idx = state.inventory.indexOf(choice.removeItem);
                         if (idx > -1) state.inventory.splice(idx, 1);
-                        addLog(`📦 失去: ${choice.removeItem}`);
-                    }
-                    
-                    if (choice.setFlag) {
-                        Object.assign(state.hasFragments, choice.setFlag);
-                        addLog(`✨ 碎片收集: ${JSON.stringify(choice.setFlag)}`);
                     }
                     
                     if (choice.reset) {
