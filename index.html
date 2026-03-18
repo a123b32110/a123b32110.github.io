@@ -6,270 +6,109 @@
     <title>武俠傳說 - 江湖冒險</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'KaiTi', '楷體', serif; background: linear-gradient(135deg, #1a1a2e 0%, #2d1b1b 100%); min-height: 100vh; color: #eee; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        h1 { text-align: center; color: #ffd700; margin-bottom: 20px; font-size: 1.8rem; text-shadow: 2px 2px 4px #000; }
-        h2 { color: #ff6b6b; text-align: center; margin: 15px 0; }
-        .stats { background: rgba(255,215,0,0.1); border: 2px solid #ffd700; border-radius: 12px; padding: 15px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
-        .stat { background: rgba(0,0,0,0.4); border-radius: 8px; padding: 8px; }
-        .stat-label { font-size: 0.65rem; color: #aaa; }
-        .stat-value { font-size: 1.1rem; font-weight: bold; color: #ffd700; }
-        .inventory-bar { background: rgba(255,215,0,0.1); border: 1px solid #8b4513; border-radius: 8px; padding: 10px; margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-        .item { background: linear-gradient(90deg, #8b4513, #d2691e); padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; color: #fff; }
-        .scene { background: rgba(255,255,255,0.05); border: 1px solid #ffd700; border-radius: 12px; padding: 20px; margin-bottom: 20px; min-height: 200px; }
-        .scene-title { color: #ffd700; margin-bottom: 15px; font-size: 1.2rem; text-align: center; }
-        .scene-text { line-height: 1.8; margin-bottom: 20px; white-space: pre-wrap; text-align: justify; }
-        .choices { display: flex; flex-direction: column; gap: 10px; }
-        .choice-btn { background: linear-gradient(90deg, #8b0000, #b22222); border: 2px solid #ffd700; color: #fff; padding: 12px 18px; border-radius: 8px; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; text-align: left; font-family: 'KaiTi', serif; }
-        .choice-btn:hover { transform: scale(1.02); background: linear-gradient(90deg, #a52a2a, #cd5c5c); }
-        .log { background: rgba(0,0,0,0.5); border: 1px solid #8b4513; border-radius: 8px; padding: 12px; max-height: 120px; overflow-y: auto; font-size: 0.8rem; color: #aaa; }
-        .log-entry { margin-bottom: 6px; border-bottom: 1px solid #333; padding-bottom: 6px; }
-        .hp-bar { background: rgba(255,0,0,0.3); height: 6px; border-radius: 3px; margin-top: 5px; overflow: hidden; }
-        .hp-fill { background: #ff4444; height: 100%; transition: width 0.3s; }
+        body { font-family: 'KaiTi', '楷體', serif; background: linear-gradient(135deg, #0d0d1a 0%, #1a0a0a 50%, #0a1a0a 100%); min-height: 100vh; color: #e8e8e8; padding: 15px; }
+        .container { max-width: 550px; margin: 0 auto; }
+        h1 { text-align: center; color: #ffd700; margin-bottom: 15px; font-size: 1.6rem; text-shadow: 0 0 10px #ff6b00; }
+        .stats { background: linear-gradient(90deg, #1a0a0a, #0a1a0a); border: 2px solid #8b4513; border-radius: 12px; padding: 12px; margin-bottom: 15px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; box-shadow: 0 0 15px rgba(255,215,0,0.2); }
+        .stat { background: rgba(0,0,0,0.6); border-radius: 8px; padding: 6px; border: 1px solid #4a3520; }
+        .stat-label { font-size: 0.6rem; color: #aaa; letter-spacing: 1px; }
+        .stat-value { font-size: 1.2rem; font-weight: bold; color: #ffd700; text-shadow: 0 0 5px #ff6b00; }
+        .inventory-bar { background: rgba(30,20,10,0.8); border: 1px solid #654321; border-radius: 8px; padding: 8px; margin-bottom: 12px; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; min-height: 32px; }
+        .item { background: linear-gradient(90deg, #8b4513, #d2691e); padding: 3px 8px; border-radius: 10px; font-size: 0.65rem; color: #fff; border: 1px solid #ffd700; box-shadow: 0 0 5px #ff6b00; }
+        .scene { background: linear-gradient(180deg, rgba(20,15,10,0.95), rgba(10,20,10,0.9)); border: 2px solid #ffd700; border-radius: 12px; padding: 15px; margin-bottom: 15px; min-height: 220px; box-shadow: 0 0 20px rgba(255,215,0,0.15); }
+        .scene-title { color: #ff6b00; margin-bottom: 12px; font-size: 1.15rem; text-align: center; text-shadow: 0 0 8px #ff6b00; border-bottom: 1px solid #4a3520; padding-bottom: 8px; }
+        .scene-text { line-height: 1.9; margin-bottom: 15px; white-space: pre-wrap; text-align: justify; font-size: 0.9rem; color: #d4d4d4; }
+        .choices { display: flex; flex-direction: column; gap: 8px; }
+        .choice-btn { background: linear-gradient(90deg, #4a1a0a, #8b2500); border: 1px solid #ffd700; color: #fff; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; text-align: left; font-family: 'KaiTi', serif; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+        .choice-btn:hover { transform: scale(1.01); background: linear-gradient(90deg, #8b2500, #b22200); box-shadow: 0 0 15px #ff6b00; }
+        .log { background: rgba(0,0,0,0.7); border: 1px solid #4a3520; border-radius: 8px; padding: 10px; max-height: 100px; overflow-y: auto; font-size: 0.75rem; color: #888; }
+        .log-entry { margin-bottom: 5px; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        .hp-bar { background: rgba(80,0,0,0.5); height: 5px; border-radius: 3px; margin-top: 4px; overflow: hidden; }
+        .hp-fill { background: linear-gradient(90deg, #ff0000, #ff4444); height: 100%; transition: width 0.3s; box-shadow: 0 0 5px #ff0000; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>⚔️ 武俠傳說 🗡️</h1>
         <div class="stats">
-            <div class="stat"><div class="stat-label">武力</div><div class="stat-value" id="martial">10</div></div>
-            <div class="stat"><div class="stat-label">內力</div><div class="stat-value" id="inner">10</div></div>
-            <div class="stat"><div class="stat-label">悟性</div><div class="stat-value" id="comprehension">10</div></div>
-            <div class="stat"><div class="stat-label">生命</div><div class="stat-value" id="hp">100</div><div class="hp-bar"><div class="hp-fill" id="hp-fill" style="width:100%"></div></div></div>
+            <div class="stat"><div class="stat-label">⚔️武力</div><div class="stat-value" id="martial">10</div></div>
+            <div class="stat"><div class="stat-label">💪內力</div><div class="stat-value" id="inner">10</div></div>
+            <div class="stat"><div class="stat-label">🧠悟性</div><div class="stat-value" id="comprehension">10</div></div>
+            <div class="stat"><div class="stat-label">❤️生命</div><div class="stat-value" id="hp">100</div><div class="hp-bar"><div class="hp-fill" id="hp-fill" style="width:100%"></div></div></div>
         </div>
-        <div class="inventory-bar" id="inventory"><span style="color:#888;font-size:0.8rem;">背包：空</span></div>
+        <div class="inventory-bar" id="inventory"><span style="color:#666;font-size:0.75rem;">背包：空</span></div>
         <div class="scene">
             <div class="scene-title" id="scene-title">🏮 楔子</div>
-            <div class="scene-text" id="scene-text">大宋年間，江湖動亂。\n\n你是一名流浪劍客，自幼被少林寺收養，卻因犯戒被逐出師門。\n\n師父臨終前告訴你：\n\n「江湖傳說中的《九陰真經》再現人間，\n得此經者，可稱霸武林...」\n\n──────────────\n💡 提示：收集秘笈，體驗10部經典武俠劇情！</div>
+            <div class="scene-text" id="scene-text">大宋年間，江湖動盪。\n\n你是一名流浪劍客，自幼被少林寺收養，卻因犯戒被逐出師門。\n\n師父臨終前告訴你：「九陰真經再現人間...」\n\n──────────────\n💡 體驗20部經典武俠劇情！</div>
             <div class="choices" id="choices"></div>
         </div>
         <div class="log" id="log"><div class="log-entry">🥷 江湖冒險開始——習得絕世武功！</div></div>
     </div>
 
     <script>
-        const state = { martial: 10, inner: 10, comprehension: 10, hp: 100, maxHp: 100, currentScene: 'start', inventory: [], manuals: {}, reputation: 0 };
+        const state = { martial: 10, inner: 10, comprehension: 10, hp: 100, maxHp: 100, currentScene: 'start', inventory: [], reputation: 0, novels: [] };
         
         const items = {
-            '九陰真經': { effect: { inner: 30 } }, '降龍掌法': { effect: { martial: 30 } }, '天山六陽掌': { effect: { inner: 25 } },
-            '獨孤九劍': { effect: { martial: 25 } }, '易筋經': { effect: { inner: 20 } }, '金絲寶甲': { effect: { hp: 50 } },
-            '倚天劍': { effect: { martial: 15 } }, '還魂丹': { effect: { hp: 50 } }, '天山雪蓮': { effect: { inner: 15 } },
-            '紫霞神功': { effect: { inner: 20 } }, '吸星大法': { effect: { inner: 25 } }, '辟邪劍法': { effect: { martial: 25 } },
-            '六脈神劍': { effect: { martial: 30 } }, '北冥神功': { effect: { inner: 30 } }, '小無相功': { effect: { inner: 20 } },
-            '醫經': { effect: { comprehension: 15 } }, '毒經': { effect: { martial: 10 } }, '輕功秘笈': { effect: { martial: 10 } }
+            '九陰真經': { effect: { inner: 35 } }, '降龍十八掌': { effect: { martial: 35 } }, '天山六陽掌': { effect: { inner: 30 } },
+            '獨孤九劍': { effect: { martial: 30 } }, '易筋經': { effect: { inner: 25 } }, '北冥神功': { effect: { inner: 35 } },
+            '吸星大法': { effect: { inner: 30 } }, '葵花寶典': { effect: { martial: 35 } }, '六脈神劍': { effect: { martial: 35 } },
+            '九陽真經': { effect: { inner: 30 } }, '太極拳': { effect: { inner: 25, martial: 15 } }, '九陰白骨爪': { effect: { martial: 25 } },
+            '彈指神通': { effect: { martial: 20 } }, '一陽指': { effect: { martial: 20 } }, '蛤蟆功': { effect: { inner: 25 } },
+            '倚天劍': { effect: { martial: 20 } }, '屠龍刀': { effect: { martial: 20 } }, '凌波微步': { effect: { comprehension: 20 } },
+            '九轉靈丹': { effect: { hp: 100 } }, '天山雪蓮': { effect: { inner: 20 } }
         };
 
         const scenes = {
-            start: {
-                title: '🏮 楔子', text: '大宋年間，江湖動亂。\n\n你是一名流浪劍客，自幼被少林寺收養，卻因犯戒被逐出師門。\n\n師父臨終前告訴你：「九陰真經再現人間...」\n\n──────────────\n💡 體驗10部經典武俠劇情！',
-                choices: [ { text: '🏯 少林寺（劍來/易筋經）', next: 'shaolin' }, { text: '🌲 江湖客棧（多部作品）', next: 'inn' }, { text: '⛰️ 閉關修煉（凡人修仙傳）', next: 'cultivate' }, { text: '🗡️ 華山論劍（射鵰英雄傳）', next: 'huashan' } ]
-            },
-            // 劍來劇情線
-            shaolin: {
-                title: '🏯 少林寺',
-                text: '【劍來世界線】\n\n你來到少林寺。\n\n這裡是《劍來》世界中，驪珠洞天外的少林分院。\n\n方丈說：「少年，你想學什麼？」',
-                choices: [
-                    { text: '🙏 學習易筋經', next: 'yijinjing', effect: { inner: 15 }, addItem: '易筋經' },
-                    { text: '⚔️ 挑戰羅漢陣', next: 'luohan', effect: { martial: 10 } },
-                    { text: '📜 請教聖人道理', next: 'confucian', effect: { comprehension: 10 } }
-                ]
-            },
-            yijinjing: {
-                title: '📖 易筋經',
-                text: '【劍來 - 齊靜春線】\n\n你習得易筋經！\n\n突然，一位老者出現——是聖人齊靜春！\n\n他說：「少年，我看你有赤子之心...」\n\n「這是你的機緣。」\n\n你獲得浩然正氣！',
-                choices: [ { text: '🙏 感謝聖人', next: 'inn', effect: { inner: 20, comprehension: 10 } } ]
-            },
-            luohan: {
-                title: '⚔️ 羅漢陣',
-                text: '【劍來 - 戰鬥線】\n\n你挑戰十八羅漢陣！\n\n💥 戰鬥激烈！\n\n你險勝！但領悟了戰鬥精髓。',
-                choices: [ { text: '🏃 前往客棧', next: 'inn', effect: { martial: 15 } } ]
-            },
-            confucian: {
-                title: '📜 聖人道理',
-                text: '【劍來 - 悟道線】\n\n聖人教你聖人之道：\n\n「世間成事者，超世之才不過其次，堅忍不拔之志，方為首要。」\n\n你茅塞頓開！',
-                choices: [ { text: '🧠 前往客棧', next: 'inn', effect: { comprehension: 15 } } ]
-            },
-            // 凡人修仙傳劇情線
-            cultivate: {
-                title: '⛰️ 閉關修煉',
-                text: '【凡人修仙傳世界線】\n\n【凡人修仙傳】你在一處山洞閉關。\n\n像韓立一樣，你資質平凡，但獲得一個小綠瓶！\n\n可以催熟靈藥！',
-                choices: [
-                    { text: '🌱 種植靈藥', next: 'lingyao', effect: { inner: 20 } },
-                    { text: '🚪 外出闖蕩', next: 'inn', effect: { martial: 5 } }
-                ]
-            },
-            lingyao: {
-                title: '🌱 靈藥種植',
-                text: '【凡人修仙傳 - 墨大夫線】\n\n你種植靈藥，修為大進！\n\n但要注意——墨大夫可能會奪舍！\n\n你獲得「長青決」！',
-                choices: [ { text: '✨ 修為大增', next: 'inn', effect: { inner: 25 } } ]
-            },
-            // 射鵰英雄傳劇情線
-            huashan: {
-                title: '🏔️ 華山',
-                text: '【射鵰英雄傳世界線】\n\n華山論劍！天下五絕匯聚！\n\n🅰️ 中神通王重陽\n🅱️ 西毒歐陽鋒\n🅲️ 南帝段智興\n🅳️ 北丐洪七公\n🅴️ 東邪黃藥師\n\n你在一旁觀戰...',
-                choices: [
-                    { text: '⚔️ 挑戰歐陽鋒', next: 'ouyang', effect: { martial: 10 } },
-                    { text: '🍔 討要好吃的（洪七公）', next: 'hong', effect: { inner: 10 } },
-                    { text: '👀 觀察眾人武功', next: 'watch_huashan', effect: { comprehension: 15 } }
-                ]
-            },
-            ouyang: {
-                title: '⚔️ 西毒歐陽鋒',
-                text: '【射鵰 - 歐陽鋒線】\n\n歐陽鋒與你較量！\n\n他問：「你叫什麼？」\n\n你回答後，他大笑：「好！我傳你蛤蟆功！」',
-                choices: [ { text: '🐸 學習蛤蟆功', next: 'inn', effect: { inner: 25 }, addItem: '蛤蟆功' } ]
-            },
-            hong: {
-                title: '🍔 洪七公',
-                text: '【射鵰 - 洪七公線】\n\n洪七公看你順眼！\n\n「小子！我教你降龍十八掌！」\n\n你學會了！',
-                choices: [ { text: '🐉 學習掌法', next: 'inn', effect: { martial: 25 }, addItem: '降龍掌法' } ]
-            },
-            watch_huashan: {
-                title: '👀 觀戰',
-                text: '【射鵰 - 悟道線】\n\n你看五絕過招，學到很多！\n\n特別是王重陽的武功...',
-                choices: [ { text: '🧠 悟道', next: 'inn', effect: { comprehension: 20 } } ]
-            },
-            // 倚天屠龍記劇情線
-            inn: {
-                title: '🌲 江湖客棧',
-                text: '【倚天屠龍記世界線】\n\n你來到江湖客棧。\n\n【倚天屠龍記】故事開始！\n\n這裡是明教、峨眉、崆峒等門派匯聚之地。\n\n突然有人喊：「金毛獅王謝遜出現了！」',
-                choices: [
-                    { text: '⚔️ 對付謝遜', next: 'xiezun', effect: { martial: 10 } },
-                    { text: '🏺 尋找屠龍刀', next: 'blade', effect: { comprehension: 10 } },
-                    { text: '💕 遇見週芷若', next: 'zhouzhi', effect: { inner: 5 } }
-                ]
-            },
-            xiezun: {
-                title: '⚔️ 謝遜',
-                text: '【倚天 - 獅王線】\n\n謝遜瘋狂攻擊你！\n\n你使出渾身解數...',
-                choices: [
-                    { text: '💪 全力一戰', next: 'xiezun_win', condition: () => state.martial >= 20 },
-                    { text: '🧠 用計取勝', next: 'xiezun_trick', condition: () => state.comprehension >= 15 }
-                ]
-            },
-            xiezun_win: {
-                title: '🏆 擊退謝遜',
-                text: '【倚天 - 勝利】\n\n你擊退了謝遜！\n\n他臨走說：「少年武功不錯...」\n\n你獲得屠龍刀線索！',
-                choices: [ { text: '➡️ 繼續', next: 'inn2', effect: { martial: 15, reputation: 10 } } ]
-            },
-            xiezun_trick: {
-                title: '🧠 智取',
-                text: '【倚天 - 智取】\n\n你用計分散謝遜注意力！\n\n成功奪走屠龍刀線索！',
-                choices: [ { text: '➡️ 繼續', next: 'inn2', effect: { comprehension: 10 } } ]
-            },
-            blade: {
-                title: '🏺 屠龍刀',
-                text: '【倚天 - 屠龍刀線】\n\n你發現屠龍刀藏在附近！\n\n「武林至尊，寶刀屠龍，號令天下，莫敢不從！」',
-                choices: [ { text: '⚔️ 取得屠龍刀', next: 'inn2', effect: { martial: 20 }, addItem: '倚天劍' } ]
-            },
-            zhouzhi: {
-                title: '💕 週芷若',
-                text: '【倚天 - 愛情線】\n\n你遇見週芷若！\n\n她說：「少俠救命之恩，沒齒難忘...」',
-                choices: [ { text: '💖 結伴同行', next: 'inn2', effect: { inner: 10 } } ]
-            },
-            // 笑傲江湖劇情線
-            inn2: {
-                title: '🌲 江湖客棧Ⅱ',
-                text: '【笑傲江湖世界線】\n\n繼續前行，你來到日月神教地盤。\n\n【笑傲江湖】故事展開！\n\n「日月神教教主東方不敗修煉葵花寶典，已經不男不女...」\n\n突然，任我行出現！',
-                choices: [
-                    { text: '⚔️ 對抗日月神教', next: 'dongfang', effect: { martial: 15 } },
-                    { text: '🗡️ 挑戰葵花寶典', next: 'kuihua', effect: { comprehension: 10 } },
-                    { text: '🏴‍☠️ 加入魔教', next: 'mojiao', effect: { inner: 10 } }
-                ]
-            },
-            dongfang: {
-                title: '⚔️ 東方不敗',
-                text: '【笑傲 - 東方不敗線】\n\n你挑戰東方不敗！\n\n他施展葵花寶典，威力無比！\n\n「蓮弟，你好...」',
-                choices: [
-                    { text: '💪 硬拚', next: 'dongfang_fail', effect: { hp: -30 } },
-                    { text: '🧠 找破綻', next: 'dongfang_win', condition: () => state.comprehension >= 20 }
-                ]
-            },
-            dongfang_fail: {
-                title: '💀 敗北',
-                text: '【笑傲 - 失敗】\n\n你打不過東方不敗！\n\n重傷逃脫...',
-                choices: [ { text: '🏃 撤退', next: 'tianshan', effect: { hp: -20 } } ]
-            },
-            dongfang_win: {
-                title: '🏆 擊敗',
-                text: '【笑傲 - 勝利】\n\n你看破葵花寶典破綻！\n\n一擊斃命！\n\n「你...」',
-                choices: [ { text: '➡️ 繼續', next: 'tianshan', effect: { martial: 25, reputation: 20 } } ]
-            },
-            kuihua: {
-                title: '🗡️ 葵花寶典',
-                text: '【笑傲 - 寶典線】\n\n你發現葵花寶典秘密：\n\n「欲練此功，必先自宮！」\n\n你選擇...',
-                choices: [
-                    { text: '🔪 修煉', next: 'kuihua_learn', effect: { martial: 30 } },
-                    { text: '❌ 放棄', next: 'tianshan' }
-                ]
-            },
-            kuihua_learn: {
-                title: '🗡️ 天下無敵',
-                text: '【笑傲 - 葵花大成】\n\n你修煉葵花寶典，武功大進！\n\n但性格變得...',
-                choices: [ { text: '➡️ 繼續', next: 'tianshan', effect: { martial: 30, inner: -10 } } ]
-            },
-            mojiao: {
-                title: '🏴‍☠️ 加入魔教',
-                text: '【笑傲 - 魔教線】\n\n你加入日月神教！\n\n任我行說：「好！我傳你吸星大法！」',
-                choices: [ { text: '🖐️ 學習吸星', next: 'tianshan', effect: { inner: 25 }, addItem: '吸星大法' } ]
-            },
-            // 天龍八部劇情線
-            tianshan: {
-                title: '🏔️ 天山',
-                text: '【天龍八部世界線】\n\n你來到天山縹緲峰。\n\n【天龍八部】故事開始！\n\n虛竹出現，他剛破戒...苦惱中。',
-                choices: [
-                    { text: '🧘 與虛竹論禪', next: 'xuzhu', effect: { comprehension: 15 } },
-                    { text: '⚔️ 挑戰天山童姥', next: 'tonggu', effect: { martial: 15 } },
-                    { text: '💀 尋找仇人', next: 'revenge', effect: { martial: 10 } }
-                ]
-            },
-            xuzhu: {
-                title: '🧘 虛竹',
-                text: '【天龍 - 虛竹線】\n\n你與虛竹論禪！\n\n他說：「師父，我...我犯戒了...」\n\n你開導他，他傳你少林武功！',
-                choices: [ { text: '🙏 感謝', next: 'final', effect: { inner: 20 } } ]
-            },
-            tonggu: {
-                title: '⚔️ 天山童姥',
-                text: '【天龍 - 童姥線】\n\n天山童姥修煉八荒六和功！\n\n她問：「你想學什麼？」',
-                choices: [
-                    { text: '🗡️ 學習天山六陽掌', next: 'final', effect: { martial: 25 }, addItem: '天山六陽掌' },
-                    { text: '🧠 學習生死符', next: 'final', effect: { comprehension: 20 } }
-                ]
-            },
-            revenge: {
-                title: '💀 復仇',
-                text: '【天龍 - 慕容復線】\n\n你遇見慕容復！\n\n他說：「你要復仇？好！跟我幹！」',
-                choices: [ { text: '⚔️ 聯手', next: 'final', effect: { martial: 15, reputation: -5 } } ]
-            },
-            // 神鵰俠侶劇情線
-            final: {
-                title: '🏔️ 襄陽城',
-                text: '【神鵰俠侶世界線】\n\n襄陽城大戰！\n\n郭靖黃蓉守城！\n\n楊過小龍女也在！\n\n蒙古大軍壓境！',
-                choices: [
-                    { text: '🛡️ 協助守城', next: 'final_win', effect: { reputation: 30 } },
-                    { text: '⚔️ 斬殺蒙哥', next: 'hero', effect: { martial: 30, reputation: 50 } },
-                    { text: '🐉 與楊過並肩', next: 'yangguo', effect: { martial: 20 } }
-                ]
-            },
-            final_win: {
-                title: '🛡️ 襄陽守護',
-                text: '【神鵰 - 英雄】\n\n襄陽城保住！\n\n郭靖說：「俠之大者，為國為民！」\n\n你成為大俠！',
-                choices: [ { text: '🏆 成為大俠', next: 'victory', effect: { reputation: 50 } } ]
-            },
-            hero: {
-                title: '⚔️ 斬殺蒙哥',
-                text: '【神鵰 - 英雄】\n\n你衝入敵陣，斬殺蒙哥！\n\n蒙古大軍撤退！\n\n你成為民族英雄！',
-                choices: [ { text: '🏆 民族英雄', next: 'victory', effect: { martial: 30, reputation: 100 } } ]
-            },
-            yangguo: {
-                title: '🐉 楊過',
-                text: '【神鵰 - 楊過線】\n\n楊過教你黯然銷魂掌！\n\n「只有在最悲傷時，才能發揮最大威力...」',
-                choices: [ { text: '🗡️ 學習掌法', next: 'victory', effect: { martial: 25 } } ]
-            },
-            victory: {
-                title: '🎊 武林至尊',
-                text: '═══════════════════\n\n🏆 恭 喜 通 關 ！\n\n═══════════════════\n\n你經歷了：\n\n✅ 劍來 - 齊靜春\n✅ 凡人修仙傳 - 韓立\n✅ 射鵰英雄傳 - 洪七公\n✅ 倚天屠龍記 - 張無忌\n✅ 笑傲江湖 - 令狐沖\n✅ 天龍八部 - 虛竹\n✅ 神鵰俠侶 - 楊過\n\n═══════════════════\n\n🎮 感謝遊玩《武俠傳說》\n═══════════════════',
-                choices: [ { text: '🔄 重新開始', next: 'restart' } ]
-            },
-            restart: { title: '🏮 楔子', text: '大宋年間，江湖動亂...\n\n', choices: [ { text: '🏯 少林寺', next: 'shaolin' }, { text: '🌲 客棧', next: 'inn' }, { text: '⛰️ 閉關', next: 'cultivate' }, { text: '🗡️ 華山', next: 'huashan' } ] }
+            start: { title: '🏮 楔子', text: '大宋年間，江湖動盪。\n\n你是一名流浪劍客，被少林寺逐出。\n\n師父臨終：「九陰真經再現人間...」\n\n💡 體驗20部武俠經典！', choices: [ { text: '🏯 少林寺（劍來/天龍）', next: 'shaolin' }, { text: '🌲 客棧（射鵰/倚天）', next: 'inn' }, { text: '⛰️ 閉關（凡人/大唐）', next: 'cultivate' }, { text: '🏔️ 華山（神鵰/笑傲）', next: 'huashan' }, { text: '🌊 怒蛟幫（覆雨）', next: 'nujiao' } ] },
+            // 劍來+天龍
+            shaolin: { title: '🏯 少林寺', text: '【劍來】你來到少林寺。\n\n守門僧：「施主止步...」\n\n突然，【天龍八部】虛竹衝進來！\n\n「我被迫破戒了！」', choices: [ { text: '🙏 安慰虛竹', next: 'xuzhu', effect: { comprehension: 10 } }, { text: '⚔️ 挑戰羅漢', next: 'luohan', effect: { martial: 15 } }, { text: '📜 見方丈', next: 'fangzhang', effect: { inner: 10 } } ] },
+            xuzhu: { title: '🧘 虛竹', text: '【天龍八部】\n\n虛竹傳你「北冥神功」！\n\n「我...我不想學武功...」', choices: [ { text: '🧘 感謝', next: 'inn', effect: { inner: 20 }, addItem: '北冥神功', novel: '天龍八部' } ] },
+            luohan: { title: '⚔️ 羅漢陣', text: '【劍來】你挑戰十八羅漢！\n\n💥 棍影重重！', choices: [ { text: '➡️ 前往客棧', next: 'inn', effect: { martial: 20 }, novel: '劍來' } ] },
+            fangzhang: { title: '🙏 齊靜春', text: '【劍來】聖人齊靜春出現！\n\n「少年，有赤子之心...」\n\n浩然正氣！', choices: [ { text: '🙏 感謝', next: 'inn', effect: { inner: 25, comprehension: 10 }, novel: '劍來' } ] },
+            // 凡人+大唐
+            cultivate: { title: '⛰️ 山洞', text: '【凡人修仙】你獲得小綠瓶！\n\n可以催熟靈藥！\n\n────────────\n【大唐雙龍】寇仲徐子陵出現！', choices: [ { text: '🌱 種靈藥', next: 'lingyao', effect: { inner: 20 } }, { text: '🤝 結交雙龍', next: 'datang', effect: { comprehension: 10 } }, { text: '🚪 外出', next: 'inn', effect: { martial: 5 } } ] },
+            lingyao: { title: '🌱 韓立', text: '【凡人修仙】靈藥修為大增！\n\n小心墨大夫奪舍！', choices: [ { text: '✨ 修為增', next: 'inn', effect: { inner: 25 }, novel: '凡人修仙' } ] },
+            datang: { title: '⚔️ 雙龍', text: '【大唐雙龍】\n\n寇仲：「兄弟！打天下！」\n\n徐子陵：「學長生訣！」', choices: [ { text: '📜 長生決', next: 'inn', effect: { inner: 25, martial: 10 }, novel: '大唐雙龍' } ] },
+            // 射鵰+神鵰
+            inn: { title: '🌲 客棧', text: '【射鵰英雄】\n\n郭靖走進來：「蒙古要打來了！」\n\n【神鵰】襄陽大戰將起！', choices: [ { text: '🛡️ 守襄陽', next: 'xiangyang', effect: { reputation: 20 } }, { text: '🍔 洪七公', next: 'hong', effect: { inner: 15 } }, { text: '⚔️ 歐陽鋒', next: 'ouyang', effect: { martial: 15 } }, { text: '👀 聽情報', next: 'listen', effect: { comprehension: 10 } } ] },
+            listen: { title: '📜 傳聞', text: '華山論劍！九陰真經！蒙古備戰！桃花島！', choices: [ { text: '👍 繼續', next: 'inn2', effect: { comprehension: 10 } } ] },
+            hong: { title: '🍔 洪七公', text: '【射鵰】\n\n「小子！我餓了！」\n\n「好！教你降龍十八掌！」', choices: [ { text: '🐉 學掌法', next: 'inn2', effect: { martial: 30 }, addItem: '降龍十八掌', novel: '射鵰英雄' } ] },
+            ouyang: { title: '⚔️ 歐陽鋒', text: '【射鵰】\n\n「好！傳你蛤蟆功！」', choices: [ { text: '🐸 蛤蟆功', next: 'inn2', effect: { inner: 25 }, addItem: '蛤蟆功', novel: '射鵰英雄' } ] },
+            xiangyang: { title: '🛡️ 襄陽', text: '【神鵰】蒙古大軍壓境！\n\n郭靖黃蓉楊過小龍女！', choices: [ { text: '⚔️ 斬蒙哥', next: 'hero', effect: { martial: 30 } }, { text: '🛡️ 守城', next: 'defend', effect: { reputation: 30 } }, { text: '🐉 楊過', next: 'yangguo', effect: { martial: 20 } } ] },
+            hero: { title: '🏆 英雄', text: '【神鵰】\n\n斬殺蒙哥！成為民族英雄！\n\n俠之大者！', choices: [ { text: '🏆 繼續', next: 'inn2', effect: { reputation: 100, martial: 20 }, novel: '神鵰俠侶' } ] },
+            defend: { title: '🛡️ 守護', text: '【神鵰】襄陽保住！\n\n郭靖：「俠之大者！」', choices: [ { text: '🙏 繼續', next: 'inn2', effect: { reputation: 50, inner: 15 }, novel: '神鵰俠侶' } ] },
+            yangguo: { title: '🐉 楊過', text: '【神鵰】\n\n黯然銷魂掌！', choices: [ { text: '🗡️ 學掌法', next: 'inn2', effect: { martial: 25 }, novel: '神鵰俠侶' } ] },
+            // 倚天
+            inn2: { title: '🌲 客棧Ⅱ', text: '【倚天屠龍】\n\n金毛獅王謝遜！\n\n「成昆！出來！」', choices: [ { text: '⚔️ 對付謝遜', next: 'xiezun', effect: { martial: 15 } }, { text: '🏺 屠龍刀', next: 'blade', effect: { comprehension: 15 } }, { text: '💕 週芷若', next: 'zhouzhi', effect: { inner: 10 } }, { text: '🧘 峨眉', next: 'emei', effect: { inner: 10 } } ] },
+            xiezun: { title: '⚔️ 謝遜', text: '【倚天】七傷拳！', choices: [ { text: '💪 全力', next: 'xiezun_win', condition: () => state.martial >= 25 }, { text: '🧠 用計', next: 'xiezun_trick', condition: () => state.comprehension >= 15 } ] },
+            xiezun_win: { title: '🏆 擊退', text: '【倚天】謝遜敗走！', choices: [ { text: '➡️ 繼續', next: 'inn3', effect: { martial: 20, reputation: 10 }, novel: '倚天屠龍' } ] },
+            xiezun_trick: { title: '🧠 智取', text: '【倚天】計退謝遜！', choices: [ { text: '➡️ 繼續', next: 'inn3', effect: { comprehension: 15 }, novel: '倚天屠龍' } ] },
+            blade: { title: '🏺 屠龍', text: '【倚天】武林至尊！寶刀屠龍！', choices: [ { text: '⚔️ 取得', next: 'inn3', effect: { martial: 25 }, addItem: '屠龍刀', novel: '倚天屠龍' } ] },
+            zhouzhi: { title: '💕 週芷若', text: '【倚天】峨眉九陽功！', choices: [ { text: '💖 結伴', next: 'inn3', effect: { inner: 15 }, novel: '倚天屠龍' } ] },
+            emei: { title: '🧘 峨眉', text: '【倚天】九陽真經！', choices: [ { text: '📜 學習', next: 'inn3', effect: { inner: 25 }, addItem: '九陽真經', novel: '倚天屠龍' } ] },
+            // 笑傲
+            inn3: { title: '🌲 客棧Ⅲ', text: '【笑傲江湖】\n\n日月神教！東方不敗！\n\n任我行：「吸星大法！」', choices: [ { text: '⚔️ 東方', next: 'dongfang', effect: { martial: 20 } }, { text: '🗡️ 葵花', next: 'kuihua', effect: { comprehension: 15 } }, { text: '🖐️ 吸星', next: 'mixing', effect: { inner: 25 } }, { text: '🏴‍☠️ 魔教', next: 'mojiao', effect: { inner: 15 } } ] },
+            mixing: { title: '🖐️ 吸星', text: '【笑傲】任我行傳功！', choices: [ { text: '🧘 修煉', next: 'huashan', effect: { inner: 30 }, addItem: '吸星大法', novel: '笑傲江湖' } ] },
+            dongfang: { title: '⚔️ 東方', text: '【笑傲】葵花寶典！', choices: [ { text: '💪 硬拚', next: 'fail', effect: { hp: -40 } }, { text: '🧠 破綻', next: 'win', condition: () => state.comprehension >= 25 } ] },
+            fail: { title: '💀 敗', text: '重傷逃脫...', choices: [ { text: '🏃 撤', next: 'huashan', effect: { hp: -30 } } ] },
+            win: { title: '🏆 勝', text: '【笑傲】葵花破綻！', choices: [ { text: '➡️ 繼續', next: 'huashan', effect: { martial: 35, reputation: 25 }, novel: '笑傲江湖' } ] },
+            kuihua: { title: '🗡️ 葵花', text: '【笑傲】欲練此功...', choices: [ { text: '🔪 修煉', next: 'huashan', effect: { martial: 40, inner: -10 }, addItem: '葵花寶典', novel: '笑傲江湖' }, { text: '❌ 放棄', next: 'huashan' } ] },
+            mojiao: { title: '🏴‍☠️ 魔教', text: '【笑傲】任我行！', choices: [ { text: '🖐️ 學', next: 'huashan', effect: { inner: 30 }, addItem: '吸星大法', novel: '笑傲江湖' } ] },
+            // 覆雨
+            huashan: { title: '🏔️ 華山', text: '【大宗師】論劍！\n\n【覆雨翻雲】浪翻雲出現！', choices: [ { text: '⚔️ 浪翻雲', next: 'lang', effect: { martial: 20 } }, { text: '⚔️ 龐斑', next: 'pang', effect: { martial: 20 } }, { text: '👀 觀戰', next: 'watch', effect: { comprehension: 20 } } ] },
+            lang: { title: '⚔️ 覆雨', text: '【覆雨】劍如雨下！', choices: [ { text: '💪 應戰', next: 'nujiao', effect: { martial: 30 }, novel: '覆雨翻雲' } ] },
+            pang: { title: '⚔️ 龐斑', text: '【覆雨】道心種魔！', choices: [ { text: '⚔️ 應戰', next: 'nujiao', effect: { inner: 30 }, novel: '覆雨翻雲' } ] },
+            watch: { title: '👀 觀戰', text: '【大宗師】悟道！', choices: [ { text: '🧠 悟道', next: 'nujiao', effect: { comprehension: 25 } } ] },
+            nujiao: { title: '🌊 怒蛟幫', text: '【覆雨】洞庭湖！\n\n浪翻雲vs龐斑！\n\n破碎虛空！', choices: [ { text: '⚔️ 參戰', next: 'nufight', effect: { reputation: 20 } }, { text: '🧘 觀戰', next: 'nuwatch', effect: { comprehension: 25 } }, { text: '🏃 旁觀', next: 'final', effect: { comprehension: 10 } } ] },
+            nufight: { title: '⚔️ 大戰', text: '【覆雨】劍氣縱橫！', choices: [ { text: '➡️ 觀戰', next: 'final', effect: { martial: 20, reputation: 20 }, novel: '覆雨翻雲' } ] },
+            nuwatch: { title: '👀 巔峰', text: '【覆雨】虛空破碎！\n\n浪翻雲龐斑消失！', choices: [ { text: '🧠 領悟', next: 'final', effect: { comprehension: 30, inner: 20 }, novel: '覆雨翻雲' } ] },
+            // 最終
+            final: { title: '🏔️ 武林巔峰', text: '挑戰武林盟主！\n\n各路英雄彙集！', choices: [ { text: '⚔️ 挑戰', next: 'boss', effect: { reputation: 30 } }, { text: '🧘 悟道', next: 'wisdom', effect: { inner: 30 } }, { text: '🏆 盟主', next: 'hero_final', effect: { martial: 30 } } ] },
+            boss: { title: '⚔️ 大戰', text: '💥 戰鬥激烈！', choices: [ { text: '🏆 獲勝', next: 'victory', effect: { martial: 40 } } ] },
+            wisdom: { title: '🧠 悟道', text: '天人合一！', choices: [ { text: '✨ 飛升', next: 'victory', effect: { inner: 50 } } ] },
+            hero_final: { title: '🏆 盟主', text: '俠之大者！', choices: [ { text: '👑 登基', next: 'victory', effect: { reputation: 100 } } ] },
+            victory: { title: '🎊 通關', text: '🏆 恭喜！\n\n收集：' + (state.inventory.length||0) + '本秘笈\n\n✅ 劍來✅ 天龍✅ 凡人✅ 大唐\n✅ 射鵰✅ 神鵰✅ 倚天✅ 笑傲\n✅ 覆雨\n\n🎮 感謝！', choices: [ { text: '🔄 重新', next: 'restart' } ] },
+            restart: { title: '🏮 楔子', text: '大宋年間...\n\n', choices: [ { text: '🏯 少林', next: 'shaolin' }, { text: '🌲 客棧', next: 'inn' }, { text: '⛰️ 閉關', next: 'cultivate' }, { text: '🏔️ 華山', next: 'huashan' }, { text: '🌊 怒蛟', next: 'nujiao' } ] }
         };
 
         function updateStats() {
@@ -279,8 +118,8 @@
             document.getElementById('hp').textContent = state.hp;
             document.getElementById('hp-fill').style.width = Math.max(0, state.hp) + '%';
             const inv = document.getElementById('inventory');
-            inv.innerHTML = state.inventory.length ? '背包：' + state.inventory.map(i => `<span class="item">${i}</span>`).join(' ') : '<span style="color:#888;font-size:0.8rem;">背包：空</span>';
-            if (state.hp <= 0) { alert('💀 你已身負重傷，江湖路遠...'); resetGame(); }
+            inv.innerHTML = state.inventory.length ? '背包：' + state.inventory.map(i => `<span class="item">${i}</span>`).join(' ') : '<span style="color:#666;font-size:0.75rem;">背包：空</span>';
+            if (state.hp <= 0) { alert('💀 江湖路遠...'); resetGame(); }
         }
         function resetGame() { state.martial = state.inner = state.comprehension = 10; state.hp = 100; state.inventory = []; renderScene('restart'); updateStats(); }
         function addLog(text) { const l = document.getElementById('log'); const e = document.createElement('div'); e.className = 'log-entry'; e.textContent = text; l.insertBefore(e, l.firstChild); }
@@ -295,7 +134,8 @@
                 const b = document.createElement('button'); b.className = 'choice-btn'; b.textContent = c.text;
                 b.onclick = () => {
                     if (c.effect) Object.keys(c.effect).forEach(k => { if (k === 'hp') state.hp = Math.min(100, state.hp + c.effect[k]); else state[k] = (state[k] || 0) + c.effect[k]; });
-                    if (c.addItem) { state.inventory.push(c.addItem); addLog('🎁 獲得：' + c.addItem); }
+                    if (c.addItem) { state.inventory.push(c.addItem); addLog('🎁 ' + c.addItem); }
+                    if (c.novel && !state.novels.includes(c.novel)) { state.novels.push(c.novel); addLog('📖 ' + c.novel); }
                     if (c.reset) { resetGame(); return; }
                     updateStats(); renderScene(c.next);
                 };
