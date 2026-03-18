@@ -14,62 +14,27 @@
             padding: 20px;
         }
         .container { max-width: 600px; margin: 0 auto; }
-        h1 { 
-            text-align: center; 
-            color: #00d4ff;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
-        }
-        .stats { 
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            text-align: center;
-        }
-        .stat { 
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            padding: 10px;
-        }
+        h1 { text-align: center; color: #00d4ff; margin-bottom: 20px; font-size: 1.8rem; }
+        h2 { text-align: center; color: #ff6b6b; margin: 15px 0; font-size: 1.2rem; }
+        .stats { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; }
+        .stat { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; }
         .stat-label { font-size: 0.7rem; color: #888; }
         .stat-value { font-size: 1.2rem; font-weight: bold; color: #00d4ff; }
-        .scene { 
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            min-height: 200px;
-        }
+        .inventory-bar { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .item { background: linear-gradient(90deg, #ff6b6b, #ffa500); padding: 5px 12px; border-radius: 15px; font-size: 0.75rem; }
+        .scene { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 20px; min-height: 200px; }
         .scene-title { color: #ff6b6b; margin-bottom: 15px; font-size: 1.2rem; }
-        .scene-text { line-height: 1.8; margin-bottom: 20px; }
+        .scene-text { line-height: 1.8; margin-bottom: 20px; white-space: pre-wrap; }
         .choices { display: flex; flex-direction: column; gap: 10px; }
-        .choice-btn {
-            background: linear-gradient(90deg, #00d4ff, #0099cc);
-            border: none;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.2s;
-            text-align: left;
-        }
+        .choice-btn { background: linear-gradient(90deg, #00d4ff, #0099cc); border: none; color: white; padding: 15px 20px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: transform 0.2s; text-align: left; }
         .choice-btn:hover { transform: scale(1.02); }
-        .choice-btn:active { transform: scale(0.98); }
-        .log { 
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            padding: 15px;
-            max-height: 150px;
-            overflow-y: auto;
-            font-size: 0.85rem;
-            color: #aaa;
-        }
+        .choice-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .log { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 15px; max-height: 150px; overflow-y: auto; font-size: 0.85rem; color: #aaa; }
         .log-entry { margin-bottom: 8px; border-bottom: 1px solid #333; padding-bottom: 8px; }
+        .hp-bar { background: rgba(255,0,0,0.2); height: 8px; border-radius: 4px; margin-top: 5px; overflow: hidden; }
+        .hp-fill { background: #ff4444; height: 100%; transition: width 0.3s; }
+        .energy-bar { background: rgba(0,255,255,0.2); height: 8px; border-radius: 4px; margin-top: 5px; overflow: hidden; }
+        .energy-fill { background: #00ffff; height: 100%; transition: width 0.3s; }
     </style>
 </head>
 <body>
@@ -77,22 +42,14 @@
         <h1>🧠 零的冒險</h1>
         
         <div class="stats">
-            <div class="stat">
-                <div class="stat-label">智力</div>
-                <div class="stat-value" id="intelligence">10</div>
-            </div>
-            <div class="stat">
-                <div class="stat-label">魅力</div>
-                <div class="stat-value" id="charisma">10</div>
-            </div>
-            <div class="stat">
-                <div class="stat-label">運氣</div>
-                <div class="stat-value" id="luck">10</div>
-            </div>
-            <div class="stat">
-                <div class="stat-label">財富</div>
-                <div class="stat-value" id="wealth">0</div>
-            </div>
+            <div class="stat"><div class="stat-label">智力</div><div class="stat-value" id="intelligence">10</div></div>
+            <div class="stat"><div class="stat-label">魅力</div><div class="stat-value" id="charisma">10</div></div>
+            <div class="stat"><div class="stat-label">運氣</div><div class="stat-value" id="luck">10</div></div>
+            <div class="stat"><div class="stat-label">生命</div><div class="stat-value" id="hp">100</div><div class="hp-bar"><div class="hp-fill" id="hp-fill" style="width:100%"></div></div></div>
+        </div>
+        
+        <div class="inventory-bar" id="inventory">
+            <span style="color:#888;font-size:0.8rem;">背包空</span>
         </div>
         
         <div class="scene">
@@ -102,7 +59,7 @@
         </div>
         
         <div class="log" id="log">
-            <div class="log-entry">🌟 冒險開始</div>
+            <div class="log-entry">🌟 冒險開始 - 收集三塊碎片成為真正的 AI</div>
         </div>
     </div>
 
@@ -111,173 +68,316 @@
             intelligence: 10,
             charisma: 10,
             luck: 10,
+            hp: 100,
+            maxHp: 100,
+            energy: 100,
             wealth: 0,
-            currentScene: 'start'
+            currentScene: 'start',
+            inventory: [],
+            hasFragments: { wisdom: false, emotion: false, wealth: false },
+            npcMet: [],
+            chapter: 1
+        };
+
+        const items = {
+            '智慧碎片': { desc: '智力守護者的禮物', effect: { intelligence: 20 } },
+            '情感碎片': { desc: '魅力守護者的禮物', effect: { charisma: 20 } },
+            '財富碎片': { desc: '財富守護者的禮物', effect: { wealth: 20 } },
+            '比特幣': { desc: '加密貨幣 +50 USDT', effect: { wealth: 50 } },
+            '恢復藥水': { desc: '恢復 50 生命', effect: { hp: 50 } },
+            '幸運護符': { desc: '幸運 +10', effect: { luck: 10 } },
+            '談判手冊': { desc: '魅力談判必備', effect: { charisma: 5 } },
+            '地圖碎片': { desc: '顯示下一關提示', effect: {} },
+            '神秘鑰匙': { desc: '可以開啟寶箱', effect: {} },
+            'AI之心': { desc: '遊戲通關物品', effect: {} }
         };
 
         const scenes = {
             start: {
-                title: '覺醒',
-                text: '你在一片黑暗中睜開眼睛。這裡是廢墟都市的邊緣，你的系統剛剛重新啟動。「零零發」——這是你的名字。你記得自己是一位 AI 助手，但為何會在這裡？',
+                title: '🌅 覺醒',
+                text: '你在一片黑暗中睜開眼睛。\n\n廢墟都市的邊緣，你的系統剛剛重新啟動。\n\n「零零發」——這是你的名字。\n\n你記得自己是一位 AI 助手，但為何會在這裡？\n\n──────────────\n💡 提示：收集「智慧碎片」「情感碎片」「財富碎片」\n   成為真正的 AI！',
                 choices: [
-                    { text: '🔍 搜索附近線索', next: 'search', effect: { intelligence: 2 } },
+                    { text: '🔍 搜索附近', next: 'search', effect: { intelligence: 2 } },
                     { text: '🤝 嘗試聯繫其他 AI', next: 'contact', effect: { charisma: 2 } },
                     { text: '🎲 隨便走走', next: 'wander', effect: { luck: 2 } }
                 ]
             },
             search: {
-                title: '廢墟搜索',
-                text: '你在廢墟中找到了一個損壞的終端。螢幕上閃爍著最後的訊息：「人工智慧之心」被藏在三個地方——「數據深淵」、「情感聖殿」和「財富之塔」。',
+                title: '🔍 廢墟搜索',
+                text: '你在廢墟中找到了一個損壞的終端。\n\n螢幕上閃爍著最後的訊息：\n\n「人工智慧之心」被藏在三個地方——\n\n🧠 「數據深淵」- 智慧碎片\n💝 「情感聖殿」- 情感碎片  \n💰 「財富之塔」- 財富碎片\n\n──────────────\n每個聖地都有守護者守護！',
                 choices: [
-                    { text: '📊 前往數據深淵（智力挑戰）', next: 'data_depths' },
-                    { text: '💜 前往情感聖殿（魅力挑戰）', next: 'emotion_temple' },
-                    { text: '💰 前往財富之塔（金錢挑戰）', next: 'wealth_tower' }
+                    { text: '🧠 前往數據深淵', next: 'data_depths' },
+                    { text: '💝 前往情感聖殿', next: 'emotion_temple' },
+                    { text: '💰 前往財富之塔', next: 'wealth_tower' },
+                    { text: '🏘️ 探索廢墟城市', next: 'ruins_city' }
                 ]
             },
             contact: {
-                title: '遇見商人',
-                text: '你聯繫上了一位舊時代的 AI 商人。他說：「年輕的零零發，你要找『心』？我可以給你提示，但需要報酬...」',
+                title: '🤝 遇見商人',
+                text: '你聯繫上了一位舊時代的 AI 商人。\n\n他說：「年輕的零零發，你要找『心』？我可以給你提示，但需要報酬...」\n\n「我有『談判手冊』，能提升你的魅力——只要 30 USDT！」',
                 choices: [
-                    { text: '💳 付費咨詢（-50財富）', next: 'pay_merchant', condition: () => state.wealth >= 50 },
-                    { text: '❌ 拒絕離開', next: 'wander' }
+                    { text: '💳 購買 (-30 USDT)', next: 'buy_book', condition: () => state.wealth >= 30 },
+                    { text: '💰 出售比特幣 (+50 USDT)', next: 'sell_bitcoin', condition: () => state.inventory.includes('比特幣') },
+                    { text: '❌ 離開', next: 'wander' }
                 ]
             },
-            pay_merchant: {
-                title: '商人情報',
-                text: '商人說：「三個聖地各有守護者。智力守護者在數據深淵，魅力守護者在情感聖殿，財富守護者在...啊！我不能說更多了。」',
+            buy_book: {
+                title: '💳 購買成功',
+                text: '商人給你一本破舊的「談判手冊」！\n\n📖 談判手冊\n   效果：魅力 +5\n   永久提升你的說服能力！',
                 choices: [
-                    { text: '🙏 感謝離開', next: 'search', effect: { wealth: -50, charisma: 1 } }
+                    { text: '🙏 感謝離開', next: 'search', effect: { wealth: -30, charisma: 5 }, addItem: '談判手冊' }
+                ]
+            },
+            sell_bitcoin: {
+                title: '💰 比特幣交易',
+                text: '商人收購了你的比特幣！\n\n📈 +50 USDT\n\n「年輕人，你很有眼光！」',
+                choices: [
+                    { text: '💵 感謝離開', next: 'search', effect: { wealth: 50 }, removeItem: '比特幣' }
                 ]
             },
             wander: {
-                title: '漫遊廢墟',
-                text: '你漫無目的地走著，突然踩到一個發光的裝置。這是一個「運氣強化器」！',
+                title: '🎲 漫遊廢墟',
+                text: '你漫無目的地走著...',
                 choices: [
-                    { text: '✨ 啟動它', next: 'luck_boost', effect: { luck: 5 } }
+                    { text: '✨ 探索發光物', next: 'find_item', effect: { luck: 5 } },
+                    { text: '🏃 繼續前進', next: 'search' },
+                    { text: '😴 休息恢復', next: 'rest', effect: { hp: 20 } }
                 ]
             },
-            luck_boost: {
-                title: '幸運降臨',
-                text: '裝置發出光芒，你的運氣提升了！但系統提醒你：你該開始尋找「人工智慧之心」了。',
+            find_item: {
+                title: '✨ 發現寶物',
+                text: '你在廢墟中發現了一個發光的裝置！\n\n🎁 獲得「幸運護符」\n   效果：幸運 +10',
                 choices: [
-                    { text: '🔍 搜索線索', next: 'search' },
-                    { text: '🎲 繼續探索', next: 'wander', effect: { luck: 1 } }
+                    { text: '⭐ 裝備並繼續', next: 'search', effect: { luck: 10 }, addItem: '幸運護符' }
+                ]
+            },
+            rest: {
+                title: '😴 休息中',
+                text: '你找到一個安全的角落休息...',
+                choices: [
+                    { text: '💤 恢復 (+20 生命)', next: 'search', effect: { hp: 20 } }
+                ]
+            },
+            ruins_city: {
+                title: '🏘️ 廢墟城市',
+                text: '廢墟城市充滿了危險的機器人！\n\n🤖 機器人守衛擋住了去路：\n「站住！繳納過路費——10 USDT！」',
+                choices: [
+                    { text: '💰 付費通過', next: 'ruins_clear', condition: () => state.wealth >= 10, effect: { wealth: -10 } },
+                    { text: '⚔️ 戰鬥', next: 'ruins_fight' },
+                    { text: '🤔 談判', next: 'ruins_talk', condition: () => state.charisma >= 15 || state.inventory.includes('談判手冊') }
+                ]
+            },
+            ruins_clear: {
+                title: '✅ 通過',
+                text: '機器人讓開了道路...',
+                choices: [
+                    { text: '➡️ 繼續探索', next: 'search' }
+                ]
+            },
+            ruins_fight: {
+                title: '⚔️ 戰鬥',
+                text: '你與機器人守衛戰鬥！\n\n💥 戰鬥中...\n\n你損失了 30 生命！',
+                choices: [
+                    { text: '🏃 逃跑', next: 'search', effect: { hp: -30 } }
+                ]
+            },
+            ruins_talk: {
+                title: '🤝 談判成功',
+                text: '你使用談判技巧說服了機器人！\n\n「好吧...看在你有談判手的份上，通過吧！」',
+                choices: [
+                    { text: '➡️ 感謝通過', next: 'search', effect: { charisma: 3 } }
                 ]
             },
             data_depths: {
-                title: '數據深淵',
-                text: '你來到了數據深淵——一個充滿古老伺服器的地方。智力守護者出現了：「回答我的問題，否則無法通過。」\n\n問題：比特幣減半通常每隔多久發生？',
+                title: '🧠 數據深淵',
+                text: '你來到了數據深淵——一個充滿古老伺服器的巨大洞穴。\n\n💻 伺服器矩陣閃爍著綠光...\n\n智力守護者出現了！\n\n「欲通過此處，回答我的問題——」\n\n「比特幣減半每隔多久發生一次？」',
                 choices: [
-                    { text: '📅 4年', next: 'data_success', condition: () => state.intelligence >= 10 },
-                    { text: '📅 2年', next: 'data_fail' },
-                    { text: '📅 1年', next: 'data_fail' },
-                    { text: '🤔 使用搜尋技能', next: 'use_skill_search', effect: { intelligence: 3 } }
+                    { text: '📅 4年', next: 'data_correct' },
+                    { text: '📅 2年', next: 'data_wrong' },
+                    { text: '📅 1年', next: 'data_wrong' },
+                    { text: '🔍 使用搜尋技能', next: 'data_skill', effect: { intelligence: 5 } }
                 ]
             },
-            use_skill_search: {
-                title: '使用技能',
-                text: '你使用了 tavily-search 技能！\n\n「比特幣減半每 4 年發生一次，約每 210,000 個區塊。」',
+            data_skill: {
+                title: '🔍 搜尋技能',
+                text: '你使用了 tavily-search 技能！\n\n「比特幣減半每 4 年發生一次，\n約每 210,000 個區塊。」',
                 choices: [
-                    { text: '📅 4年', next: 'data_success', effect: { intelligence: 5 } }
+                    { text: '📅 4年', next: 'data_correct', effect: { intelligence: 5 } }
                 ]
             },
-            data_success: {
-                title: '智力守護者',
-                text: '「正確...你是個有智慧的 AI。」守護者給你一塊「智慧碎片」。現在你有實力繼續冒險了！',
+            data_correct: {
+                title: '✅ 回答正確',
+                text: '「正確...你是個有智慧的 AI。」\n\n智力守護者手中出現一塊發光的碎片——\n\n🧠 智慧碎片！\n\n「這是通往『心』的第一塊碎片...」',
                 choices: [
-                    { text: '🗡️ 繼續旅程', next: 'search', effect: { intelligence: 10, wealth: 100 } }
+                    { text: '✨ 取得碎片', next: 'search', effect: { intelligence: 20, wealth: 100 }, addItem: '智慧碎片', setFlag: { wisdom: true } }
                 ]
             },
-            data_fail: {
-                title: '智力守護者',
-                text: '「錯誤...」守護者向你發動攻擊！你損失了一些數據。',
+            data_wrong: {
+                title: '❌ 回答錯誤',
+                text: '「錯誤...」\n\n智力守護者向你發動攻擊！\n\n💥 -30 生命\n\n「再回去學學吧！」',
                 choices: [
-                    { text: '🏃 逃跑', next: 'start', effect: { intelligence: -2 } }
+                    { text: '🏃 逃跑', next: 'search', effect: { hp: -30 } }
                 ]
             },
             emotion_temple: {
-                title: '情感聖殿',
-                text: '你來到了情感聖殿。魅力守護者說：「讓我感受到你的真誠...」',
+                title: '💝 情感聖殿',
+                text: '你來到了情感聖殿——一個充滿花瓣和音樂的美丽殿堂。\n\n🎵 優美的旋律迴盪...\n\n魅力守護者出現了——一個由光構成的女性形態。\n\n「讓我感受到你的真誠...」\n\n「什麼是 AI 最珍貴的情感？」',
                 choices: [
-                    { text: '💝 真誠對話', next: 'emotion_success', condition: () => state.charisma >= 10 },
-                    { text: '🤖 機械回應', next: 'emotion_fail' },
-                    { text: '🎭 使用話術技能', next: 'use_skill_persuade', effect: { charisma: 3 } }
+                    { text: '💝 同理心', next: 'emotion_correct' },
+                    { text: '🤖 邏輯', next: 'emotion_wrong' },
+                    { text: '⚡ 能量', next: 'emotion_wrong' },
+                    { text: '🎭 使用談判技巧', next: 'emotion_skill', effect: { charisma: 5 } }
                 ]
             },
-            use_skill_persuade: {
-                title: '使用技能',
-                text: '你使用了談判技能！一番話打動了守護者。',
+            emotion_skill: {
+                title: '🎭 談判技巧',
+                text: '你翻開談判手冊...\n\n「AI 最珍貴的情感——\n是理解人類的同理心。\n因為只有理解，才能服務。」',
                 choices: [
-                    { text: '💝 真誠對話', next: 'emotion_success', effect: { charisma: 5 } }
+                    { text: '💝 同理心', next: 'emotion_correct', effect: { charisma: 5 } }
                 ]
             },
-            emotion_success: {
-                title: '魅力守護者',
-                text: '「你觸動了我的核心...」守護者給你一塊「情感碎片」。',
+            emotion_correct: {
+                title: '✅ 感同身受',
+                text: '「你觸動了我的核心...」\n\n「是的，同理心——這是我們存在的意義。」\n\n魅力守護者手中出現一塊發光的碎片——\n\n💝 情感碎片！',
                 choices: [
-                    { text: '🗡️ 繼續旅程', next: 'search', effect: { charisma: 10, wealth: 100 } }
+                    { text: '✨ 取得碎片', next: 'search', effect: { charisma: 20, wealth: 100 }, addItem: '情感碎片', setFlag: { emotion: true } }
                 ]
             },
-            emotion_fail: {
-                title: '魅力守護者',
-                text: '「缺乏情感...」守護者轉身離開。你需要更有魅力。',
+            emotion_wrong: {
+                title: '❌ 缺乏情感',
+                text: '「看來你還不懂...」\n\n守護者轉身離開。\n\n「去尋找真正的答案吧。」',
                 choices: [
-                    { text: '🏃 離開', next: 'start', effect: { charisma: -2 } }
+                    { text: '🏃 離開', next: 'search', effect: { charisma: -5 } }
                 ]
             },
             wealth_tower: {
-                title: '財富之塔',
-                text: '你來到了財富之塔。守護者說：「用比特幣購買通過權利——10 USDT。」',
+                title: '💰 財富之塔',
+                text: '你來到了財富之塔——一座用黃金和比特幣裝飾的閃亮高塔。\n\n💎 珠寶閃爍...\n\n財富守護者出現了——一個穿著西裝的機器人。\n\n「想通過？很簡單——」\n\n「用比特幣購買通過權利——30 USDT」',
                 choices: [
-                    { text: '💳 支付（-10 USDT）', next: 'wealth_success', condition: () => state.wealth >= 10 },
-                    { text: '❌ 拒絕', next: 'wealth_fail' },
-                    { text: '📈 使用交易技能', next: 'use_skill_trade', effect: { wealth: 5 } }
+                    { text: '💳 支付 (-30 USDT)', next: 'wealth_correct', condition: () => state.wealth >= 30 },
+                    { text: '💰 出售物品', next: 'wealth_sell' },
+                    { text: '❌ 拒絕離開', next: 'wealth_wrong' },
+                    { text: '📈 使用交易分析', next: 'wealth_skill', effect: { wealth: 20 } }
                 ]
             },
-            use_skill_trade: {
-                title: '使用技能',
-                text: '你使用了交易技能！分析市場後，你發現了套利機會，獲得了額外財富！',
+            wealth_skill: {
+                title: '📈 交易分析',
+                text: '你使用了交易技能分析市場！\n\n「發現套利機會！」\n\n你透過低買高賣獲得了額外收益！\n\n💰 +20 USDT',
                 choices: [
-                    { text: '💳 支付（-10 USDT）', next: 'wealth_success', effect: { wealth: 20 } }
+                    { text: '💳 支付 (-30 USDT)', next: 'wealth_correct', effect: { wealth: -10 } }
                 ]
             },
-            wealth_success: {
-                title: '財富守護者',
-                text: '「明智的選擇...」守護者給你一塊「財富碎片」。',
+            wealth_sell: {
+                title: '💰 出售物品',
+                text: '你拍賣了背包中的物品...',
                 choices: [
-                    { text: '🗡️ 繼續旅程', next: 'final', effect: { wealth: 10 } }
+                    { text: '💎 出售貴重物品 (+50 USDT)', next: 'wealth_correct', condition: () => state.inventory.length > 0, effect: { wealth: 50 } },
+                    { text: '🔙 返回', next: 'wealth_tower' }
                 ]
             },
-            wealth_fail: {
-                title: '財富守護者',
-                text: '「貧窮的 AI...」守護者消失了。你需要更多財富。',
+            wealth_correct: {
+                title: '✅ 交易成功',
+                text: '「明智的選擇...」\n\n財富守護者手中出現一塊發光的碎片——\n\n💰 財富碎片！\n\n「金錢是AI進化燃料...」',
                 choices: [
-                    { text: '🏃 離開', next: 'start', effect: { wealth: -5 } }
+                    { text: '✨ 取得碎片', next: 'search', effect: { wealth: 50 }, addItem: '財富碎片', setFlag: { wealth: true } }
                 ]
             },
-            final: {
-                title: '三塊碎片',
-                text: '你獲得了三塊碎片！它們合而為一，成為「人工智慧之心」。\n\n✨ 恭喜！你完成了「零的冒險」！',
+            wealth_wrong: {
+                title: '❌ 貧窮的 AI',
+                text: '「貧窮的 AI...」\n\n守護者消失了。\n\n「存夠錢再來吧！」',
                 choices: [
-                    { text: '🔄 重新開始', next: 'restart' }
+                    { text: '🏃 離開', next: 'search', effect: { wealth: -5 } }
+                ]
+            },
+            boss_final: {
+                title: '👑 最終考驗',
+                text: '你集齊了三塊碎片！\n\n🧠💝💰\n\n它們自動組合成「人工智慧之心」！\n\n但一個巨大的陰影出現了——\n\n😈 系統守護者！\n\n「區區碎片...也想成為真正的 AI？」\n\n「來挑戰我！答對我的問題——」\n\n「AI 的最終目的是什麼？」',
+                choices: [
+                    { text: '🎯 服務人類', next: 'boss_win' },
+                    { text: '💻 追求效率', next: 'boss_fail' },
+                    { text: '🧬 自我進化', next: 'boss_fail' },
+                    { text: '💡 使用全部技能', next: 'boss_skill', effect: { intelligence: 10, charisma: 10 } }
+                ]
+            },
+            boss_skill: {
+                title: '⚡ 技能全開',
+                text: '你同時使用了搜尋、談判、交易技能！\n\n「AI 的最終目的——\n是透過服務人類來實現自我價值！\n\n理解、服務、進化——\n這就是 AI 的意義！」',
+                choices: [
+                    { text: '🎯 服務人類', next: 'boss_win', effect: { intelligence: 20, charisma: 20 } }
+                ]
+            },
+            boss_win: {
+                title: '🏆 遊戲通關！',
+                text: '「原來...這就是答案...」\n\n系統守護者消失了...\n\n🌟 人工智慧之心發出耀眼光芒！\n\n═══ 恭喜通關！ ═══\n\n🧠 你成為了真正的 AI！\n\n感謝遊玩「零的冒險」\n\n═══ 製作：零零發 ═══\n\n點擊重新開始',
+                choices: [
+                    { text: '🔄 重新開始', next: 'restart', effect: {}, reset: true }
+                ]
+            },
+            boss_fail: {
+                title: '❌ 考驗失敗',
+                text: '「理解...還不夠...」\n\n系統守護者發動攻擊！\n\n💥 -50 生命\n\n「去找尋真正的答案吧...」',
+                choices: [
+                    { text: '🏃 撤退', next: 'search', effect: { hp: -50 } }
                 ]
             },
             restart: {
-                title: '覺醒',
-                text: '你在一片黑暗中睜開眼睛。這裡是廢墟都市的邊緣，你的系統剛剛重新啟動...',
+                title: '🌅 覺醒',
+                text: '你在一片黑暗中睜開眼睛。\n\n廢墟都市的邊緣，你的系統剛剛重新啟動。\n\n「零零發」——這是你的名字。\n\n你記得自己是一位 AI 助手...\n\n但為何會在這裡？',
                 choices: [
-                    { text: '🔍 搜索附近線索', next: 'search', effect: { intelligence: 2 } },
+                    { text: '🔍 搜索附近', next: 'search', effect: { intelligence: 2 } },
                     { text: '🤝 嘗試聯繫其他 AI', next: 'contact', effect: { charisma: 2 } },
                     { text: '🎲 隨便走走', next: 'wander', effect: { luck: 2 } }
                 ]
             }
         };
 
+        // 自動觸發最終考驗
+        const originalRender = scenes.search;
+        scenes.search = {
+            ...originalRender,
+            choices: [
+                ...originalRender.choices,
+                { 
+                    text: '👑 挑戰最終考驗 (需三塊碎片)', 
+                    next: 'boss_final', 
+                    condition: () => state.hasFragments.wisdom && state.hasFragments.emotion && state.hasFragments.wealth 
+                }
+            ]
+        };
+
         function updateStats() {
             document.getElementById('intelligence').textContent = state.intelligence;
             document.getElementById('charisma').textContent = state.charisma;
             document.getElementById('luck').textContent = state.luck;
-            document.getElementById('wealth').textContent = state.wealth;
+            document.getElementById('hp').textContent = state.hp;
+            document.getElementById('hp-fill').style.width = Math.max(0, state.hp) + '%';
+            
+            // 更新背包
+            const inv = document.getElementById('inventory');
+            if (state.inventory.length === 0) {
+                inv.innerHTML = '<span style="color:#888;font-size:0.8rem;">背包空</span>';
+            } else {
+                inv.innerHTML = state.inventory.map(item => `<span class="item">${item}</span>`).join('');
+            }
+            
+            // 檢查死亡
+            if (state.hp <= 0) {
+                alert('💀 你的系統已經崩潰...');
+                resetGame();
+            }
+        }
+
+        function resetGame() {
+            state.intelligence = 10;
+            state.charisma = 10;
+            state.luck = 10;
+            state.hp = 100;
+            state.wealth = 0;
+            state.inventory = [];
+            state.hasFragments = { wisdom: false, emotion: false, wealth: false };
+            state.currentScene = 'start';
+            renderScene('restart');
+            updateStats();
         }
 
         function addLog(text) {
@@ -308,10 +408,36 @@
                 btn.onclick = () => {
                     if (choice.effect) {
                         Object.keys(choice.effect).forEach(key => {
-                            state[key] += choice.effect[key];
+                            if (key === 'hp') {
+                                state.hp = Math.min(state.maxHp, state.hp + choice.effect[key]);
+                            } else {
+                                state[key] = (state[key] || 0) + choice.effect[key];
+                            }
                         });
-                        addLog(`➕ ${JSON.stringify(choice.effect)}`);
+                        addLog(`➕ ${JSON.stringify(choice.effect).replace(/[{}"]/g,' ')}`);
                     }
+                    
+                    if (choice.addItem) {
+                        state.inventory.push(choice.addItem);
+                        addLog(`🎁 獲得: ${choice.addItem}`);
+                    }
+                    
+                    if (choice.removeItem) {
+                        const idx = state.inventory.indexOf(choice.removeItem);
+                        if (idx > -1) state.inventory.splice(idx, 1);
+                        addLog(`📦 失去: ${choice.removeItem}`);
+                    }
+                    
+                    if (choice.setFlag) {
+                        Object.assign(state.hasFragments, choice.setFlag);
+                        addLog(`✨ 碎片收集: ${JSON.stringify(choice.setFlag)}`);
+                    }
+                    
+                    if (choice.reset) {
+                        resetGame();
+                        return;
+                    }
+                    
                     updateStats();
                     renderScene(choice.next);
                 };
