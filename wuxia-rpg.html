@@ -1325,15 +1325,16 @@ function doAtk(skillId){
   combatBusy=true;
   const b = getEquipBonus();  // 重新取得裝備加成
   const es=effectiveStats();
+  const lv=player.level||1;
   let dmg=0,heal=0,stun=0,selfHurt=0;const realmBonus=player.realmLevel?Math.floor(player.realmLevel*1.5):0;
   if(!sk){
-    dmg=Math.max(1,Math.floor((es.str+es.atk)*(0.8+player.level*0.03)+Math.random()*(3+player.level))-enemy.def+realmBonus);
+    dmg=Math.max(1,Math.floor((es.str+es.atk)*(0.8+lv*0.03)+Math.random()*(3+lv))-enemy.def+realmBonus);
     player.mp = Math.min(player.maxMp + (b.mp || 0), player.mp + 8);  // 修正：使用 b.mp
     addLog(`你發動普通攻擊，造成 ${dmg} 傷害，恢復8內力。`);
   }else if(sk.effect.type==='atk'){
     const skLv=player.skillLevels?.[skillId]||1;
-    const lvFactor=(0.6+player.level*0.04)*(1+(skLv-1)*0.2);
-    const statBonus=Math.floor(es.str*0.35+es.qi*0.22+es.atk*0.5+player.level*sk.cost*1.2);
+    const lvFactor=(0.6+lv*0.04)*(1+(skLv-1)*0.2);
+    const statBonus=Math.floor(es.str*0.35+es.qi*0.22+es.atk*0.5+lv*sk.cost*1.2);
     const base=Math.floor(sk.effect.val*lvFactor)+statBonus;
     const crit=Math.random()*100<(es.crit||0);
     dmg=sk.effect.pierce?Math.max(1,base):Math.max(1,base-enemy.def+realmBonus);
@@ -1344,13 +1345,13 @@ function doAtk(skillId){
     addLog('你施展【'+sk.name+' Lv.'+skLv+'】'+(sk.effect.tag?'（'+sk.effect.tag+'）':'')+`，造成 ${dmg} 傷害！`);
   }else if(sk.effect.type==='heal'){
     const skLv=player.skillLevels?.[skillId]||1;
-    heal=Math.floor(sk.effect.val*(1+(skLv-1)*0.2)*0.5+es.qi*0.5+player.level*2);
+    heal=Math.floor(sk.effect.val*(1+(skLv-1)*0.2)*0.5+es.qi*0.5+lv*2);
     if(sk.effect.regen){player.mp=Math.min(player.maxMp,player.mp+Math.floor(player.maxMp*0.18));addLog('【'+sk.name+'】自然恢復內力！');}
     addLog(`你施展【${sk.name} Lv.${skLv}】，恢復 ${heal} 生命！`);
   }else if(sk.effect.type==='drain'){
     const skLv=player.skillLevels?.[skillId]||1;
-    const lvFactor=(0.6+player.level*0.04)*(1+(skLv-1)*0.2);
-    const statBonus=Math.floor(es.qi*0.4+es.str*0.2+player.level*sk.cost*1.0);
+    const lvFactor=(0.6+lv*0.04)*(1+(skLv-1)*0.2);
+    const statBonus=Math.floor(es.qi*0.4+es.str*0.2+lv*sk.cost*1.0);
     dmg=Math.max(1,Math.floor(sk.effect.val*lvFactor)+statBonus-enemy.def+realmBonus);
     heal=Math.floor(dmg*0.5);
     addLog(`你施展【${sk.name} Lv.${skLv}】，吸取 ${heal} 生命，造成 ${dmg} 傷害！`);
@@ -1363,7 +1364,7 @@ function doAtk(skillId){
   player.hp=Math.max(1,Math.min((player.maxHp||100)+((b||{}).hp||0),((player.hp||1)+((heal||0)-(selfHurt||0)))));
   if(stun>0)enemy.stunned=stun;
   if(enemy.hp<=0){
-    const expG=enemy.exp+player.level*5;
+    const expG=enemy.exp+lv*5;
     const goldG=player.birth.id==='merchant'?Math.floor(enemy.gold*1.5):enemy.gold;
     addLog(`💀 【${enemy.name}】被擊倒！`);
     addLog(`🎁 獲得 ${expG} 經驗、${goldG} 兩銀子！`);
