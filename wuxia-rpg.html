@@ -5,819 +5,142 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>武俠傳說</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bg:#080603;--paper:#f0e2c0;--dim:rgba(240,226,192,0.55);
-    --border:rgba(180,140,30,0.28);--gold:#c9940d;--goldl:#f0b820;
-    --red:#b5241c;--font:'Noto Serif TC','KaiTi','SimSun',serif;
-  }
-  body{background:var(--bg);font-family:var(--font);color:var(--paper);min-height:100vh}
-  .screen{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:20px}
-  .screen.active{display:flex}
-  h1{font-size:clamp(52px,9vw,90px);letter-spacing:10px;font-weight:900;
-    text-shadow:0 0 40px rgba(180,100,15,.4),2px 3px 0 rgba(0,0,0,.8)}
-  h2{color:var(--gold);letter-spacing:6px;text-align:center;margin-bottom:6px}
-  .decor{display:flex;align-items:center;gap:8px;margin:8px 0}
-  .decor::before,.decor::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,var(--border))}
-  .decor::after{background:linear-gradient(to left,transparent,var(--border))}
-  .decor span{color:var(--gold);font-size:10px}
-  .btn-primary{background:var(--red);border:none;color:#fff;padding:11px 30px;border-radius:5px;
-    cursor:pointer;font-family:var(--font);font-size:14px;letter-spacing:3px;font-weight:bold;
-    box-shadow:0 3px 14px rgba(181,36,28,.55);transition:filter .18s}
-  .btn-primary:hover{filter:brightness(1.2)}
-  .btn-gold{background:transparent;border:1px solid var(--gold);color:var(--goldl);padding:10px 22px;
-    border-radius:5px;cursor:pointer;font-family:var(--font);font-size:13px;letter-spacing:2px;transition:background .2s}
-  .btn-gold:hover{background:rgba(180,140,20,.15)}
-  .btn-dim{background:transparent;border:1px solid var(--border);color:var(--dim);padding:7px 16px;
-    border-radius:4px;cursor:pointer;font-family:var(--font);font-size:11px;letter-spacing:1px}
-  .btn-dim:hover{border-color:var(--gold)}
-  .card{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:18px}
-  .card.selected{background:rgba(180,100,20,.22);border:2px solid var(--gold);box-shadow:0 0 22px rgba(180,140,20,.28)}
-  .card:hover{cursor:pointer;filter:brightness(1.2)}
-  .hpbar-wrap{background:rgba(0,0,0,.5);border-radius:3px;height:8px;overflow:hidden;border:1px solid var(--border)}
-  .hpbar{height:100%;transition:width .35s}
-  .tag{background:rgba(0,0,0,.38);border-radius:4px;padding:4px 10px;font-size:11px;color:var(--paper);
-    border:1px solid var(--border);display:inline-block}
-  .notice{position:fixed;top:16px;left:50%;transform:translateX(-50%);
-    background:rgba(12,8,2,.98);border-radius:6px;padding:10px 28px;
-    letter-spacing:2px;font-size:13px;z-index:9999;pointer-events:none;
-    white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.7);transition:opacity .3s}
-  input[type=text],input[type=password]{
-    background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--paper);
-    padding:10px 14px;border-radius:5px;font-family:var(--font);font-size:13px;
-    width:100%;outline:none;letter-spacing:1px}
-  input:focus{border-color:var(--gold)}
-  .log-area{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;
-    padding:12px;height:220px;overflow-y:auto;font-size:12px;line-height:1.9;letter-spacing:.5px}
-  .log-area p{margin:0;border-bottom:1px solid rgba(255,255,255,.04);padding:2px 0}
-  .spinner{display:inline-block;width:22px;height:22px;border:2px solid var(--border);
-    border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  ::-webkit-scrollbar{width:4px}
-  ::-webkit-scrollbar-track{background:transparent}
-  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
-  .grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
-  .stat-box{background:rgba(0,0,0,.38);border-radius:4px;padding:5px 6px;text-align:center}
-  .stat-box .lbl{color:var(--dim);font-size:9px}
-  .stat-box .val{font-weight:bold;font-size:13px}
-  .sidebar{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;
-    padding:16px;min-width:200px;flex-shrink:0}
-  .main-layout{display:flex;gap:18px;width:100%;max-width:900px;flex-wrap:wrap}
-  .main-content{flex:1;min-width:260px}
-  .action-card{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;
-    padding:18px 14px;cursor:pointer;text-align:center;transition:filter .2s;position:relative}
-  .action-card:hover{filter:brightness(1.45)}
-  .skill-branch{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px}
-  .skill-node{border:1px solid var(--border);border-radius:6px;padding:10px;cursor:pointer;transition:background .2s;margin-bottom:8px}
-  .skill-node:hover{background:rgba(180,140,20,.1)}
-  .skill-node.learned{background:rgba(40,120,40,.2);border-color:rgba(60,160,60,.5)}
-  .skill-node.locked{opacity:.45;cursor:not-allowed}
-  .choice-btn{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:6px;
-    padding:13px 16px;cursor:pointer;transition:background .2s;margin-bottom:9px;width:100%;
-    text-align:left;font-family:var(--font);color:var(--paper);font-size:14px;letter-spacing:1px}
-  .choice-btn:hover{background:rgba(180,140,20,.1)}
-  .combat-enemy{background:rgba(100,0,0,.2);border:1px solid rgba(180,40,40,.3);border-radius:8px;padding:16px;text-align:center}
-  .combat-skill-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-  .combat-skill-btn{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:5px;
-    padding:8px 12px;cursor:pointer;font-family:var(--font);font-size:11px;color:var(--paper);
-    transition:background .2s;letter-spacing:1px}
-  .combat-skill-btn:hover:not(:disabled){background:rgba(180,140,20,.15);border-color:var(--gold)}
-  .combat-skill-btn:disabled{opacity:.4;cursor:not-allowed}
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#080603;--paper:#f0e2c0;--dim:rgba(240,226,192,0.55);--border:rgba(180,140,30,0.28);--gold:#c9940d;--goldl:#f0b820;--red:#b5241c;--font:'Noto Serif TC','KaiTi','SimSun',serif}
+body{background:var(--bg);font-family:var(--font);color:var(--paper);min-height:100vh}
+.screen{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.screen.active{display:flex}
+h1{font-size:clamp(52px,9vw,90px);letter-spacing:10px;font-weight:900;text-shadow:0 0 40px rgba(180,100,15,.4),2px 3px 0 rgba(0,0,0,.8)}
+h2{color:var(--gold);letter-spacing:6px;text-align:center;margin-bottom:6px}
+.decor{display:flex;align-items:center;gap:8px;margin:8px 0}
+.decor::before,.decor::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,var(--border))}
+.decor::after{background:linear-gradient(to left,transparent,var(--border))}
+.decor span{color:var(--gold);font-size:10px}
+.btn-primary{background:var(--red);border:none;color:#fff;padding:11px 30px;border-radius:5px;cursor:pointer;font-family:var(--font);font-size:14px;letter-spacing:3px;font-weight:bold;box-shadow:0 3px 14px rgba(181,36,28,.55)}
+.btn-primary:hover{filter:brightness(1.2)}
+.btn-dim{background:transparent;border:1px solid var(--border);color:var(--dim);padding:7px 16px;border-radius:4px;cursor:pointer;font-family:var(--font);font-size:11px;letter-spacing:1px}
+.btn-dim:hover{border-color:var(--gold)}
+.card{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:18px}
+.card.selected{background:rgba(180,100,20,.22);border:2px solid var(--gold);box-shadow:0 0 22px rgba(180,140,20,.28)}
+.card:hover{cursor:pointer;filter:brightness(1.2)}
+.hpbar-wrap{background:rgba(0,0,0,.5);border-radius:3px;height:8px;overflow:hidden;border:1px solid var(--border)}
+.hpbar{height:100%;transition:width .35s}
+.tag{background:rgba(0,0,0,.38);border-radius:4px;padding:4px 10px;font-size:11px;color:var(--paper);border:1px solid var(--border);display:inline-block}
+.notice{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(12,8,2,.98);border-radius:6px;padding:10px 28px;letter-spacing:2px;font-size:13px;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.7)}
+input[type=text],input[type=password]{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--paper);padding:10px 14px;border-radius:5px;font-family:var(--font);font-size:13px;width:100%;outline:none}
+input:focus{border-color:var(--gold)}
+.log-area{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:12px;height:220px;overflow-y:auto;font-size:12px;line-height:1.9}
+.log-area p{margin:0;border-bottom:1px solid rgba(255,255,255,.04);padding:2px 0}
+.spinner{display:inline-block;width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.stat-box{background:rgba(0,0,0,.38);border-radius:4px;padding:5px 6px;text-align:center}
+.stat-box .lbl{color:var(--dim);font-size:9px}
+.stat-box .val{font-weight:bold;font-size:13px}
+.sidebar{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:16px;min-width:200px}
+.main-layout{display:flex;gap:18px;width:100%;max-width:900px;flex-wrap:wrap}
+.main-content{flex:1;min-width:260px}
+.action-card{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:18px 14px;cursor:pointer;text-align:center;transition:filter .2s;position:relative}
+.action-card:hover{filter:brightness(1.45)}
+.skill-branch{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px}
+.skill-node{border:1px solid var(--border);border-radius:6px;padding:10px;cursor:pointer;transition:background .2s;margin-bottom:8px}
+.skill-node:hover{background:rgba(180,140,20,.1)}
+.skill-node.learned{background:rgba(40,120,40,.2);border-color:rgba(60,160,60,.5)}
+.skill-node.locked{opacity:.45;cursor:not-allowed}
+.choice-btn{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:6px;padding:13px 16px;cursor:pointer;transition:background .2s;margin-bottom:9px;width:100%;text-align:left;font-family:var(--font);color:var(--paper);font-size:14px}
+.choice-btn:hover{background:rgba(180,140,20,.1)}
+.combat-enemy{background:rgba(100,0,0,.2);border:1px solid rgba(180,40,40,.3);border-radius:8px;padding:16px;text-align:center}
+.combat-skill-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.combat-skill-btn{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:5px;padding:8px 12px;cursor:pointer;font-family:var(--font);font-size:11px;color:var(--paper);transition:background .2s}
+.combat-skill-btn:hover:not(:disabled){background:rgba(180,140,20,.15);border-color:var(--gold)}
+.combat-skill-btn:disabled{opacity:.4;cursor:not-allowed}
 </style>
 </head>
 <body>
-
-<!-- NOTICE -->
 <div class="notice" id="notice" style="display:none"></div>
-
-<!-- ═══ TITLE ═══ -->
 <div class="screen active" id="s-title" style="text-align:center">
-  <div style="color:var(--gold);font-size:11px;letter-spacing:8px;opacity:.6;margin-bottom:14px">══ 大宋年間 ══</div>
-  <h1 style="color:var(--paper)">武俠傳說</h1>
-  <div style="color:var(--red);font-size:clamp(14px,2.5vw,20px);letter-spacing:6px;margin:10px 0">江湖 · 武學 · 傳奇</div>
-  <div class="decor"><span>◆</span></div>
-  <p style="color:var(--dim);font-size:13px;letter-spacing:2px;line-height:2.1;max-width:340px;margin:12px auto">
-    九陰真經再現人間<br>得此經者，可稱霸武林<br>你的江湖，由你書寫
-  </p>
-  <div class="decor"><span>◆</span></div>
-  <div style="margin-top:28px">
-    <button class="btn-primary" onclick="showScreen('s-apikey')">踏入江湖</button>
-  </div>
-  <div style="margin-top:14px;color:rgba(200,180,140,.2);font-size:10px;letter-spacing:3px">AI 動態劇情 · 回合制戰鬥 · 武學修煉</div>
+<div style="color:var(--gold);font-size:11px;letter-spacing:8px;opacity:.6;margin-bottom:14px">══ 大宋年間 ══</div>
+<h1 style="color:var(--paper)">武俠傳說</h1>
+<div style="color:var(--red);font-size:clamp(14px,2.5vw,20px);letter-spacing:6px;margin:10px 0">江湖 · 武學 · 傳奇</div>
+<div class="decor"><span>◆</span></div>
+<p style="color:var(--dim);font-size:13px;letter-spacing:2px;line-height:2.1;max-width:340px;margin:12px auto">九陰真經再現人間<br>得此經者，可稱霸武林<br>你的江湖，由你書寫</p>
+<div class="decor"><span>◆</span></div>
+<div style="margin-top:28px"><button class="btn-primary" onclick="showScreen('s-apikey')">踏入江湖</button></div>
+<div style="margin-top:14px;color:rgba(200,180,140,.2);font-size:10px;letter-spacing:3px">AI 動態劇情 · 回合制戰鬥 · 武學修煉</div>
 </div>
-
-<!-- ═══ API KEY ═══ -->
 <div class="screen" id="s-apikey" style="text-align:center">
-  <div style="max-width:420px;width:100%">
-    <div style="font-size:36px;margin-bottom:12px">🗝️</div>
-    <h2>輸入 MiniMax API Key</h2>
-    <div class="decor"><span>◆</span></div>
-    <p style="color:var(--dim);font-size:12px;letter-spacing:1.5px;line-height:1.9;margin:12px 0">
-      AI 動態劇情需要 MiniMax M2.5 API Key<br>
-      Key 僅儲存於本機記憶體，不會上傳
-    </p>
-    <div style="margin:20px 0">
-      <input type="password" id="api-key-input" placeholder="輸入你的 MiniMax API Key..." style="margin-bottom:10px">
-      <input type="text" id="group-id-input" placeholder="Group ID（可選，部分帳號需要）">
-    </div>
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button class="btn-primary" onclick="saveApiKey()">確認，進入江湖 →</button>
-      <button class="btn-dim" onclick="skipApiKey()">跳過（無AI劇情）</button>
-    </div>
-    <p style="color:rgba(200,180,140,.25);font-size:10px;margin-top:16px;letter-spacing:1px">
-      前往 platform.minimaxi.com 取得 API Key
-    </p>
-  </div>
+<div style="max-width:420px;width:100%">
+<div style="font-size:36px;margin-bottom:12px">🗝️</div>
+<h2>輸入 MiniMax API Key</h2>
+<div class="decor"><span>◆</span></div>
+<p style="color:var(--dim);font-size:12px;letter-spacing:1.5px;line-height:1.9;margin:12px 0">AI 動態劇情需要 MiniMax M2.5 API Key<br>Key 僅儲存於本機記憶體，不會上傳</p>
+<div style="margin:20px 0"><input type="password" id="api-key-input" placeholder="輸入你的 MiniMax API Key..." style="margin-bottom:10px"><input type="text" id="group-id-input" placeholder="Group ID（可選）"></div>
+<div style="display:flex;gap:10px;justify-content:center"><button class="btn-primary" onclick="saveApiKey()">確認，進入江湖 →</button><button class="btn-dim" onclick="skipApiKey()">跳過</button></div>
 </div>
-
-<!-- ═══ BIRTH ═══ -->
+</div>
 <div class="screen" id="s-birth">
-  <div style="max-width:900px;width:100%">
-    <h2>選擇出身</h2>
-    <p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin-bottom:14px">出身決定天賦與初始屬性</p>
-    <div class="decor"><span>◆</span></div>
-    <div class="grid4" style="margin-top:20px" id="birth-cards"></div>
-    <div style="text-align:center;margin-top:22px">
-      <button class="btn-primary" id="birth-confirm" style="display:none" onclick="showScreen('s-faction')">確定出身，選擇門派 →</button>
-    </div>
-  </div>
+<div style="max-width:900px;width:100%">
+<h2>選擇出身</h2>
+<p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin-bottom:14px">出身決定天賦與初始屬性</p>
+<div class="decor"><span>◆</span></div>
+<div class="grid4" style="margin-top:20px" id="birth-cards"></div>
+<div style="text-align:center;margin-top:22px"><button class="btn-primary" id="birth-confirm" style="display:none" onclick="showFactionScreen()">確定出身，選擇門派 →</button></div>
 </div>
-
-<!-- ═══ FACTION ═══ -->
+</div>
 <div class="screen" id="s-faction">
-  <div style="max-width:980px;width:100%">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-      <button class="btn-dim" onclick="showScreen('s-birth')">← 返回</button>
-      <h2 style="flex:1">拜入門派</h2>
-      <div style="width:60px"></div>
-    </div>
-    <p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin-bottom:14px">門派決定起始武學與修煉方向</p>
-    <div class="decor"><span>◆</span></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:20px" id="faction-cards"></div>
-    <div style="text-align:center;margin-top:22px">
-      <button class="btn-primary" id="faction-confirm" style="display:none" onclick="startGame()">踏入江湖，開始冒險 ✦</button>
-    </div>
-  </div>
+<div style="max-width:980px;width:100%">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><button class="btn-dim" onclick="showScreen('s-birth')">← 返回</button><h2 style="flex:1">拜入門派</h2><div style="width:60px"></div></div>
+<p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin-bottom:14px">門派決定起始武學與修煉方向</p>
+<div class="decor"><span>◆</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:20px" id="faction-cards"></div>
+<div style="text-align:center;margin-top:22px"><button class="btn-primary" id="faction-confirm" style="display:none" onclick="startGame()">踏入江湖，開始冒險 ✦</button></div>
 </div>
-
-<!-- ═══ MAIN ═══ -->
+</div>
 <div class="screen" id="s-main" style="align-items:flex-start;padding:24px">
-  <div style="max-width:900px;width:100%;margin:0 auto">
-    <h2 style="margin-bottom:4px">⚔️ 江湖天地</h2>
-    <div class="decor"><span>◆</span></div>
-    <div class="main-layout" style="margin-top:16px">
-      <div class="sidebar" id="sidebar-stats"></div>
-      <div class="main-content">
-        <div class="grid2" style="margin-bottom:14px" id="action-grid"></div>
-        <div class="card">
-          <div style="color:var(--gold);font-size:12px;letter-spacing:2px;margin-bottom:8px">◆ 已習得功法</div>
-          <div id="learned-skills-display" style="color:var(--dim);font-size:11px;text-align:center;padding:10px 0">
-            尚未習得任何武學 — 前往【修煉武學】開始修煉
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div style="max-width:900px;width:100%;margin:0 auto"><h2 style="margin-bottom:4px">⚔️ 江湖天地</h2><div class="decor"><span>◆</span></div>
+<div class="main-layout" style="margin-top:16px"><div class="sidebar" id="sidebar-stats"></div><div class="main-content"><div class="grid2" style="margin-bottom:14px" id="action-grid"></div><div class="card"><div style="color:var(--gold);font-size:12px;letter-spacing:2px;margin-bottom:8px">◆ 已習得功法</div><div id="learned-skills-display" style="color:var(--dim);font-size:11px;text-align:center;padding:10px 0">尚未習得任何武學</div></div></div></div>
 </div>
-
-<!-- ═══ EXPLORE ═══ -->
+</div>
 <div class="screen" id="s-explore">
-  <div style="max-width:680px;width:100%">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-      <button class="btn-dim" onclick="showScreen('s-main');renderMain()">← 返回</button>
-      <h2 style="flex:1">江湖探索</h2>
-      <div style="width:60px"></div>
-    </div>
-    <div class="decor"><span>◆</span></div>
-    <p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin:10px 0 24px">
-      選擇地點，AI 即時生成專屬遭遇
-    </p>
-    <div class="grid2" id="location-cards"></div>
-  </div>
+<div style="max-width:680px;width:100%"><div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><button class="btn-dim" onclick="showScreen('s-main');renderMain()">← 返回</button><h2 style="flex:1">江湖探索</h2><div style="width:60px"></div></div><div class="decor"><span>◆</span></div><p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin:10px 0 24px">選擇地點，AI 即時生成專屬遭遇</p><div class="grid2" id="location-cards"></div></div>
 </div>
-
-<!-- ═══ STORY ═══ -->
 <div class="screen" id="s-story">
-  <div style="max-width:620px;width:100%">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-      <div style="width:60px" id="story-back-btn"></div>
-      <h2 style="flex:1;font-size:17px" id="story-title">地點</h2>
-      <div style="width:60px"></div>
-    </div>
-    <div class="decor"><span>◆</span></div>
-    <div class="card" style="min-height:160px;margin:18px 0" id="story-content">
-      <div style="text-align:center;padding:40px 0">
-        <div class="spinner"></div>
-      </div>
-    </div>
-    <div id="story-choices"></div>
-    <div id="story-done-btns" style="display:none;text-align:center;margin-top:16px">
-      <button class="btn-primary" style="margin-right:10px" onclick="showScreen('s-explore')">繼續探索</button>
-      <button class="btn-dim" onclick="showScreen('s-main');renderMain()">回主頁</button>
-    </div>
-  </div>
+<div style="max-width:620px;width:100%"><div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><div style="width:60px" id="story-back-btn"></div><h2 style="flex:1;font-size:17px" id="story-title">地點</h2><div style="width:60px"></div></div><div class="decor"><span>◆</span></div><div class="card" style="min-height:160px;margin:18px 0" id="story-content"><div style="text-align:center;padding:40px 0"><div class="spinner"></div></div></div><div id="story-choices"></div><div id="story-done-btns" style="display:none;text-align:center;margin-top:16px"><button class="btn-primary" style="margin-right:10px" onclick="showScreen('s-explore')">繼續探索</button><button class="btn-dim" onclick="showScreen('s-main');renderMain()">回主頁</button></div></div>
 </div>
-
-<!-- ═══ COMBAT ═══ -->
 <div class="screen" id="s-combat">
-  <div style="max-width:700px;width:100%">
-    <h2 style="margin-bottom:4px">⚔️ 戰鬥</h2>
-    <div class="decor"><span>◆</span></div>
-    <div class="grid2" style="margin-top:16px;margin-bottom:14px">
-      <!-- Player -->
-      <div class="card">
-        <div style="text-align:center;margin-bottom:10px">
-          <div style="font-size:28px">🥷</div>
-          <div style="color:var(--gold);font-size:13px;letter-spacing:2px;margin:4px 0" id="c-player-name">俠客</div>
-        </div>
-        <div style="font-size:10px;color:var(--dim);margin-bottom:3px;display:flex;justify-content:space-between">
-          <span>生命</span><span id="c-player-hp-text" style="color:#e05050">100/100</span>
-        </div>
-        <div class="hpbar-wrap" style="margin-bottom:8px">
-          <div class="hpbar" id="c-player-hpbar" style="background:#c04020;width:100%"></div>
-        </div>
-        <div class="grid3">
-          <div class="stat-box"><div class="lbl">武力</div><div class="val" id="c-str" style="color:#e06040">-</div></div>
-          <div class="stat-box"><div class="lbl">內力</div><div class="val" id="c-qi" style="color:#4090e0">-</div></div>
-          <div class="stat-box"><div class="lbl">悟性</div><div class="val" id="c-wis" style="color:#9060d0">-</div></div>
-        </div>
-      </div>
-      <!-- Enemy -->
-      <div class="combat-enemy">
-        <div style="font-size:36px;margin-bottom:6px" id="c-enemy-icon">👹</div>
-        <div style="color:#e05050;font-size:14px;letter-spacing:2px;font-weight:bold;margin-bottom:8px" id="c-enemy-name">敵人</div>
-        <div style="font-size:10px;color:var(--dim);margin-bottom:3px;display:flex;justify-content:space-between">
-          <span>生命</span><span id="c-enemy-hp-text" style="color:#e05050">100/100</span>
-        </div>
-        <div class="hpbar-wrap">
-          <div class="hpbar" id="c-enemy-hpbar" style="background:#c04020;width:100%"></div>
-        </div>
-      </div>
-    </div>
-    <!-- Log -->
-    <div class="log-area" id="combat-log"></div>
-    <!-- Skills -->
-    <div style="margin-top:12px">
-      <div style="color:var(--dim);font-size:10px;letter-spacing:2px;margin-bottom:8px">選擇出招：</div>
-      <div class="combat-skill-grid" id="combat-skill-grid"></div>
-    </div>
-    <!-- Post-combat -->
-    <div id="combat-done-btns" style="display:none;text-align:center;margin-top:16px">
-      <button class="btn-primary" style="margin-right:10px" onclick="beginCombat()">再戰一場</button>
-      <button class="btn-dim" onclick="showScreen('s-main');renderMain()">回主頁</button>
-    </div>
-  </div>
+<div style="max-width:700px;width:100%"><h2 style="margin-bottom:4px">⚔️ 戰鬥</h2><div class="decor"><span>◆</span></div>
+<div class="grid2" style="margin-top:16px;margin-bottom:14px"><div class="card"><div style="text-align:center;margin-bottom:10px"><div style="font-size:28px">🥷</div><div style="color:var(--gold);font-size:13px;letter-spacing:2px;margin:4px 0" id="c-player-name">俠客</div></div><div style="font-size:10px;color:var(--dim);margin-bottom:3px;display:flex;justify-content:space-between"><span>生命</span><span id="c-player-hp-text" style="color:#e05050">100/100</span></div><div class="hpbar-wrap" style="margin-bottom:8px"><div class="hpbar" id="c-player-hpbar" style="background:#c04020;width:100%"></div></div><div class="grid3"><div class="stat-box"><div class="lbl">武力</div><div class="val" id="c-str" style="color:#e06040">-</div></div><div class="stat-box"><div class="lbl">內力</div><div class="val" id="c-qi" style="color:#4090e0">-</div></div><div class="stat-box"><div class="lbl">悟性</div><div class="val" id="c-wis" style="color:#9060d0">-</div></div></div></div><div class="combat-enemy"><div style="font-size:36px;margin-bottom:6px" id="c-enemy-icon">👹</div><div style="color:#e05050;font-size:14px;letter-spacing:2px;font-weight:bold;margin-bottom:8px" id="c-enemy-name">敵人</div><div style="font-size:10px;color:var(--dim);margin-bottom:3px;display:flex;justify-content:space-between"><span>生命</span><span id="c-enemy-hp-text" style="color:#e05050">100/100</span></div><div class="hpbar-wrap"><div class="hpbar" id="c-enemy-hpbar" style="background:#c04020;width:100%"></div></div></div></div><div class="log-area" id="combat-log"></div><div style="margin-top:12px"><div style="color:var(--dim);font-size:10px;letter-spacing:2px;margin-bottom:8px">選擇出招：</div><div class="combat-skill-grid" id="combat-skill-grid"></div></div><div id="combat-done-btns" style="display:none;text-align:center;margin-top:16px"><button class="btn-primary" style="margin-right:10px" onclick="beginCombat()">再戰一場</button><button class="btn-dim" onclick="showScreen('s-main');renderMain()">回主頁</button></div></div>
 </div>
-
-<!-- ═══ SKILLS ═══ -->
 <div class="screen" id="s-skills">
-  <div style="max-width:700px;width:100%">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-      <button class="btn-dim" onclick="showScreen('s-main');renderMain()">← 返回</button>
-      <h2 style="flex:1">修煉武學</h2>
-      <div style="background:rgba(180,100,20,.12);border:1px solid var(--border);border-radius:4px;padding:5px 12px;font-size:12px;color:var(--goldl)" id="sp-display">修煉點 0</div>
-    </div>
-    <div class="decor"><span>◆</span></div>
-    <div id="skill-tree-container" style="margin-top:16px"></div>
-  </div>
+<div style="max-width:700px;width:100%"><div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><button class="btn-dim" onclick="showScreen('s-main');renderMain()">← 返回</button><h2 style="flex:1">修煉武學</h2><div style="background:rgba(180,100,20,.12);border:1px solid var(--border);border-radius:4px;padding:5px 12px;font-size:12px;color:var(--goldl)" id="sp-display">修煉點 0</div></div><div class="decor"><span>◆</span></div><div id="skill-tree-container" style="margin-top:16px"></div></div>
 </div>
-
 <script>
-// ══════════════════════════════════════
-// DATA
-// ══════════════════════════════════════
-const BIRTHS=[
-  {id:'scholar',name:'書香門第',icon:'📚',desc:'飽讀詩書，天資聰穎，悟性絕倫',
-   stats:{str:8,qi:12,wis:18},hp:85,trait:'博覽群書',traitDesc:'修煉速度 +30%'},
-  {id:'military',name:'將門之後',icon:'⚔️',desc:'自幼習武，力大無窮，百戰不殆',
-   stats:{str:18,qi:12,wis:8},hp:120,trait:'鐵血戰魂',traitDesc:'戰鬥傷害 +20%'},
-  {id:'merchant',name:'商賈之家',icon:'🏮',desc:'見多識廣，財富充裕，廣結善緣',
-   stats:{str:10,qi:15,wis:12},hp:100,trait:'廣結善緣',traitDesc:'金錢獲取 +50%'},
-  {id:'orphan',name:'江湖孤兒',icon:'🌙',desc:'命途多舛，磨礪心志，潛力無窮',
-   stats:{str:12,qi:12,wis:12},hp:110,trait:'天煞孤星',traitDesc:'逆境全屬性 +15%'},
-];
-const FACTIONS=[
-  {id:'shaolin',name:'少林寺',icon:'☯️',desc:'天下武功出少林，禪武合一，剛猛無比',skill:'金剛伏魔拳',color:'#5a2008',accent:'#c05020'},
-  {id:'wudang',name:'武當派',icon:'🌀',desc:'以柔克剛，太極玄機，內力深厚',skill:'太極劍法',color:'#0e1f38',accent:'#2878c0'},
-  {id:'emei',name:'峨嵋派',icon:'🌸',desc:'輕靈飄逸，奇門遁甲，閃避無雙',skill:'九天玄女步',color:'#301050',accent:'#9060c8'},
-  {id:'xiaoyao',name:'逍遙派',icon:'🍃',desc:'廣博無涯，萬法歸宗，逍遙自在',skill:'北冥神功',color:'#0c2010',accent:'#208840'},
-  {id:'blood',name:'血刀門',icon:'🗡️',desc:'邪道霸主，殺伐決斷，嗜血好鬥',skill:'血刀三斬',color:'#380000',accent:'#cc1818'},
-];
-const SKILL_TREE={
-  str:{label:'武力之道',color:'#c04020',icon:'⚔️',skills:[
-    {id:'tiger',name:'虎形拳',icon:'🐯',cost:1,req:null,effect:{type:'atk',val:22},desc:'模仿猛虎撲擊，力大無窮'},
-    {id:'eagle',name:'鷹爪功',icon:'🦅',cost:2,req:'tiger',effect:{type:'atk',val:38,tag:'流血'},desc:'鷹爪鎖喉，敵人持續流血'},
-    {id:'dragon',name:'龍象掌',icon:'🐉',cost:3,req:'eagle',effect:{type:'atk',val:65,pierce:true,tag:'破甲'},desc:'龍象合一，無視敵人防禦'},
-  ]},
-  qi:{label:'內功心法',color:'#2878c0',icon:'💧',skills:[
-    {id:'heal',name:'運氣療傷',icon:'💫',cost:1,req:null,effect:{type:'heal',val:35},desc:'調動內力，快速恢復生命值'},
-    {id:'jiuyang',name:'九陽神功',icon:'☀️',cost:2,req:'heal',effect:{type:'atk',val:45,tag:'灼燒'},desc:'純陽之氣，灼傷對手'},
-    {id:'drain',name:'北冥吸星',icon:'🌀',cost:3,req:'jiuyang',effect:{type:'drain',val:32},desc:'吸取敵人生命，化為己用'},
-  ]},
-  wis:{label:'悟性修行',color:'#8040c0',icon:'👁️',skills:[
-    {id:'observe',name:'觀氣術',icon:'🌟',cost:1,req:null,effect:{type:'passive',dodge:0.25},desc:'觀察氣機，閃避率 +25%'},
-    {id:'mesmerize',name:'攝心術',icon:'✨',cost:2,req:'observe',effect:{type:'stun'},desc:'以神念震懾敵人，使其無法行動一回合'},
-    {id:'lingbo',name:'凌波微步',icon:'🌊',cost:3,req:'mesmerize',effect:{type:'passive',dodge:0.5,counter:true},desc:'天下第一步法，閃避後必然反擊'},
-  ]},
-};
-const ENEMIES=[
-  {name:'山賊頭目',icon:'🗡️',hp:70,atk:10,def:3,exp:25,gold:20},
-  {name:'官府捕快',icon:'⚖️',hp:92,atk:14,def:6,exp:35,gold:28},
-  {name:'江湖敗類',icon:'💀',hp:118,atk:19,def:9,exp:52,gold:43},
-  {name:'邪門高手',icon:'👁️',hp:150,atk:25,def:13,exp:78,gold:68},
-];
-const LOCATIONS=[
-  {id:'market',name:'鎮上集市',icon:'🏮',desc:'熱鬧喧嚷，藏龍臥虎'},
-  {id:'forest',name:'深山老林',icon:'🌲',desc:'幽深密林，異獸出沒'},
-  {id:'temple',name:'古廟廢墟',icon:'🏯',desc:'荒廢古廟，隱藏秘辛'},
-  {id:'river',name:'大江渡口',icon:'🌊',desc:'奔騰大江，英雄相遇'},
-];
-
-// ══════════════════════════════════════
-// STATE
-// ══════════════════════════════════════
-let apiKey='';
-let groupId='';
-let selBirth=null;
-let selFaction=null;
-let player=null;
-let enemy=null;
-let combatBusy=false;
-
+const BIRTHS=[{id:'scholar',name:'書香門第',icon:'📚',desc:'飽讀詩書，天資聰穎，悟性絕倫',stats:{str:8,qi:12,wis:18},hp:85,trait:'博覽群書',traitDesc:'修煉速度 +30%'},{id:'military',name:'將門之後',icon:'⚔️',desc:'自幼習武，力大無窮，百戰不殆',stats:{str:18,qi:12,wis:8},hp:120,trait:'鐵血戰魂',traitDesc:'戰鬥傷害 +20%'},{id:'merchant',name:'商賈之家',icon:'🏮',desc:'見多識廣，財富充裕，廣結善緣',stats:{str:10,qi:15,wis:12},hp:100,trait:'廣結善緣',traitDesc:'金錢獲取 +50%'},{id:'orphan',name:'江湖孤兒',icon:'🌙',desc:'命途多舛，磨礪心志，潛力無窮',stats:{str:12,qi:12,wis:12},hp:110,trait:'天煞孤星',traitDesc:'逆境全屬性 +15%'}];
+const FACTIONS=[{id:'shaolin',name:'少林寺',icon:'☯️',desc:'天下武功出少林，禪武合一，剛猛無比',skill:'金剛伏魔拳',color:'#5a2008',accent:'#c05020'},{id:'wudang',name:'武當派',icon:'🌀',desc:'以柔克剛，太極玄機，內力深厚',skill:'太極劍法',color:'#0e1f38',accent:'#2878c0'},{id:'emei',name:'峨嵋派',icon:'🌸',desc:'輕靈飄逸，奇門遁甲，閃避無雙',skill:'九天玄女步',color:'#301050',accent:'#9060c8'},{id:'xiaoyao',name:'逍遙派',icon:'🍃',desc:'廣博無涯，萬法歸宗，逍遙自在',skill:'北冥神功',color:'#0c2010',accent:'#208840'},{id:'blood',name:'血刀門',icon:'🗡️',desc:'邪道霸主，殺伐決斷，嗜血好鬥',skill:'血刀三斬',color:'#380000',accent:'#cc1818'}];
+const SKILL_TREE={str:{label:'武力之道',color:'#c04020',icon:'⚔️',skills:[{id:'tiger',name:'虎形拳',icon:'🐯',cost:1,req:null,effect:{type:'atk',val:22},desc:'模仿猛虎撲擊'},{id:'eagle',name:'鷹爪功',icon:'🦅',cost:2,req:'tiger',effect:{type:'atk',val:38,tag:'流血'},desc:'鷹爪鎖喉'},{id:'dragon',name:'龍象掌',icon:'🐉',cost:3,req:'eagle',effect:{type:'atk',val:65,pierce:true,tag:'破甲'},desc:'龍象合一'}]},qi:{label:'內功心法',color:'#2878c0',icon:'💧',skills:[{id:'heal',name:'運氣療傷',icon:'💫',cost:1,req:null,effect:{type:'heal',val:35},desc:'調動內力'},{id:'jiuyang',name:'九陽神功',icon:'☀️',cost:2,req:'heal',effect:{type:'atk',val:45,tag:'灼燒'},desc:'純陽之氣'},{id:'drain',name:'北冥吸星',icon:'🌀',cost:3,req:'jiuyang',effect:{type:'drain',val:32},desc:'吸取生命'}]},wis:{label:'悟性修行',color:'#8040c0',icon:'👁️',skills:[{id:'observe',name:'觀氣術',icon:'🌟',cost:1,req:null,effect:{type:'passive',dodge:0.25},desc:'閃避率 +25%'},{id:'mesmerize',name:'攝心術',icon:'✨',cost:2,req:'observe',effect:{type:'stun'},desc:'震懾敵人'},{id:'lingbo',name:'凌波微步',icon:'🌊',cost:3,req:'mesmerize',effect:{type:'passive',dodge:0.5,counter:true},desc:'閃避反擊'}]}};
+const ENEMIES=[{name:'山賊頭目',icon:'🗡️',hp:70,atk:10,def:3,exp:25,gold:20},{name:'官府捕快',icon:'⚖️',hp:92,atk:14,def:6,exp:35,gold:28},{name:'江湖敗類',icon:'💀',hp:118,atk:19,def:9,exp:52,gold:43},{name:'邪門高手',icon:'👁️',hp:150,atk:25,def:13,exp:78,gold:68}];
+const LOCATIONS=[{id:'market',name:'鎮上集市',icon:'🏮',desc:'熱鬧喧嚷'},{id:'forest',name:'深山老林',icon:'🌲',desc:'幽深密林'},{id:'temple',name:'古廟廢墟',icon:'🏯',desc:'荒廢古廟'},{id:'river',name:'大江渡口',icon:'🌊',desc:'奔騰大江'}];
+let apiKey='',groupId='',selBirth=null,selFaction=null,player=null,enemy=null,combatBusy=false;
 const allSkills=Object.values(SKILL_TREE).flatMap(b=>b.skills);
 const findSkill=id=>allSkills.find(s=>s.id===id);
 const expFor=lv=>Math.floor(100*Math.pow(1.4,lv-1));
-
-function makePlayer(birth,faction){
-  return{birth,faction,level:1,exp:0,expNeeded:100,
-    hp:birth.hp,maxHp:birth.hp,
-    str:birth.stats.str,qi:birth.stats.qi,wis:birth.stats.wis,
-    gold:100,sp:2,skills:[],kills:0,days:1};
-}
-
-// ══════════════════════════════════════
-// UI HELPERS
-// ══════════════════════════════════════
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function showNotice(msg,color=null){
-  const el=document.getElementById('notice');
-  el.textContent=msg;
-  el.style.display='block';
-  el.style.color=color||'var(--gold)';
-  el.style.borderColor=color||'var(--gold)';
-  el.style.opacity='1';
-  clearTimeout(el._t);
-  el._t=setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.style.display='none',300);},2500);
-}
+function makePlayer(birth,faction){return{birth,faction,level:1,exp:0,expNeeded:100,hp:birth.hp,maxHp:birth.hp,str:birth.stats.str,qi:birth.stats.qi,wis:birth.stats.wis,gold:100,sp:2,skills:[],kills:0,days:1}}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function showNotice(msg,color=null){const el=document.getElementById('notice');el.textContent=msg;el.style.display='block';el.style.color=color||'var(--gold)';el.style.borderColor=color||'var(--gold)';el.style.opacity='1';clearTimeout(el._t);el._t=setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.style.display='none',300);},2500);}
 function hpPct(cur,max){return Math.max(0,Math.min(100,(cur/Math.max(1,max))*100))+'%'}
-
-function renderSidebar(){
-  if(!player)return;
-  const expPct=hpPct(player.exp,player.expNeeded);
-  const hpPct2=hpPct(player.hp,player.maxHp);
-  document.getElementById('sidebar-stats').innerHTML=`
-    <div style="text-align:center;margin-bottom:10px">
-      <div style="font-size:30px;margin-bottom:4px">🥷</div>
-      <div style="color:var(--gold);font-size:14px;font-weight:bold;letter-spacing:2px">${player.faction.name}弟子</div>
-      <div style="color:var(--dim);font-size:10px;margin-top:2px">出身 · ${player.birth.name}</div>
-    </div>
-    <div class="decor"><span>◆</span></div>
-    <div style="margin-bottom:7px">
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--dim);margin-bottom:3px">
-        <span>生命</span><span style="color:#e05050">${player.hp}/${player.maxHp}</span>
-      </div>
-      <div class="hpbar-wrap"><div class="hpbar" style="background:#c04020;width:${hpPct2}"></div></div>
-    </div>
-    <div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--dim);margin-bottom:3px">
-        <span>經驗</span><span style="color:var(--gold)">${player.exp}/${player.expNeeded}</span>
-      </div>
-      <div class="hpbar-wrap"><div class="hpbar" style="background:var(--gold);width:${expPct}"></div></div>
-    </div>
-    <div class="decor"><span>◆</span></div>
-    <div class="grid2" style="gap:5px;margin-bottom:8px">
-      ${[['等級','Lv.'+player.level,'var(--goldl)'],['擊殺',player.kills+'人','var(--dim)'],
-         ['天數',player.days+'天','var(--dim)'],['銀兩',player.gold+'兩','#90d090']].map(([l,v,c])=>`
-        <div class="stat-box"><div class="lbl">${l}</div><div class="val" style="color:${c}">${v}</div></div>`).join('')}
-    </div>
-    <div class="decor"><span>◆</span></div>
-    <div class="grid3">
-      ${[['武力',player.str,'#e06040'],['內力',player.qi,'#4090e0'],['悟性',player.wis,'#9060d0']].map(([l,v,c])=>`
-        <div class="stat-box"><div class="lbl">${l}</div><div class="val" style="color:${c};font-size:15px">${v}</div></div>`).join('')}
-    </div>
-    ${player.sp>0?`<div style="margin-top:8px;background:rgba(180,140,20,.12);border:1px solid var(--border);border-radius:4px;padding:5px 8px;text-align:center">
-      <span style="color:var(--goldl);font-size:11px">✦ 修煉點 ${player.sp}</span></div>`:''}
-  `;
-}
-
-// ══════════════════════════════════════
-// API KEY SCREEN
-// ══════════════════════════════════════
-function saveApiKey(){
-  const k=document.getElementById('api-key-input').value.trim();
-  const g=document.getElementById('group-id-input').value.trim();
-  if(!k){showNotice('請輸入 API Key','#e05050');return;}
-  apiKey=k; groupId=g;
-  showScreen('s-birth');
-  renderBirthCards();
-}
-function skipApiKey(){
-  apiKey='';
-  showScreen('s-birth');
-  renderBirthCards();
-}
-
-// ══════════════════════════════════════
-// BIRTH SCREEN
-// ══════════════════════════════════════
-function renderBirthCards(){
-  const container=document.getElementById('birth-cards');
-  container.innerHTML=BIRTHS.map(b=>`
-    <div class="card ${selBirth&&selBirth.id===b.id?'selected':''}" onclick="selectBirth('${b.id}')">
-      <div style="font-size:36px;margin-bottom:8px;text-align:center">${b.icon}</div>
-      <div style="color:var(--paper);font-size:16px;font-weight:bold;letter-spacing:2px;margin-bottom:5px;text-align:center">${b.name}</div>
-      <div style="color:var(--dim);font-size:11px;line-height:1.7;margin-bottom:10px;text-align:center">${b.desc}</div>
-      <div class="decor"><span>◆</span></div>
-      <div class="grid3" style="margin-bottom:10px">
-        ${[['武力',b.stats.str,'#e06040'],['內力',b.stats.qi,'#4090e0'],['悟性',b.stats.wis,'#9060d0']].map(([l,v,c])=>`
-          <div class="stat-box"><div class="lbl">${l}</div><div class="val" style="color:${c}">${v}</div></div>`).join('')}
-      </div>
-      <div style="background:rgba(180,100,20,.1);border:1px solid var(--border);border-radius:4px;padding:6px 8px;text-align:center">
-        <div style="color:var(--goldl);font-size:11px;margin-bottom:2px">✦ ${b.trait}</div>
-        <div style="color:var(--dim);font-size:10px">${b.traitDesc}</div>
-      </div>
-    </div>`).join('');
-}
-function selectBirth(id){
-  selBirth=BIRTHS.find(b=>b.id===id);
-  document.getElementById('birth-confirm').style.display='inline-block';
-  renderBirthCards();
-}
-
-// ══════════════════════════════════════
-// FACTION SCREEN
-// ══════════════════════════════════════
-function showFactionScreen(){
-  showScreen('s-faction');
-  renderFactionCards();
-}
-function renderFactionCards(){
-  const container=document.getElementById('faction-cards');
-  container.innerHTML=FACTIONS.map(f=>`
-    <div onclick="selectFaction('${f.id}')" style="
-      background:${selFaction&&selFaction.id===f.id?f.color+'ee':f.color+'44'};
-      border:${selFaction&&selFaction.id===f.id?'2px solid '+f.accent:'1px solid '+f.color+'88'};
-      border-radius:8px;padding:16px;cursor:pointer;text-align:center;transition:all .2s;
-      box-shadow:${selFaction&&selFaction.id===f.id?'0 0 22px '+f.color+'66':'none'}">
-      <div style="font-size:34px;margin-bottom:8px">${f.icon}</div>
-      <div style="color:var(--paper);font-size:15px;font-weight:bold;letter-spacing:2px;margin-bottom:6px">${f.name}</div>
-      <div style="color:var(--dim);font-size:11px;line-height:1.7;margin-bottom:10px">${f.desc}</div>
-      <div style="background:rgba(0,0,0,.38);border-radius:4px;padding:7px 8px">
-        <div style="color:${f.accent};font-size:10px;margin-bottom:2px">起始武學</div>
-        <div style="color:var(--paper);font-weight:bold;font-size:12px">【${f.skill}】</div>
-      </div>
-    </div>`).join('');
-}
-function selectFaction(id){
-  selFaction=FACTIONS.find(f=>f.id===id);
-  document.getElementById('faction-confirm').style.display='inline-block';
-  renderFactionCards();
-}
-
-// ══════════════════════════════════════
-// GAME START
-// ══════════════════════════════════════
-function startGame(){
-  if(!selBirth||!selFaction)return;
-  player=makePlayer(selBirth,selFaction);
-  showScreen('s-main');
-  renderMain();
-}
-
-// ══════════════════════════════════════
-// MAIN SCREEN
-// ══════════════════════════════════════
-function renderMain(){
-  renderSidebar();
-  const actions=[
-    {icon:'🗺️',label:'江湖探索',sub:'AI 即時生成隨機劇情',action:"showScreen('s-explore');renderLocations()",bg:'#0a1a0a'},
-    {icon:'⚔️',label:'闖蕩江湖',sub:'隨機遭遇戰鬥',action:'beginCombat()',bg:'#1a0a0a'},
-    {icon:'📖',label:'修煉武學',sub:`習武${player.sp>0?`（${player.sp}點可用）`:''}`,action:"showScreen('s-skills');renderSkillTree()",bg:'#0a0a1a',badge:player.sp},
-    {icon:'🌙',label:'打坐休息',sub:'恢復40%生命，過一天',action:'doRest()',bg:'#111009'},
-  ];
-  document.getElementById('action-grid').innerHTML=actions.map(a=>`
-    <div class="action-card" style="background:${a.bg}" onclick="${a.action}">
-      ${a.badge>0?`<div style="position:absolute;top:8px;right:8px;background:var(--red);color:#fff;border-radius:50%;width:19px;height:19px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold">${a.badge}</div>`:''}
-      <div style="font-size:34px;margin-bottom:6px">${a.icon}</div>
-      <div style="color:var(--paper);font-weight:bold;font-size:13px;letter-spacing:2px;margin-bottom:4px">${a.label}</div>
-      <div style="color:var(--dim);font-size:10px;line-height:1.5">${a.sub}</div>
-    </div>`).join('');
-  const ls=document.getElementById('learned-skills-display');
-  if(player.skills.length===0){
-    ls.innerHTML='<span style="color:var(--dim);font-size:11px">尚未習得任何武學 — 前往【修煉武學】開始修煉</span>';
-  }else{
-    ls.innerHTML=player.skills.map(sid=>{const sk=findSkill(sid);return sk?`<span class="tag" style="margin:3px">${sk.icon} ${sk.name}</span>`:''}).join('');
-  }
-}
-function doRest(){
-  const h=Math.floor(player.maxHp*0.4);
-  player.hp=Math.min(player.maxHp,player.hp+h);
-  player.days++;
-  showNotice(`休息一夜，恢復 ${h} 點生命`);
-  renderMain();
-}
-
-// ══════════════════════════════════════
-// EXPLORE
-// ══════════════════════════════════════
-function renderLocations(){
-  document.getElementById('location-cards').innerHTML=LOCATIONS.map(loc=>`
-    <div onclick="exploreLocation('${loc.id}')" style="
-      background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;
-      padding:26px 18px;cursor:pointer;text-align:center;transition:background .2s"
-      onmouseenter="this.style.background='rgba(180,140,20,.09)'"
-      onmouseleave="this.style.background='rgba(255,255,255,.025)'">
-      <div style="font-size:42px;margin-bottom:10px">${loc.icon}</div>
-      <div style="color:var(--paper);font-size:16px;font-weight:bold;letter-spacing:3px;margin-bottom:7px">${loc.name}</div>
-      <div style="color:var(--dim);font-size:11px">${loc.desc}</div>
-    </div>`).join('');
-}
-async function exploreLocation(locId){
-  const loc=LOCATIONS.find(l=>l.id===locId);
-  showScreen('s-story');
-  document.getElementById('story-title').textContent=`${loc.icon} ${loc.name}`;
-  document.getElementById('story-back-btn').innerHTML='';
-  document.getElementById('story-done-btns').style.display='none';
-  document.getElementById('story-choices').innerHTML='';
-  document.getElementById('story-content').innerHTML='<div style="text-align:center;padding:40px 0"><div class="spinner"></div><div style="color:var(--dim);font-size:12px;letter-spacing:3px;margin-top:12px">AI 正在生成劇情...</div></div>';
-
-  const prompt=`你是武俠故事敘述者，請用繁體中文生成遭遇事件。
-玩家：${player.faction.name}弟子（出身：${player.birth.name}，${player.level}級，武力${player.str}，內力${player.qi}，悟性${player.wis}）
-地點：${loc.name}（${loc.desc}）
-請生成一段武俠遭遇（80-100字）及3個行動選項。
-輸出純JSON，不含任何markdown或說明：
-{"story":"事件描述","choices":[{"id":1,"text":"選項文字","outcome":"大致結果提示"},{"id":2,"text":"選項文字","outcome":"大致結果提示"},{"id":3,"text":"選項文字","outcome":"大致結果提示"}]}`;
-
-  try{
-    const result=await callMiniMax([{role:'user',content:prompt}]);
-    const clean=result.replace(/```json|```/g,'').trim();
-    const p=JSON.parse(clean);
-    document.getElementById('story-content').innerHTML=`<p style="color:var(--paper);line-height:2.1;font-size:15px;letter-spacing:1px">${p.story}</p>`;
-    document.getElementById('story-choices').innerHTML=p.choices.map(c=>`
-      <button class="choice-btn" onclick="makeChoice('${encodeURIComponent(JSON.stringify(c))}')">
-        <span style="color:var(--gold);font-weight:bold;margin-right:8px">${c.id}.</span>${c.text}
-      </button>`).join('');
-  }catch(e){
-    // Fallback story
-    document.getElementById('story-content').innerHTML=`<p style="color:var(--paper);line-height:2.1;font-size:15px;letter-spacing:1px">${loc.name}風雲突變，一股殺氣悄然逼近。你警覺地握緊劍柄，靜候來者身份...</p>`;
-    document.getElementById('story-choices').innerHTML=[
-      {id:1,text:'拔劍應戰',outcome:'迎面而上，以武解困'},
-      {id:2,text:'靜觀其變',outcome:'沉著應對，等待時機'},
-      {id:3,text:'悄然撤離',outcome:'識時務者為俊傑'},
-    ].map(c=>`<button class="choice-btn" onclick="makeChoice('${encodeURIComponent(JSON.stringify(c))}')">
-      <span style="color:var(--gold);font-weight:bold;margin-right:8px">${c.id}.</span>${c.text}</button>`).join('');
-  }
-}
-async function makeChoice(encoded){
-  const choice=JSON.parse(decodeURIComponent(encoded));
-  document.getElementById('story-choices').innerHTML='<div style="text-align:center;padding:20px 0"><div class="spinner"></div></div>';
-  
-  const prompt=`玩家選擇「${choice.text}」（${choice.outcome}）
-玩家：${player.faction.name}弟子，${player.level}級，武力${player.str}，內力${player.qi}，悟性${player.wis}
-請描述選擇的結果（50-70字），給出合理獎懲。
-輸出純JSON：{"result":"結果描述","reward":{"gold":0,"exp":0,"hp":0}}`;
-
-  try{
-    const text=await callMiniMax([{role:'user',content:prompt}]);
-    const clean=text.replace(/```json|```/g,'').trim();
-    const p=JSON.parse(clean);
-    if(p.reward){
-      player.gold=Math.max(0,player.gold+(p.reward.gold||0));
-      player.hp=Math.min(player.maxHp,player.hp+(p.reward.hp||0));
-      player.exp+=p.reward.exp||0;
-      checkLevelUp();
-    }
-    const sc=document.getElementById('story-content');
-    sc.innerHTML+=`<div class="decor" style="margin:14px 0"><span>◆</span></div><p style="color:var(--goldl);line-height:1.9;font-size:14px;letter-spacing:1px">${p.result}</p>`;
-  }catch{
-    const sc=document.getElementById('story-content');
-    sc.innerHTML+=`<div class="decor" style="margin:14px 0"><span>◆</span></div><p style="color:var(--goldl);line-height:1.9;font-size:14px;letter-spacing:1px">${choice.outcome}</p>`;
-  }
-  document.getElementById('story-choices').innerHTML='';
-  document.getElementById('story-back-btn').innerHTML='<button class="btn-dim" onclick="showScreen(\'s-explore\');renderLocations()">← 返回</button>';
-  document.getElementById('story-done-btns').style.display='block';
-}
-
-// ══════════════════════════════════════
-// COMBAT
-// ══════════════════════════════════════
-function beginCombat(){
-  const lv=player?player.level:1;
-  const pool=ENEMIES.slice(0,Math.min(4,Math.max(1,Math.ceil(lv/2))));
-  const base=pool[Math.floor(Math.random()*pool.length)];
-  const sc=1+(lv-1)*0.12;
-  enemy={...base,hp:Math.floor(base.hp*sc),maxHp:Math.floor(base.hp*sc),
-    atk:Math.floor(base.atk*sc),def:Math.floor(base.def*sc),stunned:false};
-  combatBusy=false;
-  showScreen('s-combat');
-  document.getElementById('combat-done-btns').style.display='none';
-  renderCombat();
-  addLog(`⚔️ 遭遇了【${enemy.name}】！準備戰鬥！`);
-}
-function renderCombat(){
-  if(!player||!enemy)return;
-  document.getElementById('c-player-name').textContent=`${player.faction.name}弟子 Lv.${player.level}`;
-  document.getElementById('c-player-hp-text').textContent=`${player.hp}/${player.maxHp}`;
-  document.getElementById('c-player-hpbar').style.width=hpPct(player.hp,player.maxHp);
-  document.getElementById('c-str').textContent=player.str;
-  document.getElementById('c-qi').textContent=player.qi;
-  document.getElementById('c-wis').textContent=player.wis;
-  document.getElementById('c-enemy-icon').textContent=enemy.icon;
-  document.getElementById('c-enemy-name').textContent=enemy.name;
-  document.getElementById('c-enemy-hp-text').textContent=`${enemy.hp}/${enemy.maxHp}`;
-  document.getElementById('c-enemy-hpbar').style.width=hpPct(enemy.hp,enemy.maxHp);
-  // Skill buttons
-  const grid=document.getElementById('combat-skill-grid');
-  const disabled=combatBusy||enemy.hp<=0||player.hp<=0;
-  grid.innerHTML=`<button class="combat-skill-btn" ${disabled?'disabled':''} onclick="doAttack(null)">👊 普通攻擊</button>`+
-    player.skills.map(sid=>{const sk=findSkill(sid);return sk?`<button class="combat-skill-btn" ${disabled?'disabled':''} onclick="doAttack('${sid}')">${sk.icon} ${sk.name}</button>`:''}).join('');
-}
-function addLog(msg){
-  const log=document.getElementById('combat-log');
-  const p=document.createElement('p');
-  p.textContent=msg;
-  p.style.color=msg.startsWith('💀')||msg.startsWith('💔')?'#e05050':
-    msg.startsWith('🎁')||msg.startsWith('🎉')?'var(--goldl)':
-    msg.startsWith('你')?'var(--paper)':'#e08060';
-  log.appendChild(p);
-  log.scrollTop=log.scrollHeight;
-}
-function checkLevelUp(){
-  let gained=false;
-  while(player.exp>=player.expNeeded){
-    player.exp-=player.expNeeded;
-    player.level++;
-    player.expNeeded=expFor(player.level);
-    player.sp+=2;
-    player.str++;player.qi++;player.wis++;
-    player.maxHp+=8;
-    gained=true;
-  }
-  return gained;
-}
-function doAttack(skillId){
-  if(combatBusy||!enemy||enemy.hp<=0||!player||player.hp<=0)return;
-  combatBusy=true;
-  const sk=skillId?findSkill(skillId):null;
-  let dmgToEnemy=0,healToPlayer=0,willStun=false;
-
-  if(!sk){
-    dmgToEnemy=Math.max(1,Math.floor(player.str*1.2+Math.random()*8)-enemy.def);
-    addLog(`你發動普通攻擊，造成 ${dmgToEnemy} 點傷害！`);
-  }else if(sk.effect.type==='heal'){
-    healToPlayer=sk.effect.val+Math.floor(player.qi/4);
-    addLog(`你施展【${sk.name}】，恢復 ${healToPlayer} 點生命！`);
-  }else if(sk.effect.type==='atk'){
-    dmgToEnemy=sk.effect.pierce?Math.max(1,sk.effect.val+Math.floor(player.qi/5)):
-      Math.max(1,sk.effect.val+Math.floor(player.qi/5)-enemy.def);
-    addLog(`你施展【${sk.name}】${sk.effect.tag?`（${sk.effect.tag}）`:''}，造成 ${dmgToEnemy} 點傷害！`);
-  }else if(sk.effect.type==='drain'){
-    dmgToEnemy=Math.max(1,sk.effect.val+Math.floor(player.qi/5)-enemy.def);
-    healToPlayer=Math.floor(dmgToEnemy*0.5);
-    addLog(`你施展【${sk.name}】，吸取 ${healToPlayer} 生命，造成 ${dmgToEnemy} 傷害！`);
-  }else if(sk.effect.type==='stun'){
-    willStun=true;
-    addLog(`你施展【${sk.name}】，敵人被震懾！`);
-  }else if(sk.effect.type==='passive'){
-    dmgToEnemy=Math.max(1,Math.floor(player.str+Math.random()*6)-enemy.def);
-    addLog(`你施展【${sk.name}】，迅捷攻擊造成 ${dmgToEnemy} 點傷害！`);
-  }
-
-  enemy.hp=Math.max(0,enemy.hp-dmgToEnemy);
-  player.hp=Math.min(player.maxHp,player.hp+healToPlayer);
-
-  if(enemy.hp<=0){
-    const expGain=enemy.exp+player.level*5;
-    const goldGain=player.birth.id==='merchant'?Math.floor(enemy.gold*1.5):enemy.gold;
-    addLog(`💀 【${enemy.name}】被擊倒！`);
-    addLog(`🎁 獲得 ${expGain} 點經驗、${goldGain} 兩銀子！`);
-    player.exp+=expGain; player.gold+=goldGain; player.kills++;
-    const lv=checkLevelUp();
-    if(lv)addLog(`🎉 升至 ${player.level} 級！獲得 2 修煉點！`);
-    renderCombat();
-    document.getElementById('combat-done-btns').style.display='block';
-    combatBusy=false;
-    return;
-  }
-
-  enemy.stunned=willStun||enemy.stunned;
-  renderCombat();
-
-  setTimeout(()=>{
-    if(enemy.stunned){
-      addLog(`【${enemy.name}】被震懾，無法行動！`);
-      enemy.stunned=false;
-    }else{
-      const dodgeChance=player.skills.reduce((best,id)=>{const s=findSkill(id);return s?.effect.dodge&&s.effect.dodge>best?s.effect.dodge:best;},0);
-      const hasCounter=player.skills.includes('lingbo');
-      if(Math.random()<dodgeChance){
-        addLog(`【${enemy.name}】出招！你輕巧閃過！`);
-        if(hasCounter){
-          const cdmg=Math.max(1,Math.floor(player.wis*0.8)-enemy.def);
-          enemy.hp=Math.max(0,enemy.hp-cdmg);
-          addLog(`你順勢反擊，造成 ${cdmg} 點傷害！`);
-        }
-      }else{
-        const dmg=Math.max(0,enemy.atk-Math.floor(player.wis/7)+Math.floor(Math.random()*5));
-        player.hp=Math.max(0,player.hp-dmg);
-        addLog(`【${enemy.name}】攻擊你，造成 ${dmg} 點傷害！`);
-      }
-    }
-    if(player.hp<=0){
-      addLog('💔 力竭倒地，你敗了...');
-      player.gold=Math.max(0,Math.floor(player.gold*0.8));
-      player.hp=1;
-      document.getElementById('combat-done-btns').style.display='block';
-    }
-    renderCombat();
-    combatBusy=false;
-  },750);
-}
-
-// ══════════════════════════════════════
-// SKILL TREE
-// ══════════════════════════════════════
-function renderSkillTree(){
-  document.getElementById('sp-display').textContent=`修煉點 ${player.sp}`;
-  const container=document.getElementById('skill-tree-container');
-  container.innerHTML=Object.entries(SKILL_TREE).map(([key,branch])=>`
-    <div class="skill-branch">
-      <div style="color:${branch.color};font-size:14px;font-weight:bold;letter-spacing:3px;margin-bottom:12px">
-        ${branch.icon} ${branch.label}
-      </div>
-      ${branch.skills.map(sk=>{
-        const learned=player.skills.includes(sk.id);
-        const reqOk=!sk.req||player.skills.includes(sk.req);
-        const canLearn=!learned&&reqOk&&player.sp>=sk.cost;
-        return `<div class="skill-node ${learned?'learned':!reqOk?'locked':''}" onclick="${canLearn?`learnSkill('${sk.id}')`:''}" style="opacity:${!reqOk&&!learned?.45:1}">
-          <div style="display:flex;align-items:center;gap:10px">
-            <span style="font-size:24px">${sk.icon}</span>
-            <div style="flex:1">
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <span style="color:var(--paper);font-weight:bold;font-size:13px;letter-spacing:1px">${sk.name}</span>
-                <span style="color:${learned?'#60b060':'var(--dim)'};font-size:10px">${learned?'✓ 已習得':`需 ${sk.cost} 修煉點`}</span>
-              </div>
-              <div style="color:var(--dim);font-size:11px;margin-top:3px">${sk.desc}</div>
-              ${sk.req?`<div style="color:rgba(200,180,140,.35);font-size:10px;margin-top:2px">前置：${findSkill(sk.req)?.name||sk.req}</div>`:''}
-            </div>
-          </div>
-          ${canLearn?`<div style="margin-top:8px;text-align:right"><span style="color:var(--gold);font-size:10px;border:1px solid var(--border);padding:2px 10px;border-radius:3px;cursor:pointer">點擊修煉</span></div>`:''}
-        </div>`;
-      }).join('')}
-    </div>`).join('');
-}
-function learnSkill(id){
-  const sk=findSkill(id);
-  if(!sk||player.skills.includes(id)||player.sp<sk.cost)return;
-  if(sk.req&&!player.skills.includes(sk.req)){showNotice('需要先習得前置武功','#e05050');return;}
-  player.skills.push(id);
-  player.sp-=sk.cost;
-  showNotice(`習得【${sk.name}】！`);
-  renderSkillTree();
-}
-
-// ══════════════════════════════════════
-// MINIMAX API
-// ══════════════════════════════════════
-async function callMiniMax(messages){
-  if(!apiKey) throw new Error('no key');
-  const body={
-    model:'MiniMax-M2.5',
-    messages,
-    max_tokens:600,
-  };
-  if(groupId) body.group_id=groupId;
-  const res=await fetch('https://api.minimax.io/v1/text/chatcompletion_v2',{
-    method:'POST',
-    headers:{
-      'Authorization':`Bearer ${apiKey}`,
-      'Content-Type':'application/json',
-    },
-    body:JSON.stringify(body),
-  });
-  if(!res.ok){
-    const err=await res.text();
-    throw new Error(err);
-  }
-  const data=await res.json();
-  return data.choices[0].message.content;
-}
-</script>
-</body>
-</html>
+function renderSidebar(){if(!player)return;const expPct=hpPct(player.exp,player.expNeeded);const hpPct2=hpPct(player.hp,player.maxHp);document.getElementById('sidebar-stats').innerHTML='<div style="text-align:center;margin-bottom:10px"><div style="font-size:30px;margin-bottom:4px">🥷</div><div style="color:var(--gold);font-size:14px;font-weight:bold;letter-spacing:2px">'+player.faction.name+'弟子</div><div style="color:var(--dim);font-size:10px;margin-top:2px">出身 · '+player.birth.name+'</div></div><div class="decor"><span>◆</span></div><div style="margin-bottom:7px"><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--dim);margin-bottom:3px"><span>生命</span><span style="color:#e05050">'+player.hp+'/'+player.maxHp+'</span></div><div class="hpbar-wrap"><div class="hpbar" style="background:#c04020;width:'+hpPct2+'"></div></div></div><div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--dim);margin-bottom:3px"><span>經驗</span><span style="color:var(--gold)">'+player.exp+'/'+player.expNeeded+'</span></div><div class="hpbar-wrap"><div class="hpbar" style="background:var(--gold);width:'+expPct+'"></div></div></div><div class="decor"><span>◆</span></div><div class="grid2" style="gap:5px;margin-bottom:8px"><div class="stat-box"><div class="lbl">等級</div><div class="val" style="color:var(--goldl)">Lv.'+player.level+'</div></div><div class="stat-box"><div class="lbl">擊殺</div><div class="val" style="color:var(--dim)">'+player.kills+'人</div></div><div class="stat-box"><div class="lbl">天數</div><div class="val" style="color:var(--dim)">'+player.days+'天</div></div><div class="stat-box"><div class="lbl">銀兩</div><div class="val" style="color:#90d090">'+player.gold+'兩</div></div></div><div class="decor"><span>◆</span></div><div class="grid3"><div class="stat-box"><div class="lbl">武力</div><div class="val" style="color:#e06040;font-size:15px">'+player.str+'</div></div><div class="stat-box"><div class="lbl">內力</div><div class="val" style="color:#4090e0;font-size:15px">'+player.qi+'</div></div><div class="stat-box"><div class="lbl">悟性</div><div class="val" style="color:#9060d0;font-size:15px">'+player.wis+'</div></div></div>'+(player.sp>0?'<div style="margin-top:8px;background:rgba(180,140,20,.12);border:1px solid var(--border);border-radius:4px;padding:5px 8px;text-align:center"><span style="color:var(--goldl);font-size:11px">✦ 修煉點 '+player.sp+'</span></div>':'');}
+function saveApiKey(){const k=document.getElementById('api-key-input').value.trim();const g=document.getElementById('group-id-input').value.trim();if(!k){showNotice('請輸入 API Key','#e05050');return;}apiKey=k;groupId=g;showScreen('s-birth');renderBirthCards();}
+function skipApiKey(){apiKey='';showScreen('s-birth');renderBirthCards();}
+function renderBirthCards(){document.getElementById('birth-cards').innerHTML=BIRTHS.map(b=>'<div class="card '+(selBirth&&selBirth.id===b.id?'selected':'')+'" onclick="selectBirth(\''+b.id+'\')"><div style="font-size:36px;margin-bottom:8px;text-align:center">'+b.icon+'</div><div style="color:var(--paper);font-size:16px;font-weight:bold;letter-spacing:2px;margin-bottom:5px;text-align:center">'+b.name+'</div><div style="color:var(--dim);font-size:11px;line-height:1.7;margin-bottom:10px;text-align:center">'+b.desc+'</div><div class="decor"><span>◆</span></div><div class="grid3" style="margin-bottom:10px"><div class="stat-box"><div class="lbl">武力</div><div class="val" style="color:#e06040">'+b.stats.str+'</div></div><div class="stat-box"><div class="lbl">內力</div><div class="val" style="color:#4090e0">'+b.stats.qi+'</div></div><div class="stat-box"><div class="lbl">悟性</div><div class="val" style="color:#9060d0">'+b.stats.wis+'</div></div></div><div style="background:rgba(180,100,20,.1);border:1px solid var(--border);border-radius:4px;padding:6px 8px;text-align:center"><div style="color:var(--goldl);font-size:11px;margin-bottom:2px">✦ '+b.trait+'</div><div style="color:var(--dim);font-size:10px">'+b.traitDesc+'</div></div></div>').join('');}
+function selectBirth(id){selBirth=BIRTHS.find(b=>b.id===id);document.getElementById('birth-confirm').style.display='inline-block';renderBirthCards();}
+function showFactionScreen(){showScreen('s-faction');renderFactionCards();}
+function renderFactionCards(){document.getElementById('faction-cards').innerHTML=FACTIONS.map(f=>'<div onclick="selectFaction(\''+f.id+'\')" style="background:'+(selFaction&&selFaction.id===f.id?f.color+'ee':f.color+'44')+';border:'+(selFaction&&selFaction.id===f.id?'2px solid '+f.accent:'1px solid '+f.color+'88')+';border-radius:8px;padding:16px;cursor:pointer;text-align:center;transition:all .2s"><div style="font-size:34px;margin-bottom:8px">'+f.icon+'</div><div style="color:var(--paper);font-size:15px;font-weight:bold;letter-spacing:2px;margin-bottom:6px">'+f.name+'</div><div style="color:var(--dim);font-size:11px;line-height:1.7;margin-bottom:10px">'+f.desc+'</div><div style="background:rgba(0,0,0,.38);border-radius:4px;padding:7px 8px"><div style="color:'+f.accent+';font-size:10px;margin-bottom:2px">起始武學</div><div style="color:var(--paper);font-weight:bold;font-size:12px">【'+f.skill+'】</div></div></div>').join('');}
+function selectFaction(id){selFaction=FACTIONS.find(f=>f.id===id);document.getElementById('faction-confirm').style.display='inline-block';renderFactionCards();}
+function startGame(){if(!selBirth||!selFaction)return;player=makePlayer(selBirth,selFaction);showScreen('s-main');renderMain();}
+function renderMain(){renderSidebar();const actions=[{icon:'🗺️',label:'江湖探索',sub:'AI 即時生成隨機劇情',action:"showScreen('s-explore');renderLocations()",bg:'#0a1a0a'},{icon:'⚔️',label:'闖蕩江湖',sub:'隨機遭遇戰鬥',action:'beginCombat()',bg:'#1a0a0a'},{icon:'📖',label:'修煉武學',sub:'習武'+(player.sp>0?'（'+player.sp+'點可用）':''),action:"showScreen('s-skills');renderSkillTree()",bg:'#0a0a1a',badge:player.sp},{icon:'🌙',label:'打坐休息',sub:'恢復40%生命',action:'doRest()',bg:'#111009'}];document.getElementById('action-grid').innerHTML=actions.map(a=>'<div class="action-card" style="background:'+a.bg+'" onclick="'+a.action+'">'+(a.badge>0?'<div style="position:absolute;top:8px;right:8px;background:var(--red);color:#fff;border-radius:50%;width:19px;height:19px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:
