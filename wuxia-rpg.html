@@ -242,6 +242,7 @@ input:focus{border-color:var(--gold)}
       <div style="color:var(--dim);font-size:10px;letter-spacing:2px;margin-bottom:7px">選擇出招：</div>
       <div style="display:flex;flex-wrap:wrap;gap:7px" id="combat-skill-grid"></div>
     </div>
+    <div style="display:flex;justify-content:center;gap:10px;margin-top:10px"><button class="btn-d" onclick="fleeCombat()">🏃 逃跑</button></div>
     <div id="combat-done-btns" style="display:none;text-align:center;margin-top:14px">
       <button class="btn-p" style="margin-right:10px" onclick="beginCombat()">再戰一場</button>
       <button class="btn-d" onclick="showScreen('s-main');renderMain()">回主頁</button>
@@ -264,6 +265,18 @@ input:focus{border-color:var(--gold)}
 </div>
 
 <!-- EQUIPMENT -->
+<!-- REALM -->
+<div class="screen" id="s-realm">
+  <div style="max-width:600px;width:100%">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <button class="btn-d" onclick="showScreen('s-main');renderMain()">← 返回</button>
+      <h2 style="flex:1">武學境界</h2>
+      <div style="background:rgba(180,100,20,.12);border:1px solid var(--gold);border-radius:4px;padding:4px 12px;font-size:12px;color:var(--goldl)" id="realm-points-display">境界點 0</div>
+    </div>
+    <div class="decor"><span>◆</span></div>
+    <div id="realm-container" style="margin-top:14px"></div>
+  </div>
+</div>
 <div class="screen" id="s-equip">
   <div style="max-width:780px;width:100%">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
@@ -614,7 +627,7 @@ function makePlayer(birth,faction,master){
     str:birth.stats.str,qi:birth.stats.qi,wis:birth.stats.wis,
     gold:150,sp:3,skills:[],kills:0,days:1,
     equipped:{weapon:null,armor:null,accessory:null},
-    inventory:[],consumables:[],
+    inventory:[],consumables:[],realmLevel:1,realmExp:0,realmNeed:200,realmPoints:0,
   };
   // Give master's gift equipment
   const giftPool={weapon:EQUIP_DB.weapon,armor:EQUIP_DB.armor,accessory:EQUIP_DB.accessory};
@@ -689,7 +702,7 @@ function renderSidebar(){
     </div>
     <div class="decor"><span>◆</span></div>
     <div class="g2" style="gap:4px;margin-bottom:7px">
-      ${[['等級','Lv.'+player.level,'var(--goldl)'],['擊殺',player.kills+'人','var(--dim)'],['天數',player.days+'天','var(--dim)'],['銀兩',player.gold+'兩','#90d090']].map(([l,v,c])=>`<div class="sbox"><div class="l">${l}</div><div class="v" style="color:${c}">${v}</div></div>`).join('')}
+      ${['境界','🌟'+player.realmLevel,'var(--goldl)'],['擊殺',player.kills+'人','var(--dim)'],['天數',player.days+'天','var(--dim)'],['銀兩',player.gold+'兩','#90d090']].map(([l,v,c])=>`<div class="sbox"><div class="l">${l}</div><div class="v" style="color:${c}">${v}</div></div>`).join('')}
     </div>
     <div class="decor"><span>◆</span></div>
     <div class="g3">
@@ -1061,6 +1074,23 @@ async function aiChoice(enc,novEnc){
 // COMBAT
 // ═══════════════════════════════════════════════════
 const MP_COST={1:16,2:26,3:40};
+// Flee from combat
+function fleeCombat(){
+  if(combatBusy)return;
+  if(!player||!enemy)return;
+  combatBusy=true;
+  const success=Math.random()>0.4;
+  if(success){
+    addLog("🏃 你轉身就跑，順利逃脫！");
+    setTimeout(()=>{
+      showScreen(""s-main"");renderMain();combatBusy=false;
+    },800);
+  }else{
+    addLog("🏃 逃跑失敗！敵人追上來了！");
+    setTimeout(()=>{enemyTurn();},600);
+  }
+}
+
 function beginCombat(){
   const lv=player.level;
   const pool=ENEMIES.slice(0,Math.min(ENEMIES.length,Math.max(2,Math.ceil(lv/1.4))));
@@ -1137,10 +1167,10 @@ function doAtk(skillId){
   if(sk){const cost=MP_COST[sk.cost]||20;if(player.mp<cost){showNotice(`內力不足！需要 ${cost} 點`,'#4090e0');return;}player.mp=Math.max(0,player.mp-cost);}
   combatBusy=true;
   const es=effectiveStats();
-  let dmg=0,heal=0,stun=0,selfHurt=0;
+  let dmg=0,heal=0,stun=0,selfHurt=0;const realmBonus=player.realmLevel?Math.floor(player.realmLevel*1.5):0;
   if(!sk){
     // Normal attack scales with str, level, equipment
-    dmg=Math.max(1,Math.floor((es.str+es.atk)*(0.8+player.level*0.03)+Math.random()*(3+player.level))-enemy.def);
+    dmg=Math.max(1,Math.floor((es.str+es.atk)*(0.8+player.level*0.03)+Math.random()*(3+player.level))-enemy.def+realmBonus);
     player.mp=Math.min(player.maxMp,player.mp+8);
     addLog(`你發動普通攻擊，造成 ${dmg} 傷害，恢復8內力。`);
   }else if(sk.effect.type==='atk'){
@@ -1149,7 +1179,7 @@ function doAtk(skillId){
     const statBonus=Math.floor(es.str*0.35+es.qi*0.22+es.atk*0.5+player.level*sk.cost*1.2);
     const base=Math.floor(sk.effect.val*lvFactor)+statBonus;
     const crit=Math.random()*100<(es.crit||0);
-    dmg=sk.effect.pierce?Math.max(1,base):Math.max(1,base-enemy.def);
+    dmg=sk.effect.pierce?Math.max(1,base):Math.max(1,base-enemy.def+realmBonus);
     if(crit){dmg=Math.floor(dmg*1.75);addLog('⚡ 會心一擊！');}
     if(sk.effect.tag==='流血')enemy.bleed=Math.max(enemy.bleed,3);
     if(sk.effect.tag==='灼燒')enemy.burn=Math.max(enemy.burn,3);
@@ -1164,7 +1194,7 @@ function doAtk(skillId){
     // Drain scales with qi and level
     const lvFactor=0.6+player.level*0.04;
     const statBonus=Math.floor(es.qi*0.4+es.str*0.2+player.level*sk.cost*1.0);
-    dmg=Math.max(1,Math.floor(sk.effect.val*lvFactor)+statBonus-enemy.def);
+    dmg=Math.max(1,Math.floor(sk.effect.val*lvFactor)+statBonus-enemy.def+realmBonus);
     heal=Math.floor(dmg*0.5);
     addLog(`你施展【${sk.name}】，吸取 ${heal} 生命，造成 ${dmg} 傷害！`);
   }else if(sk.effect.type==='stun'){
@@ -1174,7 +1204,7 @@ function doAtk(skillId){
     // Passive strike scales with wis + str + level
     const lvFactor=0.6+player.level*0.04;
     const statBonus=Math.floor(es.wis*0.35+es.str*0.3+player.level*sk.cost*1.0);
-    dmg=Math.max(1,Math.floor((sk.effect.val||30)*lvFactor)+statBonus-enemy.def);
+    dmg=Math.max(1,Math.floor((sk.effect.val||30)*lvFactor)+statBonus-enemy.def+realmBonus);
     if(sk.effect.omnistrike){const extra=Math.floor(dmg*0.5);dmg+=extra;addLog('凌波微步多重攻擊追加 '+extra+' 傷害！');}
     addLog(`你施展【${sk.name}】，造成 ${dmg} 傷害！`);
   }
@@ -1187,7 +1217,7 @@ function doAtk(skillId){
     const goldG=player.birth.id==='merchant'?Math.floor(enemy.gold*1.5):enemy.gold;
     addLog(`💀 【${enemy.name}】被擊倒！`);
     addLog(`🎁 獲得 ${expG} 經驗、${goldG} 兩銀子！`);
-    player.exp+=expG;player.gold+=goldG;player.kills++;
+    player.exp+=expG;player.realmExp+=Math.floor(expG/2);player.gold+=goldG;player.kills++;if(player.realmExp>=player.realmNeed){player.realmExp-=player.realmNeed;player.realmLevel++;player.realmPoints++;player.realmNeed=Math.floor(player.realmNeed*1.5);gained.push("🎉 境界突破到 "+player.realmLevel+" 重！");}
     // Random drop
     maybeDropEquip();
     const lv=checkLevelUp();if(lv)addLog(`🎉 升至 ${player.level} 級！生命內力全滿！`);
@@ -1207,7 +1237,7 @@ function doAtk(skillId){
     const hasReflect=player.skills.some(id=>findSkill(id)?.effect.reflect)||(b.reflect||0)>0;
     if(Math.random()<dodge){
       addLog(`【${enemy.name}】出招！你輕巧閃過！`);
-      if(hasCounter){const cd=Math.max(1,Math.floor((player.wis+(b.wis||0))*0.9+(b.atk||0))-enemy.def);enemy.hp=Math.max(0,enemy.hp-cd);addLog(`你順勢反擊，造成 ${cd} 傷害！`);}
+      if(hasCounter){const cd=Math.max(1,Math.floor((player.wis+(b.wis||0))*0.9+(b.atk||0))-enemy.def+realmBonus);enemy.hp=Math.max(0,enemy.hp-cd);addLog(`你順勢反擊，造成 ${cd} 傷害！`);}
     }else{
       let ed=Math.max(0,enemy.atk-Math.floor((player.wis+(b.wis||0))/8)-(b.def||0)+Math.floor(Math.random()*5));
       if(hasReflect&&Math.random()<0.35){const ref=Math.floor(ed*0.4);enemy.hp=Math.max(0,enemy.hp-ref);addLog(`軟猬甲反傷 ${ref} 點！`);ed=Math.floor(ed*0.6);}
@@ -1232,6 +1262,39 @@ function maybeDropEquip(){
 // ═══════════════════════════════════════════════════
 // SKILLS — FACTION ONLY
 // ═══════════════════════════════════════════════════
+// Render Realm Screen
+function renderRealm(){
+  if(!player)return;
+  document.getElementById("realm-points-display").innerHTML="境界點 "+player.realmPoints;
+  const realms=[
+    {id:"str",name:"武力境界",icon:"⚔️",desc:"提升攻擊傷害",color:"#e06040"},
+    {id:"qi",name:"內力境界",icon:"💧",desc:"提升內力上限與恢復",color:"#4090e0"},
+    {id:"wis",name:"悟性境界",icon:"👁️",desc:"提升暴擊與閃避",color:"#9060d0"}
+  ];
+  document.getElementById("realm-container").innerHTML= realms.map(r=>`
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+        <span style="font-size:32px">${r.icon}</span>
+        <div style="flex:1">
+          <div style="color:var(--gold);font-size:14px;font-weight:bold">${r.name}</div>
+          <div style="color:var(--dim);font-size:10px">${r.desc}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="color:${r.color};font-size:18px;font-weight:bold">${player[r.id]||0}</div>
+          <div style="color:var(--dim);font-size:9px">當前等級</div>
+        </div>
+      </div>
+      ${player.realmPoints>0?`<button class="btn-p" style="width:100%;margin-top:8px" onclick="提升境界('${r.id}')">修煉 (+1)</button>`:""}
+    </div>`).join("");
+}
+function 提升境界(stat){
+  if(player.realmPoints<=0)return;
+  player.realmPoints--;
+  player[stat]=(player[stat]||0)+1;
+  showNotice("境界提升！"+stat+" +1","#60b060");
+  renderRealm();
+}
+
 function renderSkillTree(){
   document.getElementById('sp-display').textContent=`修煉點 ${player.sp}`;
   const branch=player.faction.skills;
