@@ -25,8 +25,10 @@ h1{text-align:center;color:#c9a227;margin:12px 0;font-size:1.6rem;letter-spacing
 .faction-btn:hover{border-color:#c9a227}
 .faction-icon{font-size:1.3rem;display:block;margin-bottom:3px}
 .faction-name{color:#c9a227;font-size:0.75rem}
-.combat-log{background:#0a0a0a;border:1px solid #3a3a2a;border-radius:5px;padding:8px;height:100px;overflow-y:auto;font-size:0.75rem;margin-top:8px}
+.combat-log{background:#0a0a0a;border:1px solid #3a3a2a;border-radius:5px;padding:8px;height:120px;overflow-y:auto;font-size:0.75rem;margin-top:8px}
 .log-entry{margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid #1a1a1a}
+.log-win{color:#00ff88;font-weight:bold}
+.log-lose{color:#ff4444;font-weight:bold}
 .log-enemy{color:#ff6666}
 .log-player{color:#66ff66}
 .log-skill{color:#c9a227}
@@ -34,12 +36,17 @@ h1{text-align:center;color:#c9a227;margin:12px 0;font-size:1.6rem;letter-spacing
 .battle-btn{flex:1;padding:10px;background:linear-gradient(135deg,#3a1515,#5a2020);border:1px solid #8b0000;color:#ff6666;border-radius:5px;cursor:pointer;font-size:0.85rem}
 .battle-btn.special{background:linear-gradient(135deg,#15153a,#20205a);border-color:#0000ff;color:#6666ff}
 .battle-btn.heal{background:linear-gradient(135deg,#153a15,#205a20);border-color:#008800;color:#66ff66}
+.battle-btn.continue{background:linear-gradient(135deg,#1a3a1a,#205a20);border-color:#00ff88;color:#66ff66}
 .skill-grid{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
 .skill-chip{padding:4px 8px;background:#1a1815;border:1px solid #3a3a2a;border-radius:10px;font-size:0.7rem;color:#c9a227}
 .skill-chip.learned{border-color:#00ff88;background:#1a2515}
 .map-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .map-btn{padding:12px;text-align:center;background:#1a1815;border:1px solid #3a3a2a;border-radius:5px;cursor:pointer}
 .map-btn:hover{border-color:#c9a227}
+.result-panel{text-align:center;padding:20px}
+.result-title{font-size:1.5rem;margin-bottom:15px}
+.result-stats{background:rgba(0,0,0,0.5);padding:15px;border-radius:8px;margin-bottom:15px}
+.result-btn{background:linear-gradient(135deg,#2a2015,#3a3025);border:1px solid #c9a227;color:#c9a227;padding:12px 30px;border-radius:5px;font-size:1rem;cursor:pointer}
 .hidden{display:none}
 </style>
 </head>
@@ -108,9 +115,17 @@ h1{text-align:center;color:#c9a227;margin:12px 0;font-size:1.6rem;letter-spacing
 <button class="battle-btn heal" onclick="battleHeal()">💊 療</button>
 </div>
 </div>
+<div class="panel hidden" id="result-panel">
+<div class="panel-title">⚔️ 戰鬥結果</div>
+<div class="result-panel">
+<div class="result-title" id="result-title">🏆 戰鬥勝利！</div>
+<div class="result-stats" id="result-stats"></div>
+<button class="result-btn" onclick="continueBattle()">繼續</button>
+</div>
+</div>
 </div>
 <script>
-const game={faction:'',level:1,exp:0,maxExp:100,hp:100,maxHp:100,mp:50,maxMp:50,atk:10,def:5,comp:10,gold:100,skills:[],location:'洛陽',inBattle:false,enemy:null};
+const game={faction:'',level:1,exp:0,maxExp:100,hp:100,maxHp:100,mp:50,maxMp:50,atk:10,def:5,comp:10,gold:100,skills:[],location:'洛陽',inBattle:false,enemy:null,battleWon:false,battleExp:0,battleGold:0};
 const factions={少林:{skills:['金鐘罩','易筋經','少林棍法'],bonus:{def:3,hp:20}},丐幫:{skills:['降龍十八掌','打狗棒法'],bonus:{atk:3}},明教:{skills:['乾坤大挪移','聖火令'],bonus:{atk:2,mp:20}},日月:{skills:['葵花寶典','吸星大法'],bonus:{atk:2,comp:3}},逍遙:{skills:['天山六陽掌','凌波微步','北冥神功'],bonus:{mp:30,comp:2}},華山:{skills:['獨孤九劍','太極劍'],bonus:{atk:3,def:2}}};
 const skillData={基礎拳法:{dmg:10},基礎劍法:{dmg:12},基礎掌法:{dmg:11},金鐘罩:{def:5},易筋經:{hp:30},降龍十八掌:{dmg:50,mp:30},打狗棒法:{dmg:35,mp:15},乾坤大挪移:{dmg:40,mp:25},葵花寶典:{atk:10},吸星大法:{dmg:30,mp:20},天山六陽掌:{dmg:38,mp:18},凌波微步:{luck:5},獨孤九劍:{dmg:55,mp:35}};
 const enemies={山賊:{hp:30,atk:8,def:2,exp:15,gold:10},土匪:{hp:40,atk:10,def:3,exp:20,gold:15},強盜:{hp:50,atk:12,def:4,exp:25,gold:20},殺手:{hp:70,atk:18,def:6,exp:40,gold:35},武僧:{hp:80,atk:20,def:10,exp:50,gold:40}};
@@ -124,13 +139,16 @@ function selectFaction(f){game.faction=f;const fb=factions[f];game.skills=[...fb
 function renderSkills(){const tree=document.getElementById('skill-tree');tree.innerHTML='';Object.keys(skillData).forEach(s=>{const chip=document.createElement('div');chip.className='skill-chip'+(game.skills.includes(s)?' learned':'');chip.textContent=s;tree.appendChild(chip);});}
 function updateLocation(){const desc={洛陽:'繁華都市',揚州:'江南魚米鄉',少林:'天下武學正宗',華山:'五嶽劍派',光明頂:'明教總壇',襄陽:'宋蒙邊境'};document.getElementById('location-desc').textContent=desc[game.location]||'';}
 function travel(loc){game.location=loc;updateLocation();if(Math.random()<0.4){const et=Object.keys(enemies)[Math.floor(Math.random()*Object.keys(enemies).length)];startBattle(et);}else{addLog('🏃 前往'+loc+'...');}}
-function startBattle(enemyType){game.inBattle=true;const e=enemies[enemyType];game.enemy={...e,name:enemyType,currentHp:e.hp};showPanel('battle-panel');updateBattleUI();addLog('⚔️ 遭遇'+enemyType+'！');}
+function startBattle(enemyType){game.inBattle=true;game.battleWon=false;game.battleExp=0;game.battleGold=0;const e=enemies[enemyType];game.enemy={...e,name:enemyType,currentHp:e.hp};showPanel('battle-panel');updateBattleUI();addLog('⚔️ 遭遇'+enemyType+'！');}
 function updateBattleUI(){document.getElementById('enemy-name').textContent=game.enemy.name;document.getElementById('enemy-hp').textContent=game.enemy.currentHp;document.getElementById('enemy-hp-bar').style.width=(game.enemy.currentHp/game.enemy.hp*100)+'%';document.getElementById('player-hp').textContent=game.hp;document.getElementById('player-hp-bar').style.width=(game.hp/game.maxHp*100)+'%';}
-function addLog(msg){const log=document.getElementById('combat-log');const entry=document.createElement('div');entry.className='log-entry';entry.textContent=msg;log.insertBefore(entry,log.firstChild);}
+function addLog(msg,cls=''){const log=document.getElementById('combat-log');const entry=document.createElement('div');entry.className='log-entry '+cls;entry.textContent=msg;log.insertBefore(entry,log.firstChild);}
 function battleAttack(){if(!game.inBattle)return;let dmg=Math.max(1,game.atk-game.enemy.def+Math.floor(Math.random()*5));game.enemy.currentHp-=dmg;addLog('⚔️ 造成'+dmg+'傷害','log-player');if(game.enemy.currentHp>0){let ed=Math.max(1,game.enemy.atk-game.def+Math.floor(Math.random()*3));game.hp-=ed;addLog('👹 受'+ed+'傷害','log-enemy');}updateBattleUI();checkBattleEnd();}
 function battleSkill(){if(!game.inBattle)return;const us=game.skills.filter(s=>skillData[s]&&skillData[s].dmg);if(us.length===0){alert('沒有絕技！');return;}const s=skillData[us[Math.floor(Math.random()*us.length)]];if(game.mp<s.mp){alert('內力不足！');return;}game.mp-=s.mp;let dmg=s.dmg+Math.floor(game.comp/2);game.enemy.currentHp-=dmg;addLog('📖 造成'+dmg+'傷害！','log-skill');if(game.enemy.currentHp>0){let ed=Math.max(1,game.enemy.atk-game.def);game.hp-=ed;addLog('👹 受傷','log-enemy');}updateBattleUI();checkBattleEnd();}
 function battleHeal(){if(!game.inBattle)return;game.hp=Math.min(game.maxHp,game.hp+10);game.mp=Math.max(0,game.mp-5);addLog('💊 恢復10HP','log-player');let ed=Math.max(1,game.enemy.atk-game.def);game.hp-=ed;addLog('👹 受傷','log-enemy');updateBattleUI();checkBattleEnd();}
-function checkBattleEnd(){if(game.hp<=0){alert('💀 被打敗！');game.hp=Math.floor(game.maxHp/2);game.inBattle=false;showMain();updateUI();}else if(game.enemy.currentHp<=0){const e=game.enemy;game.exp+=e.exp;game.gold+=e.gold;addLog('🏆 獲勝！經驗+'+e.exp+' 金+'+e.gold,'log-player');if(game.exp>=game.maxExp){game.level++;game.exp-=game.maxExp;game.maxExp=Math.floor(game.maxExp*1.5);game.atk+=2;game.def+=1;game.maxHp+=10;game.hp=game.maxHp;addLog('⭐ 升級！');}game.inBattle=false;showMain();updateUI();}}
+function checkBattleEnd(){if(game.hp<=0){game.inBattle=false;game.battleWon=false;showResult();}else if(game.enemy.currentHp<=0){game.inBattle=false;game.battleWon=true;game.battleExp=game.enemy.exp;game.battleGold=game.enemy.gold;game.exp+=game.battleExp;game.gold+=game.battleGold;showResult();}}
+function showResult(){const title=document.getElementById('result-title');const stats=document.getElementById('result-stats');if(game.battleWon){title.textContent='🏆 戰鬥勝利！';title.style.color='#00ff88';stats.innerHTML='<div style="color:#c9a227;margin:8px 0">經驗 +'+game.battleExp+' | 銀兩 +'+game.battleGold+'</div><div style="color:#888;font-size:0.8rem">等級:'+game.level+' 經驗:'+game.exp+'/'+game.maxExp+'</div>';if(game.exp>=game.maxExp){game.level++;game.exp-=game.maxExp;game.maxExp=Math.floor(game.maxExp*1.5);game.atk+=2;game.def+=1;game.maxHp+=10;game.hp=game.maxHp;stats.innerHTML+='<div style="color:#00ff88;margin-top:8px">⭐ 升級了！等級'+game.level+'！</div>';}}else{title.textContent='💀 戰鬥失敗...';title.style.color='#ff4444';stats.innerHTML='<div style="color:#888">修養後再戰！</div>';}updateUI();showPanel('result-panel');}
+function continueBattle(){game.inBattle=false;if(game.hp>0){showMap();}else{game.hp=Math.floor(game.maxHp/2);game.mp=Math.floor(game.maxMp/2);showMain();}updateUI();}
+addLog('🏮 請選擇門派開始遊戲！');
 updateUI();
 </script>
 </body>
