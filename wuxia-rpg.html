@@ -393,6 +393,37 @@ code{font-family:monospace;}
   </div>
 </div>
 
+<!-- ARENA -->
+<div class="screen" id="s-arena">
+  <div style="max-width:620px;width:100%">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <button class="btn-d" onclick="showScreen('s-main');renderMain()">← 返回</button>
+      <h2 style="flex:1">🏆 論劍台</h2>
+      <div style="width:60px"></div>
+    </div>
+    <div class="decor"><span>◆</span></div>
+    <div id="arena-container" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<!-- ARENA FIGHT -->
+<div class="screen" id="s-arena-fight">
+  <div id="arena-fight-container" style="max-width:640px;width:100%"></div>
+</div>
+
+<!-- ACHIEVEMENTS -->
+<div class="screen" id="s-achievements">
+  <div style="max-width:640px;width:100%">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <button class="btn-d" onclick="showScreen('s-main');renderMain()">← 返回</button>
+      <h2 style="flex:1">🏆 成就系統</h2>
+      <div style="width:60px"></div>
+    </div>
+    <div class="decor"><span>◆</span></div>
+    <div id="achievements-container" style="margin-top:14px"></div>
+  </div>
+</div>
+
 <!-- COMBAT -->
 <div class="screen" id="s-combat">
   <div style="max-width:740px;width:100%">
@@ -586,8 +617,427 @@ const SFX=(function(){
     heal:function(){[500,600,700].forEach(function(f,i){setTimeout(function(){play(f,0.1,'sine',0.1);},i*60);});},
     flee:function(){[300,250,200].forEach(function(f,i){setTimeout(function(){play(f,0.1,'square',0.08);},i*80);});},
     questComplete:function(){[523,659,784,1047,1319].forEach(function(f,i){setTimeout(function(){play(f,0.25,'sine',0.15);},i*140);});},
+    achievement:function(){[523,659,880,1047,1319,1568].forEach(function(f,i){setTimeout(function(){play(f,0.22,'sine',0.13);},i*110);});},
   };
 })();
+
+// ═══════════════════════════════════════════════════
+// ACHIEVEMENTS SYSTEM
+// ═══════════════════════════════════════════════════
+const ACHIEVEMENTS=[
+  // 戰鬥成就
+  {id:'first_blood',    name:'初試啼聲',   icon:'⚔️',category:'combat',rarity:'普通',
+   desc:'贏得第一場戰鬥',condition:function(p){return p.achievements.first_blood!==true;},check:function(p){return p.wins>=1;},reward:{attr:{str:1}}},
+  {id:'warrior_10',     name:'武將新秀',   icon:'🗡️',category:'combat',rarity:'精良',
+   desc:'累計擊敗10名敵人',condition:function(p){return p.achievements.warrior_10!==true;},check:function(p){return p.kills>=10;},reward:{attr:{str:2,qi:1}}},
+  {id:'warrior_50',     name:'沙場老將',   icon:'🛡️',category:'combat',rarity:'稀有',
+   desc:'累計擊敗50名敵人',condition:function(p){return p.achievements.warrior_50!==true;},check:function(p){return p.kills>=50;},reward:{attr:{str:3,qi:2}}},
+  {id:'warrior_100',    name:'武林霸主',   icon:'👑',category:'combat',rarity:'史詩',
+   desc:'累計擊敗100名敵人',condition:function(p){return p.achievements.warrior_100!==true;},check:function(p){return p.kills>=100;},reward:{attr:{str:5,qi:3},gold:500}},
+  {id:'win_streak_3',  name:'連戰連勝',   icon:'🔥',category:'combat',rarity:'精良',
+   desc:'戰鬥取得3連勝',condition:function(p){return p.achievements.win_streak_3!==true;},check:function(p){return p.winStreak>=3;},reward:{attr:{str:2}}},
+  {id:'arena_king',     name:'論劍至尊',   icon:'🏆',category:'arena',rarity:'傳說',
+   desc:'在論劍台擊敗10位對手',condition:function(p){return p.achievements.arena_king!==true;},check:function(p){return(p.arenaWins||0)>=10;},reward:{attr:{str:5,qi:5,wis:3},skill:'anran'}},
+
+  // 境界成就
+  {id:'realm_5',        name:'小有所成',   icon:'🌱',category:'realm',rarity:'普通',
+   desc:'境界達到第5重',condition:function(p){return p.achievements.realm_5!==true;},check:function(p){return p.realm>=5;},reward:{attr:{qi:3}}},
+  {id:'realm_10',       name:'一方高手',   icon:'⚡',category:'realm',rarity:'稀有',
+   desc:'境界達到第10重',condition:function(p){return p.achievements.realm_10!==true;},check:function(p){return p.realm>=10;},reward:{attr:{qi:5,str:2}}},
+  {id:'realm_15',       name:'宗師境界',   icon:'🌟',category:'realm',rarity:'史詩',
+   desc:'境界達到第15重',condition:function(p){return p.achievements.realm_15!==true;},check:function(p){return p.realm>=15;},reward:{attr:{qi:8,str:3,wis:2}}},
+
+  // 等級成就
+  {id:'level_5',        name:'江湖菜鳥',   icon:'🥉',category:'level',rarity:'普通',
+   desc:'角色達到5級',condition:function(p){return p.achievements.level_5!==true;},check:function(p){return p.level>=5;},reward:{attr:{str:1,qi:1},exp:200}},
+  {id:'level_10',      name:'初窺門徑',   icon:'🥈',category:'level',rarity:'精良',
+   desc:'角色達到10級',condition:function(p){return p.achievements.level_10!==true;},check:function(p){return p.level>=10;},reward:{attr:{str:2,qi:2,wis:1},exp:500}},
+  {id:'level_20',      name:'一方名俠',   icon:'🥇',category:'level',rarity:'稀有',
+   desc:'角色達到20級',condition:function(p){return p.achievements.level_20!==true;},check:function(p){return p.level>=20;},reward:{attr:{str:5,qi:5,wis:3},exp:1000}},
+
+  // 技能成就
+  {id:'skill_3',        name:'廣習武學',   icon:'📖',category:'skill',rarity:'普通',
+   desc:'學會3種以上技能',condition:function(p){return p.achievements.skill_3!==true;},check:function(p){return p.skills.length>=3;},reward:{sp:1}},
+  {id:'skill_6',        name:'博採眾長',   icon:'📜',category:'skill',rarity:'精良',
+   desc:'學會6種以上技能',condition:function(p){return p.achievements.skill_6!==true;},check:function(p){return p.skills.length>=6;},reward:{sp:2}},
+  {id:'skill_all',      name:'武學宗師',   icon:'🏮',category:'skill',rarity:'史詩',
+   desc:'學會本門所有技能',condition:function(p){return p.achievements.skill_all!==true;},check:function(p){var cnt=0;for(var k in player.skillsMap||{})cnt++;var req=player.faction.skills.length;return cnt>=req;},reward:{attr:{wis:5,qi:3},exp:800}},
+
+  // 財富成就
+  {id:'gold_1000',      name:'小康之家',   icon:'💰',category:'wealth',rarity:'普通',
+   desc:'累計獲得1000兩銀',condition:function(p){return p.achievements.gold_1000!==true;},check:function(p){return p.totalGold>=1000;},reward:{gold:200}},
+  {id:'gold_10000',     name:'富甲一方',   icon:'💎',category:'wealth',rarity:'稀有',
+   desc:'累計獲得10000兩銀',condition:function(p){return p.achievements.gold_10000!==true;},check:function(p){return p.totalGold>=10000;},reward:{gold:1000}},
+
+  // 探索成就
+  {id:'explore_10',     name:'閒俠',       icon:'🗺️',category:'explore',rarity:'精良',
+   desc:'完成10次江湖探索',condition:function(p){return p.achievements.explore_10!==true;},check:function(p){return p.exploreCount>=10;},reward:{exp:300,sp:1}},
+  {id:'boss_defeat',    name:'除暴安良',   icon:'⚡',category:'boss',rarity:'史詩',
+   desc:'擊敗最終Boss',condition:function(p){return p.achievements.boss_defeat!==true;},check:function(p){return p.bossDefeated===true;},reward:{attr:{str:5,qi:5},exp:2000,skill:'anran'}},
+
+  // 師門成就
+  {id:'master_task',    name:'孝子孝女',   icon:'🙏',category:'master',rarity:'精良',
+   desc:'完成3次師門任務',condition:function(p){return p.achievements.master_task!==true;},check:function(p){return(p.masterTasksDone||0)>=3;},reward:{rep:50,exp:300}},
+  {id:'faction_love',   name:'門派之光',   icon:'🕮',category:'master',rarity:'稀有',
+   desc:'門派聲望達到200',condition:function(p){return p.achievements.faction_love!==true;},check:function(p){return p.factionRep>=200;},reward:{attr:{qi:4},rep:100}},
+];
+
+const ACHIEVEMENT_ICONS={combat:'⚔️',arena:'🏆',realm:'☯️',level:'⭐',skill:'📖',wealth:'💰',explore:'🗺️',boss:'👹',master:'🙏'};
+const RARITY_COLORS={普通:'#aaa',精良:'#5aaa5a',稀有:'#5080e0',史詩:'#a060d0',傳說:'#f0b820'};
+
+function checkAchievement(forceId){
+  if(!player.achievements)player.achievements={};
+  if(forceId){
+    var ach=ACHIEVEMENTS.find(function(a){return a.id===forceId;});
+    if(ach&&!player.achievements[ach.id]){
+      player.achievements[ach.id]=true;
+      if(ach.reward){
+        if(ach.reward.attr){var b=getEquipBonus();for(var k in ach.reward.attr){player[k]=(player[k]||0)+ach.reward.attr[k];}}
+        if(ach.reward.gold){player.gold+=ach.reward.gold;player.totalGold=(player.totalGold||0)+ach.reward.gold;}
+        if(ach.reward.exp){player.exp+=ach.reward.exp;checkLevelUp();}
+        if(ach.reward.sp){player.sp+=ach.reward.sp;}
+        if(ach.reward.rep){updateFactionStanding(player.faction.id,ach.reward.rep);}
+        if(ach.reward.skill&&!player.skills.includes(ach.reward.skill)){learnSkill(ach.reward.skill);}
+      }
+      SFX.achievement();
+      showNotice('🏆 成就解鎖：'+ach.name,'#f0b820');
+      addLog('🏆 成就解鎖：'+ach.icon+' '+ach.name);
+      saveGame();
+      return ach;
+    }
+    return null;
+  }
+  // Scan all
+  for(var i=0;i<ACHIEVEMENTS.length;i++){
+    var a=ACHIEVEMENTS[i];
+    if(!player.achievements[a.id]&&a.check(player)){checkAchievement(a.id);}
+  }
+}
+
+function renderAchievements(){
+  if(!player.achievements)player.achievements={};
+  var cats=['combat','arena','realm','level','skill','wealth','explore','boss','master'];
+  var catNames={combat:'⚔️ 戰鬥',arena:'🏆 論劍',realm:'☯️ 境界',level:'⭐ 等級',skill:'📖 技能',wealth:'💰 財富',explore:'🗺️ 探索',boss:'👹 Boss',master:'🙏 師門'};
+  var unlocked=Object.keys(player.achievements).length;
+  var total=ACHIEVEMENTS.length;
+  var html='<div style="max-width:640px;width:100%">';
+  html+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+  html+='<button class="btn-d" onclick="showScreen(\'s-main\');renderMain()">← 返回</button>';
+  html+='<h2 style="flex:1">🏆 成就系統</h2>';
+  html+='<span style="color:var(--gold);font-size:11px">'+unlocked+'/'+total+'</span>';
+  html+='</div><div class="decor"><span>◆</span></div>';
+  for(var c=0;c<cats.length;c++){
+    var cat=cats[c];
+    var items=ACHIEVEMENTS.filter(function(a){return a.category===cat;});
+    if(items.length===0)continue;
+    html+='<div style="margin-bottom:16px">';
+    html+='<div style="color:var(--gold);font-size:11px;letter-spacing:2px;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)">'+catNames[cat]+'</div>';
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+    for(var j=0;j<items.length;j++){
+      var a=items[j];
+      var done=player.achievements[a.id]===true;
+      var col=RARITY_COLORS[a.rarity];
+      html+='<div style="background:'+(done?'rgba(180,140,20,.12)':'rgba(0,0,0,.3)');border:1px solid '+(done?col:'var(--border)')+';border-radius:8px;padding:10px;opacity:'+(done?'1':'0.45')+'">';
+      html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">';
+      html+='<span style="font-size:16px">'+a.icon+'</span>';
+      html+='<span style="color:'+col+';font-size:11px;font-weight:bold">'+a.name+'</span>';
+      html+='<span style="font-size:9px;color:'+col+';margin-left:auto">'+a.rarity+'</span>';
+      html+='</div>';
+      html+='<div style="font-size:10px;color:var(--dim);margin-bottom:4px">'+a.desc+'</div>';
+      if(done){
+        var rw=[];
+        if(a.reward.attr)for(var k in a.reward.attr)rw.push('+'+a.reward.attr[k]+k);
+        if(a.reward.gold)rw.push('+'+a.reward.gold+'兩');
+        if(a.reward.exp)rw.push('+'+a.reward.exp+'經驗');
+        if(a.reward.sp)rw.push('+'+a.reward.sp+'修煉點');
+        if(a.reward.skill)rw.push('技能:'+a.reward.skill);
+        html+='<div style="font-size:9px;color:var(--gold)">獎勵：'+rw.join(' · ')+'</div>';
+      } else {html+='<div style="font-size:9px;color:#666">未達成</div>';}
+      html+='</div>';
+    }
+    html+='</div></div>';
+  }
+  html+='</div>';
+  document.getElementById('achievements-container').innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════
+// ARENA (PvP) SYSTEM
+// ═══════════════════════════════════════════════════
+const ARENA_NAMES=[
+  '西門吹雪','葉孤城','獨孤求敗','風清揚','張三丰','蕭峰','楊過','郭靖','張無忌','令狐沖',
+  '林朝英','小龍女','黃藥師','歐陽鋒','一燈大師','洪七公','周伯通','段譽','虛竹','鳩摩智',
+  '丁春秋','慕容復','丁當','田伯光','余滄海','左冷禪','嶽不群','任我行','向問天','方證大師',
+];
+const ARENA_TITLES=['無名小卒','江湖散客','一方鏢師','綠林好漢','山寨頭目','江湖俠客','武林新秀','聞名江湖','一流高手','宗師'];
+
+function getArenaOpponents(){
+  var lvl=player.level||1;
+  var realm=player.realm||1;
+  var opponents=[];
+  var used={};
+  for(var i=0;i<5;i++){
+    var seed=(player.arenaSeed||0)+i;
+    var rng=Math.abs(Math.sin(seed*9999+player.arenaWins*777));
+    var name=ARENA_NAMES[Math.floor(rng*ARENA_NAMES.length)%ARENA_NAMES.length];
+    while(used[name]){name=ARENA_NAMES[Math.floor(Math.random()*ARENA_NAMES.length)];}
+    used[name]=true;
+    var t=Math.floor(rng*10);
+    var diffMult=0.7+rng*0.6;
+    opponents.push({
+      name:name,
+      title:ARENA_TITLES[Math.min(t,ARENA_TITLES.length-1)],
+      level:Math.max(1,Math.floor(lvl*diffMult)),
+      realm:Math.max(1,Math.floor(realm*diffMult)),
+      hp:Math.floor((80+lvl*12+realm*8)*diffMult),
+      maxHp:Math.floor((80+lvl*12+realm*8)*diffMult),
+      str:Math.floor((12+lvl*2.5+realm*2)*diffMult),
+      qi:Math.floor((10+lvl*2+realm*2.5)*diffMult),
+      wis:Math.floor((8+lvl*1.5+realm*1.5)*diffMult),
+      gold:Math.floor((20+lvl*10)*diffMult),
+      exp:Math.floor((15+lvl*8)*diffMult),
+      icon:'⚔️',
+      beaten:false,
+    });
+  }
+  return opponents;
+}
+
+function renderArena(){
+  var html='<div style="max-width:620px;width:100%">';
+  html+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+  html+='<button class="btn-d" onclick="showScreen(\'s-main\');renderMain()">← 返回</button>';
+  html+='<h2 style="flex:1">🏆 論劍台</h2>';
+  html+='<span style="color:var(--gold);font-size:11px">勝 '+((player.arenaWins||0))+' 敗 '+(player.arenaLosses||0)+'</span>';
+  html+='</div><div class="decor"><span>◆</span></div>';
+  html+='<div style="text-align:center;margin:10px 0;font-size:11px;color:var(--dim)">挑選對手較量，勝利可獲豐厚獎勵</div>';
+  var opponents=getArenaOpponents();
+  player.arenaOpponents=opponents;
+  for(var i=0;i<opponents.length;i++){
+    var opp=opponents[i];
+    var canFight=opp.level<=player.level+5;
+    var difficulty=opp.level>player.level?'⚠️ 高於你':'✅ 低於你';
+    var diffColor=opp.level>player.level?'#e06040':'#60c060';
+    html+='<div style="background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px">';
+    html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
+    html+='<span style="font-size:26px">'+opp.icon+'</span>';
+    html+='<div>';
+    html+='<div style="color:var(--gold);font-size:13px;font-weight:bold">'+opp.name+'</div>';
+    html+='<div style="color:var(--dim);font-size:10px">'+opp.title+' · '+opp.realm+'重境界</div>';
+    html+='</div>';
+    html+='<div style="margin-left:auto;text-align:right">';
+    html+='<div style="color:#e05050;font-size:11px">Lv.'+opp.level+'</div>';
+    html+='<div style="color:'+diffColor+';font-size:10px">'+difficulty+'</div>';
+    html+='</div>';
+    html+='</div>';
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:8px">';
+    html+='<div class="sbox"><div class="l">武力</div><div class="v" style="color:#e06040">'+opp.str+'</div></div>';
+    html+='<div class="sbox"><div class="l">內功</div><div class="v" style="color:#4090e0">'+opp.qi+'</div></div>';
+    html+='<div class="sbox"><div class="l">生命</div><div class="v" style="color:#e05050">'+opp.hp+'</div></div>';
+    html+='</div>';
+    html+='<div style="display:flex;gap:8px">';
+    if(canFight){
+      html+='<button class="btn-p" style="flex:1;font-size:12px" onclick="startArenaFight('+i+')">挑戰！</button>';
+    } else {
+      html+='<button class="btn-d" style="flex:1;font-size:12px" disabled>等級不足</button>';
+    }
+    html+='<div style="background:rgba(0,0,0,.3);border-radius:4px;padding:4px 10px;font-size:10px;text-align:center;color:var(--dim)">勝利: +'+opp.gold+'兩 +'+opp.exp+'經</div>';
+    html+='</div>';
+    html+='</div>';
+  }
+  html+='<div style="margin-top:16px;text-align:center;font-size:10px;color:var(--dim)">每挑戰一次對手名單將重置</div>';
+  html+='</div>';
+  document.getElementById('arena-container').innerHTML=html;
+}
+
+var arenaInProgress=false;
+var currentArenaOpp=null;
+
+function startArenaFight(idx){
+  if(arenaInProgress)return;
+  var opp=player.arenaOpponents[idx];
+  if(!opp)return;
+  currentArenaOpp=opp;
+  arenaInProgress=true;
+  player.arenaHp=player.hp;
+  player.arenaMp=player.mp;
+  showScreen('s-arena-fight');
+  renderArenaFight();
+  saveGame();
+}
+
+function renderArenaFight(){
+  if(!currentArenaOpp)return;
+  var opp=currentArenaOpp;
+  var php=Math.max(0,player.arenaHp);
+  var pmx=player.maxHp;
+  var ehp=Math.max(0,opp.hp);
+  var emx=opp.maxHp;
+  var pPct=(php/emx*100).toFixed(1);
+  var ePct=(ehp/emx*100).toFixed(1);
+  var pStr=player.str+(getEquipBonus().str||0);
+  var pQi=player.qi+(getEquipBonus().qi||0);
+  var oStr=opp.str;
+  var oQi=opp.qi;
+  var html='<div style="max-width:640px;width:100%">';
+  html+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+  html+='<button class="btn-d" onclick="surrenderArena()">放棄</button>';
+  html+='<h2 style="flex:1;text-align:center;font-size:14px">⚔️ 論劍：'+opp.name+'</h2>';
+  html+='<div style="width:60px"></div>';
+  html+='</div><div class="decor"><span>◆</span></div>';
+  // Player
+  html+='<div class="card" style="margin-bottom:12px">';
+  html+='<div style="text-align:center;font-weight:bold;color:var(--gold);margin-bottom:6px">'+player.name+'</div>';
+  html+='<div class="hpbar-wrap" style="margin-bottom:4px"><div class="hpbar" id="aphp" style="background:#c04020;width:'+Math.min(100,pPct)+'%"></div></div>';
+  html+='<div style="font-size:10px;color:var(--dim);text-align:center">'+php+' / '+pmx+'</div>';
+  html+='<div style="display:flex;justify-content:space-around;margin-top:6px;font-size:11px">';
+  html+='<span style="color:#e06040">武力 '+pStr+'</span>';
+  html+='<span style="color:#4090e0">內功 '+pQi+'</span>';
+  html+='</div>';
+  html+='</div>';
+  // Enemy
+  html+='<div style="background:rgba(100,0,0,.2);border:1px solid rgba(180,40,40,.3);border-radius:8px;padding:14px;text-align:center;margin-bottom:12px">';
+  html+='<div style="font-size:28px;margin-bottom:4px">'+opp.icon+'</div>';
+  html+='<div style="color:var(--gold);font-size:12px;margin-bottom:6px">'+opp.name+'</div>';
+  html+='<div class="hpbar-wrap" style="margin-bottom:4px"><div class="hpbar" id="aehp" style="background:#802010;width:'+Math.min(100,ePct)+'%"></div></div>';
+  html+='<div style="font-size:10px;color:var(--dim);text-align:center">'+ehp+' / '+emx+'</div>';
+  html+='<div style="display:flex;justify-content:space-around;margin-top:6px;font-size:11px">';
+  html+='<span style="color:#e06040">武力 '+oStr+'</span>';
+  html+='<span style="color:#4090e0">內功 '+oQi+'</span>';
+  html+='</div>';
+  html+='</div>';
+  // Combat log
+  html+='<div id="arena-log" style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;height:120px;overflow-y:auto;font-size:11px;line-height:1.8;margin-bottom:10px"></div>';
+  // Actions
+  var canUseMp=player.arenaMp>=20;
+  html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">';
+  html+='<button class="btn-p" id="abatn" onclick="arenaDoAction(\'atk\')" style="font-size:12px">攻擊</button>';
+  html+='<button class="btn-g" id="adefbtn" onclick="arenaDoAction(\'def\')" style="font-size:12px">防禦</button>';
+  html+='<button class="btn-g" id="askbtn" onclick="arenaDoAction(\'skill\')" style="font-size:12px"'+(canUseMp?'':' disabled')+'>技能</button>';
+  html+='</div>';
+  html+='<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+  html+='<button class="btn-d" onclick="arenaDoAction(\'heal\')"'+(player.inventory.some(function(it){return it.type==='hp_potion';})?'':' disabled')+'>使用血瓶</button>';
+  html+='<button class="btn-d" onclick="surrenderArena()" style="color:#c04040">認輸</button>';
+  html+='</div>';
+  html+='</div>';
+  document.getElementById('arena-fight-container').innerHTML=html;
+  addArenaLog('論劍開始！');
+}
+
+function addArenaLog(msg){
+  var el=document.getElementById('arena-log');
+  if(!el)return;
+  var d=document.createElement('div');
+  d.style.borderBottom='1px solid rgba(255,255,255,.03)';
+  d.innerHTML=msg;
+  el.appendChild(d);
+  el.scrollTop=el.scrollHeight;
+}
+
+function arenaDoAction(type){
+  if(!arenaInProgress||!currentArenaOpp)return;
+  var opp=currentArenaOpp;
+  var b=getEquipBonus();
+  var pStr=player.str+(b.str||0);
+  var pQi=player.qi+(b.qi||0);
+  var pWis=player.wis+(b.wis||0);
+  var oStr=opp.str;
+  var oQi=opp.qi;
+  var dmg=0;var emdmg=0;var log='';
+  // Player action
+  if(type==='atk'){
+    dmg=Math.floor(pStr*(0.9+Math.random()*0.3));
+    opp.hp-=dmg;
+    log='你攻擊對手，造成 '+dmg+' 點傷害';
+  } else if(type==='def'){
+    dmg=Math.floor(pStr*0.3);
+    opp.hp-=dmg;
+    log='你防禦姿態，反擊造成 '+dmg+' 點傷害';
+  } else if(type==='skill'){
+    if(player.arenaMp<20){addArenaLog('內力不足！');return;}
+    player.arenaMp-=20;
+    dmg=Math.floor(pQi*1.8+pWis*0.5);
+    opp.hp-=dmg;
+    log='你施展技能，造成 '+dmg+' 點內力傷害！';
+  } else if(type==='heal'){
+    var potIdx=player.inventory.findIndex(function(it){return it.type==='hp_potion';});
+    if(potIdx>=0){
+      player.inventory.splice(potIdx,1);
+      var heal=Math.floor(player.maxHp*0.4);
+      player.arenaHp=Math.min(player.maxHp,player.arenaHp+heal);
+      log='使用血瓶，恢復 '+heal+' 生命';
+    }
+  }
+  addArenaLog(log);
+  // Check opp dead
+  if(opp.hp<=0){
+    arenaEnd(true);return;
+  }
+  // Enemy turn (simple AI)
+  setTimeout(function(){
+    var eAct=Math.random()<0.3?'skill':'atk';
+    if(eAct==='skill'){
+      emdmg=Math.floor(oQi*1.3);
+      player.arenaHp-=emdmg;
+      addArenaLog('對手施展內功，造成 '+emdmg+' 點傷害！');
+    } else {
+      emdmg=Math.floor(oStr*0.8*(0.8+Math.random()*0.4));
+      player.arenaHp-=emdmg;
+      addArenaLog('對手攻擊，造成 '+emdmg+' 點傷害');
+    }
+    document.getElementById('aphp').style.width=Math.max(0,player.arenaHp/player.maxHp*100)+'%';
+    document.getElementById('aehp').style.width=Math.max(0,opp.hp/opp.maxHp*100)+'%';
+    if(player.arenaHp<=0){arenaEnd(false);} else {
+      arenaInProgress=true;
+    }
+  },600);
+}
+
+function surrenderArena(){
+  if(!arenaInProgress)return;
+  arenaEnd(false);
+}
+
+function arenaEnd(won){
+  arenaInProgress=false;
+  var opp=currentArenaOpp;
+  player.arenaHp=player.hp;
+  player.arenaMp=player.mp;
+  var html='<div style="max-width:640px;width:100%;text-align:center;padding:20px">';
+  if(won){
+    player.arenaWins=(player.arenaWins||0)+1;
+    player.winStreak=(player.winStreak||0)+1;
+    player.gold+=opp.gold;
+    player.totalGold=(player.totalGold||0)+opp.gold;
+    player.exp+=opp.exp;
+    player.arenaSeed=(player.arenaSeed||0)+1;
+    checkLevelUp();
+    checkAchievement();
+    SFX.victory();
+    html+='<div style="font-size:48px;margin-bottom:12px">🏆</div>';
+    html+='<div style="color:var(--gold);font-size:18px;margin-bottom:8px">論劍取勝！</div>';
+    html+='<div style="color:var(--paper);font-size:13px;margin-bottom:16px">擊敗 '+opp.name+'</div>';
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:260px;margin:0 auto">';
+    html+='<div class="card"><div class="l">金銀</div><div class="v" style="color:var(--gold)">+'+opp.gold+'</div></div>';
+    html+='<div class="card"><div class="l">經驗</div><div class="v" style="color:#60c060">+'+opp.exp+'</div></div>';
+    html+='</div>';
+    addLog('🏆 論劍戰勝 '+opp.name+'！');
+  } else {
+    player.arenaLosses=(player.arenaLosses||0)+1;
+    player.winStreak=0;
+    player.arenaSeed=(player.arenaSeed||0)+1;
+    SFX.defeat();
+    html+='<div style="font-size:48px;margin-bottom:12px">💔</div>';
+    html+='<div style="color:#c04040;font-size:18px;margin-bottom:8px">惜敗</div>';
+    html+='<div style="color:var(--dim);font-size:12px">實力不足，再接再厲</div>';
+    addLog('💔 論劍不敵 '+opp.name);
+  }
+  html+='<button class="btn-p" style="margin-top:20px" onclick="showScreen(\'s-arena\');renderArena()">返回論劍台</button>';
+  html+='</div>';
+  document.getElementById('arena-fight-container').innerHTML=html;
+  saveGame();
+}
+
 
 // ═══════════════════════════════════════════════════
 
@@ -1029,6 +1479,9 @@ function makePlayer(birth,faction,master){
     gold:150,sp:3,skills:[],kills:0,days:1,
     equipped:{weapon:null,armor:null,accessory:null},
     inventory:[],consumables:[],reputation:0,questStage:0,bossDefeated:false,lastSkill:null,comboReady:false,realmLevel:1,realmPoints:0,realmExp:0,realmNeed:200,skillLevels:{},factionStandings:null,masterTask:null,masterTaskSnapshot:null,exploreCount:0,qiyuCount:0,totalDmg:0,locCount:{},lastShopDay:0,
+    achievements:{},wins:0,winStreak:0,totalGold:0,
+    arenaWins:0,arenaLosses:0,arenaSeed:0,
+    masterTasksDone:0,
   };
   // Give master's gift equipment
   const giftPool={weapon:EQUIP_DB.weapon,armor:EQUIP_DB.armor,accessory:EQUIP_DB.accessory};
@@ -1239,6 +1692,8 @@ function _renderMainOld(){
     {icon:'🌙',label:'打坐休息',sub:'恢復生命內力，過一天',action:'doRest()',bg:'#111009'},
     {icon:'☯️',label:'武學境界',sub:'消耗境界點提升屬性',action:"showScreen('s-realm');renderRealm()",bg:'#180818'},
     {icon:'🏆',label:'門派排行',sub:'武林各派聲望榜',action:"showScreen('s-ranking');renderRanking()",bg:'#0a1020'},
+    {icon:'⚔️',label:'論劍台',sub:'PvP挑戰賽',action:"showScreen('s-arena');renderArena()",bg:'#1a0808'},
+    {icon:'🏅',label:'成就',sub:'挑戰成就拿獎勵',action:"showScreen('s-achievements');renderAchievements()",bg:'#1a1000'},
     {icon:'📋',label:'師門任務',sub:(player.masterTask&&checkMasterTask()?'✦ 任務完成可領取':'師父的指引'),action:"showScreen('s-mastertask');renderMasterTask()",bg:'#100a20',badge:player.masterTask&&checkMasterTask()?1:0},
   ];
   document.getElementById('action-grid').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
@@ -1413,7 +1868,7 @@ function doQiyu(id){
 }
 
 function resolveQiyu(choices,idx){
-  if(player)player.qiyuCount=(player.qiyuCount||0)+1;
+  if(player){player.qiyuCount=(player.qiyuCount||0)+1;player.exploreCount=(player.exploreCount||0)+1;}
   const c=choices[idx];
   const r=c.reward;
   let gained=[];
@@ -1453,6 +1908,7 @@ function resolveQiyu(choices,idx){
   }
   applyReward(r);
   const lv=checkLevelUp();if(lv)gained.push(`升至 ${player.level} 級！`);
+  checkAchievement();
   const sc=document.getElementById('story-content');
   sc.innerHTML+=`<div class="decor" style="margin:12px 0"><span>◆</span></div>
     <p style="color:var(--goldl);line-height:1.9;font-size:13px">${c.outcome}</p>
@@ -1525,6 +1981,7 @@ function resolveAIChoice(ch,novel){
 
 function resolveClassic(choices,idx){
   const c=choices[idx];const r=c.reward||{};
+  player.exploreCount=(player.exploreCount||0)+1;
   if(r.str)player.str+=r.str;if(r.qi)player.qi+=r.qi;if(r.wis)player.wis+=r.wis;
   if(r.hp)player.hp=Math.min(player.maxHp,player.hp+r.hp);
   if(r.exp){player.exp+=r.exp;checkLevelUp();}
@@ -1536,6 +1993,7 @@ function resolveClassic(choices,idx){
     <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">${tags.map(t=>`<span style="background:rgba(180,140,20,.15);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:10px;color:var(--goldl)">${t}</span>`).join('')}</div>`;
   document.getElementById('story-choices').innerHTML='';
   document.getElementById('story-done-btns').style.display='block';
+  checkAchievement();
 }
 
 // ─── AI EXPLORE ───
@@ -1651,10 +2109,11 @@ function fleeCombat(){
   if(combatBusy)return;
   if(!player||!enemy)return;
   combatBusy=true;
+  player.winStreak=0;
   const success=Math.random()>0.4;
   if(success){
     addLog('🏃 你轉身就跑，順利逃脫！');
-    setTimeout(()=>{combatBusy=false;document.getElementById('combat-done-btns').style.display='block';},400);
+    setTimeout(function(){combatBusy=false;document.getElementById('combat-done-btns').style.display='block';},400);
   }else{
     const dmg=Math.floor(enemy.atk*0.6);
     player.hp=Math.max(1,player.hp-dmg);
@@ -1757,6 +2216,7 @@ function checkLevelUp(){
     player.realmPoints=(player.realmPoints||0)+1;
     player.hp=player.maxHp;player.mp=player.maxMp;g=true;
   }
+  if(g){checkAchievement();}
   return g;
 }
 function usePot(idx){
@@ -1833,7 +2293,7 @@ function doAtk(skillId){
     addLog('💀 【'+enemy.name+'】被擊倒！');
     addLog('🎁 獲得 '+expG+' 經驗、'+goldG+' 兩銀子！');
     player.exp+=expG;player.gold+=goldG;player.kills++;
-    if(enemy.isBoss){player.bossDefeated=true;SFX.victory();addLog('🏆 Boss 倒下！');}
+    if(enemy.isBoss){player.bossDefeated=true;SFX.victory();addLog('🏆 Boss 倒下！');checkAchievement();}
     maybeDropEquip();
     const lv=checkLevelUp();if(lv){addLog('🎉 升至 '+player.level+' 級！');SFX.levelup();}else{SFX.victory();}
     saveGame();
@@ -1849,12 +2309,12 @@ function doAtk(skillId){
       if(enemy.bleed>0){
         const bd=Math.floor(8+Math.random()*5);enemy.hp=Math.max(0,enemy.hp-bd);enemy.bleed--;
         addLog('🩸 流血造成 '+bd+' 點傷害！');
-        if(enemy.hp<=0){addLog('💀 敵人因失血倒下！');player.exp+=enemy.exp;player.gold+=enemy.gold;player.kills++;checkLevelUp();saveGame();combatBusy=false;renderCombat();const d=document.getElementById('combat-done-btns');if(d)d.style.display='block';return;}
+        if(enemy.hp<=0){addLog('💀 敵人因失血倒下！');player.exp+=enemy.exp;player.gold+=enemy.gold;player.kills++;player.wins=(player.wins||0)+1;player.winStreak=(player.winStreak||0)+1;checkLevelUp();checkAchievement();saveGame();combatBusy=false;renderCombat();const d=document.getElementById('combat-done-btns');if(d)d.style.display='block';return;}
       }
       if(enemy.burn>0){
         const fd=Math.floor(10+Math.random()*6);enemy.hp=Math.max(0,enemy.hp-fd);enemy.burn--;
         addLog('🔥 灼燒造成 '+fd+' 點傷害！');
-        if(enemy.hp<=0){addLog('💀 敵人被灼燒！');player.exp+=enemy.exp;player.gold+=enemy.gold;player.kills++;checkLevelUp();saveGame();combatBusy=false;renderCombat();const d=document.getElementById('combat-done-btns');if(d)d.style.display='block';return;}
+        if(enemy.hp<=0){addLog('💀 敵人被灼燒！');player.exp+=enemy.exp;player.gold+=enemy.gold;player.kills++;player.wins=(player.wins||0)+1;player.winStreak=(player.winStreak||0)+1;checkLevelUp();checkAchievement();saveGame();combatBusy=false;renderCombat();const d=document.getElementById('combat-done-btns');if(d)d.style.display='block';return;}
       }
       if(enemy.stunned>0){addLog('【'+enemy.name+'】被震懾，無法行動！');enemy.stunned--;combatBusy=false;renderCombat();return;}
       // 敵人攻擊
@@ -1872,7 +2332,7 @@ function doAtk(skillId){
         addLog('【'+enemy.name+'】攻擊你，造成 '+ed+' 傷害！');
         SFX.hit();
       }
-      if(enemy.hp<=0){addLog('💀 敵人倒下！');player.exp+=enemy.exp;player.gold+=enemy.gold;player.kills++;checkLevelUp();saveGame();combatBusy=false;renderCombat();const d=document.getElementById('combat-done-btns');if(d)d.style.display='block';return;}
+      if(enemy.hp<=0){addLog('💀 敵人倒下！');player.exp+=enemy.exp;player.gold+=enemy.gold;player.kills++;player.wins=(player.wins||0)+1;player.winStreak=(player.winStreak||0)+1;checkLevelUp();checkAchievement();saveGame();combatBusy=false;renderCombat();const d=document.getElementById('combat-done-btns');if(d)d.style.display='block';return;}
       if(player.hp<=1){addLog('💔 力竭倒地，你敗了...');player.gold=Math.max(0,Math.floor(player.gold*0.8));saveGame();const d=document.getElementById('combat-done-btns');if(d)d.style.display='block';}
     }catch(e){console.error('enemy turn error',e);}
     combatBusy=false;renderCombat();
@@ -1923,9 +2383,11 @@ function upgradeRealm(stat){
   if(!player||player.realmPoints<=0)return;
   player.realmPoints--;
   player[stat]=(player[stat]||0)+1;
+  player.realm=(player.realm||0)+1;
   if(stat==='qi'){player.maxMp=(player.maxMp||80)+15;player.mp=Math.min(player.mp+15,player.maxMp);showNotice('內力境界提升！內力上限 +15','#4090e0');}
   else if(stat==='str'){player.maxHp=(player.maxHp||100)+12;player.hp=Math.min(player.hp+12,player.maxHp);showNotice('武力境界提升！生命上限 +12','#e06040');}
   else{showNotice('悟性境界提升！爆擊閃避大增','#9060d0');}
+  checkAchievement();
   saveGame();renderRealm();renderSidebar();
 }
 
@@ -2060,6 +2522,7 @@ function learnSkill(id){
   player.skills.push(id);player.sp-=sk.cost;
   if(!player.skillLevels)player.skillLevels={};
   player.skillLevels[id]=1;
+  checkAchievement();
   saveGame();
   showNotice('習得【'+sk.name+'】Lv.1！');renderSkillTree();
 }
@@ -2234,11 +2697,13 @@ function buyItem(type,i){
   const price=Math.floor((item.price||100)*disc);
   if(player.gold<price){showNotice('銀兩不足！','#e05050');return;}
   player.gold-=price;
+  if(!player.totalGold)player.totalGold=0;
   // Skill scroll
   if(item.skillId){
     if(player.skills.includes(item.skillId)){showNotice('已習得此武學！銀兩已退還');player.gold+=price;return;}
     player.skills.push(item.skillId);
     showNotice(`習得【${item.name.replace('秘笈','')}】！`);
+    checkAchievement();
   }else if(type==='consumable'){
     player.consumables.push({...item,uid:Date.now()});
     showNotice(`購入【${item.name}】！`);
@@ -2287,7 +2752,7 @@ function claimQuest(){
   if(!qs||!qs.check(player))return;
   const r=qs.reward;
   if(r.exp){player.exp+=r.exp;checkLevelUp();}
-  if(r.gold)player.gold+=r.gold;
+  if(r.gold){player.gold+=r.gold;if(!player.totalGold)player.totalGold=0;player.totalGold+=r.gold;}
   if(r.sp)player.sp+=r.sp;
   if(r.skill&&!player.skills.includes(r.skill)){
     player.skills.push(r.skill);
@@ -2306,6 +2771,7 @@ function claimQuest(){
     player.questStage=qs.next;
     setTimeout(function(){showNotice('📜 新任務：'+QUEST_STAGES[qs.next].name,'#4090e0');},1500);
   }
+  checkAchievement();
   saveGame();renderMain();
 }
 
@@ -2368,7 +2834,7 @@ function doCombo(comboId){
   player.hp=Math.min(player.maxHp,player.hp+heal);
   if(stun)enemy.stunned=stun;
   if(enemy.hp<=0){
-    if(enemy.isBoss){player.bossDefeated=true;SFX.victory();addLog('🏆 黑衣劍魔倒下！《九陰真經》就在眼前！');}
+    if(enemy.isBoss){player.bossDefeated=true;SFX.victory();addLog('🏆 黑衣劍魔倒下！《九陰真經》就在眼前！');checkAchievement();}
     else SFX.victory();
     const expG=enemy.exp+player.level*5;
     const goldG=player.birth.id==='merchant'?Math.floor(enemy.gold*1.5):enemy.gold;
@@ -2394,7 +2860,7 @@ function doCombo(comboId){
       player.hp=Math.max(1,player.hp-dmgE);
       SFX.hit();addLog('【'+enemy.name+'】攻擊你，造成 '+dmgE+' 傷害！');
     }
-    if(enemy.hp<=0){addLog('💀 敵人因反傷倒下！');player.exp+=enemy.exp;player.gold+=enemy.gold;player.kills++;checkLevelUp();saveGame();combatBusy=false;renderCombat();document.getElementById('combat-done-btns').style.display='block';return;}
+    if(enemy.hp<=0){addLog('💀 敵人因反傷倒下！');player.exp+=enemy.exp;player.gold+=enemy.gold;player.kills++;player.wins=(player.wins||0)+1;player.winStreak=(player.winStreak||0)+1;checkLevelUp();checkAchievement();saveGame();combatBusy=false;renderCombat();document.getElementById('combat-done-btns').style.display='block';return;}
     combatBusy=false;renderCombat();
   },780);
 }
@@ -2645,6 +3111,7 @@ function claimMasterTask(){
     if(item){player.inventory.push(Object.assign({},item,{uid:Date.now()}));gains.push('獲得 【'+item.name+'】');}
   }
   SFX.questComplete();pLog('🎉 師門任務完成！','good');
+  player.masterTasksDone=(player.masterTasksDone||0)+1;
   player.masterTask=null;
   player.masterTaskSnapshot=null;
   // Assign new task after short delay
@@ -2772,6 +3239,8 @@ function updateLeftPanel(){
     {icon:'🏮',label:'市集',screen:'s-shop',action:"showScreen('s-shop');renderShop()"},
     {icon:'☯️',label:'境界',screen:'s-realm',action:"showScreen('s-realm');renderRealm()"},
     {icon:'🏆',label:'排行',screen:'s-ranking',action:"showScreen('s-ranking');renderRanking()"},
+    {icon:'⚔️',label:'論劍',screen:'s-arena',action:"showScreen('s-arena');renderArena()"},
+    {icon:'🏅',label:'成就',screen:'s-achievements',action:"showScreen('s-achievements');renderAchievements()"},
     {icon:'📋',label:'師門',screen:'s-mastertask',action:"showScreen('s-mastertask');renderMasterTask()",badge:player.masterTask&&checkMasterTask()?1:0},
     {icon:'🌙',label:'休息',screen:'',action:'doRest()'},
   ];
