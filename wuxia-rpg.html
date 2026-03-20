@@ -274,24 +274,7 @@ code{font-family:monospace;}
     <div class="decor"><span>◆</span></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-top:18px" id="faction-cards"></div>
     <div style="text-align:center;margin-top:20px">
-      <button class="btn-p" id="faction-confirm" style="display:none" onclick="showMasterScreen()">選定門派，結識師父 →</button>
-    </div>
-  </div>
-</div>
-
-<!-- MASTER -->
-<div class="screen" id="s-master">
-  <div style="max-width:860px;width:100%">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-      <button class="btn-d" onclick="showFactionScreen()">← 返回</button>
-      <h2 style="flex:1">結識江湖前輩</h2>
-      <div style="width:60px"></div>
-    </div>
-    <p style="text-align:center;color:var(--dim);font-size:12px;letter-spacing:2px;margin-bottom:4px">師父將贈予初始裝備，並影響 AI 劇情走向</p>
-    <div class="decor"><span>◆</span></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px" id="master-cards"></div>
-    <div style="text-align:center;margin-top:20px">
-      <button class="btn-p" id="master-confirm" style="display:none" onclick="startGame()">拜師學藝，踏入江湖 ✦</button>
+      <button class="btn-p" id="faction-confirm" style="display:none" onclick="startGame()">選定門派，踏入江湖 →</button>
     </div>
   </div>
 </div>
@@ -310,7 +293,7 @@ code{font-family:monospace;}
           <div style="color:var(--gold);font-size:11px;letter-spacing:2px;margin-bottom:8px">◆ 已習得功法</div>
           <div id="learned-skills-display" style="color:var(--dim);font-size:11px;padding:4px 0">尚未習得任何武學</div>
         </div>
-        <div class="card" id="master-info-box"></div>
+        <div class="card" id="quest-panel-box"></div>
       </div>
     </div>
   </div>
@@ -380,18 +363,6 @@ code{font-family:monospace;}
   </div>
 </div>
 
-<!-- MASTER TASK -->
-<div class="screen" id="s-mastertask">
-  <div style="max-width:620px;width:100%">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-      <button class="btn-d" onclick="showScreen('s-main');renderMain()">← 返回</button>
-      <h2 style="flex:1">師門任務</h2>
-      <div style="width:60px"></div>
-    </div>
-    <div class="decor"><span>◆</span></div>
-    <div id="mastertask-container" style="margin-top:14px"></div>
-  </div>
-</div>
 
 <!-- ARENA -->
 <div class="screen" id="s-arena">
@@ -1056,6 +1027,8 @@ const FACTIONS=[
      {id:'bg1',name:'打狗棒法',icon:'🪵',cost:1,req:null,effect:{type:'atk',val:22},desc:'丐幫絕學，以棍克敵，靈活多變'},
      {id:'bg2',name:'降龍十八掌',icon:'🐉',cost:2,req:'bg1',effect:{type:'atk',val:48,tag:'撼地'},desc:'丐幫至高神功，剛猛無儔'},
      {id:'bg3',name:'九指神丐',icon:'🤌',cost:3,req:'bg2',effect:{type:'drain',val:40,tag:'化骨'},desc:'洪七公真傳，吸取敵人內力'},
+     {id:'bg4',name:'神龍十八打',icon:'🐉',cost:2,req:'bg3',effect:{type:'atk',val:38,tag:'眩暈'},desc:'攻守兼備，有幾率使敵人眩暈'},
+     {id:'bg5',name:'丐幫心法',icon:'🩸',cost:3,req:'bg4',effect:{type:'passive',dodge:0.2,counter:true},desc:'被動：提升迴避率，被攻擊時自動反擊'},
    ]},
   {id:'wudang',name:'武當派',icon:'🌀',novel:'金庸',color:'#0e1f38',accent:'#2878c0',
    desc:'太極陰陽，以柔克剛，內力深厚',
@@ -1063,6 +1036,8 @@ const FACTIONS=[
      {id:'wd1',name:'武當長拳',icon:'👊',cost:1,req:null,effect:{type:'atk',val:18},desc:'武當基礎拳法，剛柔並濟'},
      {id:'wd2',name:'太極劍法',icon:'⚔️',cost:2,req:'wd1',effect:{type:'passive',dodge:0.3,counter:true},desc:'以柔克剛，閃避後反擊'},
      {id:'wd3',name:'純陽無極功',icon:'☯️',cost:3,req:'wd2',effect:{type:'atk',val:55,tag:'純陽'},desc:'武當內功至高境界'},
+     {id:'wd4',name:'武當劍陣',icon:'⚔️',cost:2,req:'wd3',effect:{type:'atk',val:40,tag:'穿刺'},desc:'以柔克剛，穿透敵人防禦'},
+     {id:'wd5',name:'太極心法',icon:'☯️',cost:3,req:'wd4',effect:{type:'drain',val:50,tag:'化功'},desc:'吸取敵人內力，转化为自身生命'},
    ]},
   {id:'quanzhen',name:'全真教',icon:'☯️',novel:'金庸',color:'#1a2810',accent:'#50a030',
    desc:'天罡北斗陣，道法自然，剛正不阿',
@@ -1077,6 +1052,8 @@ const FACTIONS=[
      {id:'mj1',name:'聖火令法',icon:'🔥',cost:1,req:null,effect:{type:'atk',val:24,tag:'灼燒'},desc:'明教聖火之力，灼傷敵人'},
      {id:'mj2',name:'乾坤大挪移',icon:'🌀',cost:2,req:'mj1',effect:{type:'drain',val:35},desc:'化敵之力為己用'},
      {id:'mj3',name:'七傷拳',icon:'💥',cost:3,req:'mj2',effect:{type:'atk',val:70,pierce:true,tag:'傷己'},desc:'傷敵七分，傷己三分，大威力穿甲拳'},
+     {id:'mj4',name:'烈火掌',icon:'🔥',cost:2,req:'mj3',effect:{type:'atk',val:42,tag:'灼燒'},desc:'附帶3層灼燒效果'},
+     {id:'mj5',name:'明教寶典',icon:'📿',cost:3,req:'mj4',effect:{type:'passive',crit:0.25},desc:'被動：暴擊率大幅提升'},
    ]},
   {id:'gutomb',name:'古墓派',icon:'🌸',novel:'金庸',color:'#201030',accent:'#c060c0',
    desc:'玉女心經，超凡脫俗，飄逸如仙',
@@ -1084,6 +1061,8 @@ const FACTIONS=[
      {id:'gt1',name:'玉女劍法',icon:'🌸',cost:1,req:null,effect:{type:'passive',dodge:0.28},desc:'輕靈飄逸，閃避無雙'},
      {id:'gt2',name:'玉女心經',icon:'💮',cost:2,req:'gt1',effect:{type:'passive',dodge:0.45,counter:true},desc:'以弱勝強，閃避後必反擊'},
      {id:'gt3',name:'天羅地網',icon:'🌐',cost:3,req:'gt2',effect:{type:'atk',val:50,tag:'困敵'},desc:'輕功極致，困住敵人無處可逃'},
+     {id:'gt4',name:'滅劍',icon:'⚡',cost:2,req:'gt3',effect:{type:'atk',val:40,tag:'重創'},desc:'破壞力驚人，造成重創'},
+     {id:'gt5',name:'峨眉心法',icon:'🌸',cost:3,req:'gt4',effect:{type:'heal',val:60},desc:'攻擊後恢復自身相當於傷害的生命值'},
    ]},
   {id:'xiaoyao',name:'逍遙派',icon:'🍃',novel:'金庸',color:'#0c2010',accent:'#208840',
    desc:'北冥神功，吸星大法，廣博無涯',
@@ -1091,6 +1070,8 @@ const FACTIONS=[
      {id:'xy1',name:'小無相功',icon:'🌬️',cost:1,req:null,effect:{type:'atk',val:20,tag:'幻化'},desc:'萬法皆可仿效，克制專一功法'},
      {id:'xy2',name:'北冥神功',icon:'🌑',cost:2,req:'xy1',effect:{type:'drain',val:38,tag:'大量'},desc:'吸取天下內力，為己所用'},
      {id:'xy3',name:'凌波微步',icon:'🌊',cost:3,req:'xy2',effect:{type:'passive',dodge:0.55,omnistrike:true},desc:'天下第一步法，閃避後多次攻擊'},
+     {id:'xy4',name:'天山折梅手',icon:'❄️',cost:2,req:'xy3',effect:{type:'atk',val:38,tag:'禁足'},desc:'使敵人2回合無法移動'},
+     {id:'xy5',name:'逍遙心法',icon:'🍃',cost:3,req:'xy4',effect:{type:'drain',val:45,tag:'吸星'},desc:'吸取敵人生命與內力'},
    ]},
   {id:'chuliu',name:'楚留香門下',icon:'🦋',novel:'古龍',color:'#0a1525',accent:'#3080c0',
    desc:'盜帥傳人，輕功絕頂，風流倜儻',
@@ -1133,16 +1114,6 @@ const EXTRA_SKILLS=[
   {id:'qiankun',name:'乾坤大挪移',icon:'🔄',novel:'金庸',rarity:'史詩',cost:2,effect:{type:'drain',val:40},desc:'明教至寶，化敵力為己用'},
 ];
 
-const MASTERS=[
-  {id:'guojing',name:'郭靖',title:'俠之大者',icon:'🦅',novel:'金庸·射鵰',gift:'玄鐵重劍',giftType:'weapon',quote:'俠之大者，為國為民'},
-  {id:'linghu',name:'令狐沖',title:'笑傲江湖',icon:'🍷',novel:'金庸·笑傲',gift:'辟邪劍譜（殘本）',giftType:'accessory',quote:'有酒今朝醉，無劍天下行'},
-  {id:'zhangwuji',name:'張無忌',title:'明教教主',icon:'☀️',novel:'金庸·倚天',gift:'乾坤一氣袋',giftType:'accessory',quote:'乾坤大挪移，明教威天下'},
-  {id:'yanguo',name:'楊過',title:'神鵰大俠',icon:'🦅',novel:'金庸·神鵰',gift:'玄鐵劍（碎片）',giftType:'weapon',quote:'問世間情是何物，直教人生死相許'},
-  {id:'chuliu',name:'楚留香',title:'盜帥',icon:'🦋',novel:'古龍',gift:'香帥護身符',giftType:'accessory',quote:'人在江湖，身不由己'},
-  {id:'lixunhuan',name:'李尋歡',title:'小李飛刀',icon:'🗡️',novel:'古龍',gift:'飛刀匣（空）',giftType:'accessory',quote:'小李飛刀成絕響，人間不見楚留香'},
-  {id:'zhuge',name:'諸葛小花',title:'神侯',icon:'🏯',novel:'溫瑞安',gift:'神侯令牌',giftType:'accessory',quote:'正義或許遲到，但絕不缺席'},
-  {id:'dugu',name:'獨孤求敗',title:'劍魔',icon:'⚡',novel:'金庸·傳說',gift:'無名石劍',giftType:'weapon',quote:'無劍勝有劍，無招勝有招'},
-];
 
 // EQUIPMENT DATABASE
 const EQUIP_DB={
@@ -1421,7 +1392,7 @@ let apiKey='',groupId='';
 let aiEngine='minimax';  // 'minimax' | 'ollama' | 'none'
 let ollamaUrl='http://localhost:11434';
 let ollamaModel='qwen2.5:7b';
-let selBirth=null,selFaction=null,selMaster=null;
+let selBirth=null,selFaction=null;
 let player=null,enemy=null,combatBusy=false;
 let shopStock=[];
 
@@ -1430,7 +1401,7 @@ let shopStock=[];
 const SAVE_KEY = 'wuxia_rpg_v2';
 function saveGame(){
   if(!player)return;
-  const data={player,selBirth,selFaction,selMaster,shopStock,savedAt:Date.now()};
+  const data={player,selBirth,selFaction,shopStock,savedAt:Date.now()};
   try{
     localStorage.setItem(SAVE_KEY,JSON.stringify(data));
     localStorage.setItem(OFFLINE_KEY,Date.now().toString());
@@ -1443,7 +1414,7 @@ function loadGame(){
     if(!raw)return false;
     const data=JSON.parse(raw);
     if(data.player){
-      player=data.player;selBirth=data.selBirth;selFaction=data.selFaction;selMaster=data.selMaster;shopStock=data.shopStock||[];
+      player=data.player;selBirth=data.selBirth;selFaction=data.selFaction;shopStock=data.shopStock||[];
       if(!player.skillLevels){player.skillLevels={};player.skills.forEach(function(id){player.skillLevels[id]=1;});}
       if(player.realmPoints===undefined)player.realmPoints=0;
       if(!player.factionStandings)player.factionStandings=Object.assign({},FACTION_STANDING_INIT);
@@ -1461,7 +1432,7 @@ function clearSave(){localStorage.removeItem(SAVE_KEY);showNotice('存檔已清�
 
 function getAllSkills(){return FACTIONS.flatMap(f=>f.skills).concat(EXTRA_SKILLS);}
 function findSkill(id){return getAllSkills().find(s=>s.id===id);}
-function expFor(lv){return Math.floor(100*Math.pow(1.4,lv-1));}
+function expFor(lv){return Math.floor(80*Math.pow(1.28,lv-1));}
 function ncolor(n){
   if(!n)return'rgba(120,120,120,0.5)';
   if(n.includes('金庸'))return'rgba(180,120,20,0.7)';
@@ -1471,32 +1442,17 @@ function ncolor(n){
 }
 function rarityColor(r){const m={普通:'#aaa',精良:'#5aaa5a',稀有:'#5080e0',史詩:'#a060d0',傳說:'var(--goldl)'};return m[r]||'#aaa';}
 
-function makePlayer(birth,faction,master){
+function makePlayer(birth,faction){
   const maxMp=Math.floor(birth.mp||80);
-  const p={birth,faction,master,level:1,exp:0,expNeeded:100,
+  const p={birth,faction,level:1,exp:0,expNeeded:100,
     hp:birth.hp,maxHp:birth.hp,mp:maxMp,maxMp,
     str:birth.stats.str,qi:birth.stats.qi,wis:birth.stats.wis,
     gold:150,sp:3,skills:[],kills:0,days:1,
     equipped:{weapon:null,armor:null,accessory:null},
-    inventory:[],consumables:[],reputation:0,questStage:0,bossDefeated:false,lastSkill:null,comboReady:false,realmLevel:1,realmPoints:0,realmExp:0,realmNeed:200,skillLevels:{},factionStandings:null,masterTask:null,masterTaskSnapshot:null,exploreCount:0,qiyuCount:0,totalDmg:0,locCount:{},lastShopDay:0,
+    inventory:[],consumables:[],reputation:0,questStage:0,bossDefeated:false,lastSkill:null,comboReady:false,realmLevel:1,realmPoints:0,realmExp:0,realmNeed:200,skillLevels:{},factionStandings:null,exploreCount:0,qiyuCount:0,totalDmg:0,locCount:{},lastShopDay:0,
     achievements:{},wins:0,winStreak:0,totalGold:0,
     arenaWins:0,arenaLosses:0,arenaSeed:0,
-    masterTasksDone:0,
   };
-  // Give master's gift equipment
-  const giftPool={weapon:EQUIP_DB.weapon,armor:EQUIP_DB.armor,accessory:EQUIP_DB.accessory};
-  if(master.giftType && master.gift){
-    const match=giftPool[master.giftType]?.find(e=>e.name===master.gift||e.id.startsWith(master.giftType[0]));
-    // Give a themed starter item based on master
-    const starterEquips={
-      guojing:'w4',linghu:'ac4',zhangwuji:'ac3',yanguo:'w4',
-      chuliu:'ac1',lixunhuan:'ac1',zhuge:'ac5',dugu:'w5'
-    };
-    const sid=starterEquips[master.id];
-    const allE=[...EQUIP_DB.weapon,...EQUIP_DB.armor,...EQUIP_DB.accessory];
-    const item=allE.find(e=>e.id===sid);
-    if(item) p.inventory.push({...item,uid:Date.now()});
-  }
   // Starting potion
   p.consumables.push({...EQUIP_DB.consumable[0],uid:Date.now()+1});
   return p;
@@ -1546,7 +1502,7 @@ function renderSidebar(){
     <div style="text-align:center;margin-bottom:8px">
       <div style="font-size:28px;margin-bottom:3px">🥷</div>
       <div style="color:var(--gold);font-size:12px;font-weight:bold;letter-spacing:2px">${player.faction.name}弟子</div>
-      <div style="color:var(--dim);font-size:9px;margin-top:1px">出身·${player.birth.name} ${player.master?`· 師·${player.master.name}`:''}</div>
+      <div style="color:var(--dim);font-size:9px;margin-top:1px">出身·${player.birth.name}</div>
     </div>
     <div class="decor"><span>◆</span></div>
     <div style="margin-bottom:5px">
@@ -1644,35 +1600,13 @@ function renderFactionCards(){
   });
 }
 
-function showMasterScreen(){showScreen('s-master');renderMasterCards();}
-function renderMasterCards(){
-  const el=document.getElementById('master-cards');
-  el.innerHTML=MASTERS.map(function(m){
-    const sel=selMaster&&selMaster.id===m.id;
-    let h='<div class="card '+(sel?'sel':'')+'" data-mid="'+m.id+'" style="text-align:center;cursor:pointer">';
-    h+='<div style="font-size:32px;margin-bottom:6px">'+m.icon+'</div>';
-    h+='<div style="color:var(--paper);font-size:14px;font-weight:bold;letter-spacing:2px">'+m.name+'</div>';
-    h+='<div style="color:var(--dim);font-size:10px;margin:2px 0 7px"><span class="nbadge" style="background:'+ncolor(m.novel)+'">'+m.novel+'</span> '+m.title+'</div>';
-    h+='<div style="color:var(--dim);font-size:11px;line-height:1.7;margin-bottom:9px">'+m.quote+'</div>';
-    h+='<div style="background:rgba(180,140,20,.1);border:1px solid var(--border);border-radius:4px;padding:6px">';
-    h+='<div style="color:var(--goldl);font-size:9px;margin-bottom:2px">贈予初始裝備</div>';
-    h+='<div style="color:var(--paper);font-size:11px;font-weight:bold">【'+m.gift+'】</div></div></div>';
-    return h;
-  }).join('');
-  el.querySelectorAll('[data-mid]').forEach(function(div){
-    div.onclick=function(){selMaster=MASTERS.find(function(m){return m.id===div.dataset.mid;});document.getElementById('master-confirm').style.display='inline-block';renderMasterCards();};
-  });
-}
-
 function startGame(){
-  if(!selBirth||!selFaction||!selMaster)return;
-  player=makePlayer(selBirth,selFaction,selMaster);
+  if(!selBirth||!selFaction)return;
+  player=makePlayer(selBirth,selFaction);
   generateShopStock();
   // Init faction standings
   player.factionStandings=Object.assign({},FACTION_STANDING_INIT);
   player.factionStandings[player.faction.id]=(player.factionStandings[player.faction.id]||50)+10;
-  // Assign first master task
-  assignMasterTask();
   saveGame();
   document.body.classList.add('game-mode');
   showScreen('s-main');renderMain();
@@ -1694,7 +1628,6 @@ function _renderMainOld(){
     {icon:'🏆',label:'門派排行',sub:'武林各派聲望榜',action:"showScreen('s-ranking');renderRanking()",bg:'#0a1020'},
     {icon:'⚔️',label:'論劍台',sub:'PvP挑戰賽',action:"showScreen('s-arena');renderArena()",bg:'#1a0808'},
     {icon:'🏅',label:'成就',sub:'挑戰成就拿獎勵',action:"showScreen('s-achievements');renderAchievements()",bg:'#1a1000'},
-    {icon:'📋',label:'師門任務',sub:(player.masterTask&&checkMasterTask()?'✦ 任務完成可領取':'師父的指引'),action:"showScreen('s-mastertask');renderMasterTask()",bg:'#100a20',badge:player.masterTask&&checkMasterTask()?1:0},
   ];
   document.getElementById('action-grid').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
     ${actions.map(a=>`<div class="acard" style="background:${a.bg}" onclick="${a.action}">
@@ -1732,26 +1665,13 @@ function _renderMainOld(){
   }else{
     qhtml+='<div style="color:var(--goldl);font-size:12px;text-align:center;padding:8px">🏆 九陰真經在握，武林至尊！</div>';
   }
-  document.getElementById('master-info-box').innerHTML=qhtml;
+  document.getElementById('quest-panel-box').innerHTML=qhtml;
   // Check offline cultivation on every main page visit
   checkOfflineCultivation();
   // Fluctuate faction standings occasionally
   if(player.days%3===0) fluctuateFactionStandings();
   // Boost player faction on kills
   if(player.faction) updateFactionStanding(player.faction.id, Math.floor((player.kills||0)/10));
-  if(player.master){
-    const mbox=document.getElementById('master-info-box');
-    mbox.innerHTML+='<div class="decor"><span>◆</span></div>';
-    mbox.innerHTML+='<div style="display:flex;align-items:center;gap:10px"><div style="font-size:24px">'+player.master.icon+'</div><div><div style="color:var(--gold);font-size:11px;letter-spacing:2px">師父 · '+player.master.name+' '+player.master.title+'</div><div style="color:rgba(200,180,140,.45);font-size:10px;margin-top:2px;font-style:italic">「'+player.master.quote+'」</div></div></div>';
-  }
-  if(false&&player.master){
-    document.getElementById('master-info-box').innerHTML=`
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="font-size:24px">${player.master.icon}</div>
-        <div><div style="color:var(--gold);font-size:11px;letter-spacing:2px">師父 · ${player.master.name} ${player.master.title}</div>
-        <div style="color:rgba(200,180,140,.45);font-size:10px;margin-top:2px;font-style:italic">「${player.master.quote}」</div></div>
-      </div>`;
-  }
 }
 function doRest(){
   const h=Math.floor(player.maxHp*0.4);
@@ -2023,7 +1943,7 @@ async function exploreAI(locId){
   const rndT=TWISTS[Math.floor(Math.random()*TWISTS.length)];
   const rt=getRepTitle(player.reputation||0);
   const seed=Math.floor(Math.random()*9999);
-  const prompt='你是頂級武俠小說作者，請生成【隨機種子:'+seed+'，每次必須完全不同】的武俠遭遇。\n\n【玩家】'+player.faction.name+'弟子 '+player.level+'級（聲望:'+rt.name+'）\n師父:'+(player.master?player.master.name:'無')+' · 武學:'+sk+'\n\n【場景】'+loc.name+'（'+loc.novel+'）\n【天氣】'+rndW+' 【鉤子】'+rndH+' 【轉折】'+rndT+'\n\n【要求】\n1. 必須出現'+loc.novel+'的具名人物，依聲望（'+rt.name+'）決定態度\n2. 以天氣開場，帶入鉤子，加入轉折，不能平鋪直敘\n3. 三選項風險差異大，獎勵exp 30-200、gold -100到150\n4. 故事120字，選項12字內\n\n輸出純JSON不含markdown：\n{"story":"故事","choices":[{"id":1,"text":"選項","risk":"高/中/低","result":"結果60字","reward":{"exp":0,"gold":0,"hp":0,"rep":0}},{"id":2,"text":"選項","risk":"高/中/低","result":"結果60字","reward":{"exp":0,"gold":0,"hp":0,"rep":0}},{"id":3,"text":"選項","risk":"高/中/低","result":"結果60字","reward":{"exp":0,"gold":0,"hp":0,"rep":0}}]}';  try{
+  const prompt='你是頂級武俠小說作者，請生成【隨機種子:'+seed+'，每次必須完全不同】的武俠遭遇。\n\n【玩家】'+player.faction.name+'弟子 '+player.level+'級（聲望:'+rt.name+'）\n武學:'+sk+'\n\n【場景】'+loc.name+'（'+loc.novel+'）\n【天氣】'+rndW+' 【鉤子】'+rndH+' 【轉折】'+rndT+'\n\n【要求】\n1. 必須出現'+loc.novel+'的具名人物，依聲望（'+rt.name+'）決定態度\n2. 以天氣開場，帶入鉤子，加入轉折，不能平鋪直敘\n3. 三選項風險差異大，獎勵exp 30-200、gold -100到150\n4. 故事120字，選項12字內\n\n輸出純JSON不含markdown：\n{"story":"故事","choices":[{"id":1,"text":"選項","risk":"高/中/低","result":"結果60字","reward":{"exp":0,"gold":0,"hp":0,"rep":0}},{"id":2,"text":"選項","risk":"高/中/低","result":"結果60字","reward":{"exp":0,"gold":0,"hp":0,"rep":0}},{"id":3,"text":"選項","risk":"高/中/低","result":"結果60字","reward":{"exp":0,"gold":0,"hp":0,"rep":0}}]}';  try{
     document.getElementById('story-content').innerHTML=`<span class="nbadge" style="background:${ncolor(loc.novel)};margin-bottom:10px;display:inline-block">${loc.novel}</span><p id="stxt" style="color:var(--paper);line-height:2.2;font-size:14px;letter-spacing:1px;margin-top:8px"></p>`;
     let buf='';
     const full=await callStream([{role:'user',content:prompt}],d=>{buf+=d;try{const j=JSON.parse(buf.replace(/```json|```/g,'').trim());if(j.story)document.getElementById('stxt').textContent=j.story;}catch{}});
@@ -2068,7 +1988,7 @@ async function aiChoice(c,nov){
   document.getElementById('story-choices').innerHTML='<div style="text-align:center;padding:14px 0"><div class="spinner"></div></div>';
   const sk=player.skills.map(id=>findSkill(id)?.name||'').join('、')||'無';
   const prompt=`玩家選擇「${c.text}」，風險${c.risk||'中'}
-玩家：${player.faction.name}弟子 ${player.level}級，師父${player.master?.name||'無'}，武學：${sk}
+玩家：${player.faction.name}弟子 ${player.level}級，武學：${sk}
 世界：${nov}
 
 請描述結果（80-110字）：
@@ -2212,7 +2132,7 @@ function checkLevelUp(){
   let g=false;
   while(player.exp>=player.expNeeded){
     player.exp-=player.expNeeded;player.level++;player.expNeeded=expFor(player.level);
-    player.sp+=2;player.str++;player.qi++;player.wis++;player.maxHp+=8;player.maxMp+=10;
+    player.sp+=1;player.str++;player.qi++;player.wis++;player.maxHp+=5;player.maxMp+=7;
     player.realmPoints=(player.realmPoints||0)+1;
     player.hp=player.maxHp;player.mp=player.maxMp;g=true;
   }
@@ -2873,104 +2793,13 @@ const FACTION_STANDING_INIT={
   xiaoyao:68, chuliu:65, xiaoli:72, siming:80, wanderer:40,
 };
 
-// ═══════ MASTER TASKS ═══════
-const MASTER_TASKS={
-  guojing:[
-    {id:'gj1',title:'以武會友',desc:'擊敗15名敵人，彰顯俠義之道',icon:'⚔️',
-     check:function(p,s){return p.kills-s.kills>=15;},trackKills:true,
-     reward:{sp:3,exp:300,gold:150,rep:15},hint:'擊殺進度：'},
-    {id:'gj2',title:'廣結善緣',desc:'完成5次江湖探索，廣交朋友',icon:'🤝',
-     check:function(p,s){return(p.exploreCount||0)-(s.exploreCount||0)>=5;},trackExplore:true,
-     reward:{sp:2,exp:200,rep:20},hint:'探索進度：'},
-    {id:'gj3',title:'守護蒼生',desc:'聲望達到60點，成為真正大俠',icon:'🦅',
-     check:function(p,s){return(p.reputation||0)>=60;},
-     reward:{sp:4,exp:500,gold:200},hint:'當前聲望：'},
-  ],
-  linghu:[
-    {id:'lh1',title:'醉臥江湖',desc:'連續3天打坐休息，感受江湖逍遙',icon:'🍷',
-     check:function(p,s){return p.days-s.days>=3;},
-     reward:{sp:3,qi:3,exp:250},hint:'天數進度：'},
-    {id:'lh2',title:'無招勝有招',desc:'習得獨孤九劍或達到悟性30',icon:'⚡',
-     check:function(p,s){return p.skills.includes('dugu')||(p.wis||0)>=30;},
-     reward:{sp:4,wis:3,exp:400},hint:'達成條件：悟性30或習得獨孤九劍'},
-    {id:'lh3',title:'笑傲江湖',desc:'擊敗30名敵人後聲望不低於20',icon:'😄',
-     check:function(p,s){return p.kills>=30&&(p.reputation||0)>=20;},
-     reward:{sp:3,exp:350,gold:180},hint:'擊殺進度：'},
-  ],
-  zhangwuji:[
-    {id:'zwj1',title:'明教教義',desc:'達到10級，展現教主氣概',icon:'☀️',
-     check:function(p,s){return p.level>=10;},
-     reward:{sp:4,qi:4,exp:600,gold:300},hint:'當前等級：'},
-    {id:'zwj2',title:'乾坤一轉',desc:'使用技能造成總傷害超過5000點',icon:'🌀',
-     check:function(p,s){return(p.totalDmg||0)-(s.totalDmg||0)>=5000;},trackDmg:true,
-     reward:{sp:3,exp:400,skill:'qiankun'},hint:'累計傷害：'},
-    {id:'zwj3',title:'光明頂守護',desc:'在光明頂完成3次探索',icon:'🔥',
-     check:function(p,s){return(p.locCount&&p.locCount['guangmingtop']||0)>=3;},
-     reward:{sp:3,exp:300,equip:'a5'},hint:'光明頂探索次數：'},
-  ],
-  yanguo:[
-    {id:'yg1',title:'神鵰傳承',desc:'武力達到25點',icon:'🦅',
-     check:function(p,s){return(p.str||0)>=25;},
-     reward:{sp:3,str:3,exp:350},hint:'當前武力：'},
-    {id:'yg2',title:'黯然銷魂',desc:'習得黯然銷魂掌',icon:'💔',
-     check:function(p,s){return p.skills.includes('anran');},
-     reward:{sp:5,exp:600,gold:400},hint:'尚未習得黯然銷魂掌'},
-    {id:'yg3',title:'情義江湖',desc:'完成2個奇遇且聲望>10',icon:'🌹',
-     check:function(p,s){return(p.qiyuCount||0)-(s.qiyuCount||0)>=2&&(p.reputation||0)>10;},trackQiyu:true,
-     reward:{sp:3,exp:280,gold:150,rep:10},hint:'奇遇進度：'},
-  ],
-  chuliu:[
-    {id:'cl1',title:'盜帥風範',desc:'獲得300兩銀子（累計）',icon:'🦋',
-     check:function(p,s){return p.gold>=300;},
-     reward:{sp:3,wis:2,exp:250},hint:'當前銀兩：'},
-    {id:'cl2',title:'輕功天下',desc:'悟性達到20點',icon:'🌊',
-     check:function(p,s){return(p.wis||0)>=20;},
-     reward:{sp:3,wis:3,exp:300,skill:'yihua'},hint:'當前悟性：'},
-    {id:'cl3',title:'江湖義氣',desc:'完成6次江湖探索',icon:'🌙',
-     check:function(p,s){return(p.exploreCount||0)-(s.exploreCount||0)>=6;},trackExplore:true,
-     reward:{sp:4,exp:380,gold:200},hint:'探索進度：'},
-  ],
-  lixunhuan:[
-    {id:'lxh1',title:'小李飛刀無虛發',desc:'習得小李飛刀秘法',icon:'🗡️',
-     check:function(p,s){return p.skills.includes('feidao')||p.skills.includes('xl2');},
-     reward:{sp:4,str:4,exp:450},hint:'尚未習得飛刀之法'},
-    {id:'lxh2',title:'一刀定江山',desc:'擊敗20名敵人且武力>20',icon:'💥',
-     check:function(p,s){return p.kills-s.kills>=20&&(p.str||0)>20;},trackKills:true,
-     reward:{sp:3,exp:400,gold:200},hint:'擊殺進度：'},
-    {id:'lxh3',title:'多情劍客',desc:'聲望在-20到20之間保持平衡',icon:'⚖️',
-     check:function(p,s){return Math.abs(p.reputation||0)<=20&&p.kills-s.kills>=10;},trackKills:true,
-     reward:{sp:4,exp:350,gold:300},hint:'保持中立聲望，擊殺進度：'},
-  ],
-  zhuge:[
-    {id:'zg1',title:'神侯威名',desc:'聲望達到50點',icon:'🏅',
-     check:function(p,s){return(p.reputation||0)>=50;},
-     reward:{sp:4,exp:450,gold:250,rep:10},hint:'當前聲望：'},
-    {id:'zg2',title:'四大名捕精神',desc:'擊敗25名敵人且聲望>30',icon:'⚖️',
-     check:function(p,s){return p.kills-s.kills>=25&&(p.reputation||0)>30;},trackKills:true,
-     reward:{sp:3,exp:400,skill:'shenhou'},hint:'擊殺進度：'},
-    {id:'zg3',title:'正義使者',desc:'完成4次奇遇，解決江湖問題',icon:'🌟',
-     check:function(p,s){return(p.qiyuCount||0)-(s.qiyuCount||0)>=4;},trackQiyu:true,
-     reward:{sp:3,exp:350,gold:200,rep:15},hint:'奇遇進度：'},
-  ],
-  dugu:[
-    {id:'dg1',title:'無敵求敗',desc:'達到8級，踏上無敵之路',icon:'⚡',
-     check:function(p,s){return p.level>=8;},
-     reward:{sp:5,exp:700,skill:'dugu'},hint:'當前等級：'},
-    {id:'dg2',title:'劍意通玄',desc:'習得5門武學，融會貫通',icon:'🌟',
-     check:function(p,s){return p.skills.length>=5;},
-     reward:{sp:4,wis:4,exp:500},hint:'已習武學數量：'},
-    {id:'dg3',title:'破萬法',desc:'擊敗50名敵人，求一敗而不可得',icon:'🗡️',
-     check:function(p,s){return p.kills>=50;},
-     reward:{sp:5,str:3,qi:3,wis:3,exp:800,gold:400},hint:'擊殺進度：'},
-  ],
-};
 
 // ═══════ OFFLINE CULTIVATION ═══════
 const OFFLINE_KEY='wuxia_offline_ts';
-const OFFLINE_SP_PER_MIN=1/10;    // 1 SP per 10 minutes
-const OFFLINE_GOLD_PER_MIN=1/5;   // 1 gold per 5 minutes
-const OFFLINE_EXP_PER_MIN=1/2;    // 1 exp per 2 minutes
-const OFFLINE_MAX_HOURS=12;        // cap at 12 hours
+const OFFLINE_SP_PER_MIN=1/3;     // 1 SP per 3 minutes
+const OFFLINE_GOLD_PER_MIN=1/2;    // 1 gold per 2 minutes
+const OFFLINE_EXP_PER_MIN=1;       // 1 exp per 1 minute
+const OFFLINE_MAX_HOURS=8;         // cap at 8 hours
 
 // ═══════ WORLD EVENTS (隨機武林大事) ═══════
 const WORLD_EVENTS=[
@@ -3064,129 +2893,6 @@ function renderRanking(){
   document.getElementById('ranking-container').innerHTML=h;
 }
 
-// ═══════ MASTER TASKS ═══════
-function assignMasterTask(){
-  if(!player||!player.master)return;
-  const masterId=player.master.id;
-  const tasks=MASTER_TASKS[masterId];
-  if(!tasks||!tasks.length)return;
-  if(player.masterTask)return; // already has a task
-  const t=tasks[Math.floor(Math.random()*tasks.length)];
-  player.masterTask={...t};
-  // Snapshot current progress values
-  player.masterTaskSnapshot={
-    kills:player.kills||0,
-    exploreCount:player.exploreCount||0,
-    qiyuCount:player.qiyuCount||0,
-    totalDmg:player.totalDmg||0,
-    days:player.days||0,
-  };
-}
-function checkMasterTask(){
-  if(!player||!player.masterTask||!player.masterTaskSnapshot)return false;
-  return player.masterTask.check(player,player.masterTaskSnapshot);
-}
-function claimMasterTask(){
-  if(!player||!player.masterTask)return;
-  if(!checkMasterTask()){showNotice('任務尚未完成','#e05050');return;}
-  const r=player.masterTask.reward||{};
-  let gains=[];
-  if(r.sp){player.sp+=r.sp;gains.push('修煉點 +'+r.sp);}
-  if(r.exp){player.exp+=r.exp;checkLevelUp();gains.push('經驗 +'+r.exp);}
-  if(r.gold){player.gold+=r.gold;gains.push('銀兩 +'+r.gold);}
-  if(r.str){player.str+=r.str;gains.push('武力 +'+r.str);}
-  if(r.qi){player.qi+=r.qi;gains.push('內力 +'+r.qi);}
-  if(r.wis){player.wis+=r.wis;gains.push('悟性 +'+r.wis);}
-  if(r.rep){player.reputation=(player.reputation||0)+r.rep;gains.push('聲望 +'+r.rep);}
-  if(r.skill&&!player.skills.includes(r.skill)){
-    player.skills.push(r.skill);
-    if(!player.skillLevels)player.skillLevels={};
-    player.skillLevels[r.skill]=1;
-    const sk=findSkill(r.skill);
-    if(sk)gains.push('習得 【'+sk.name+'】');
-  }
-  if(r.equip){
-    const allE=[...EQUIP_DB.weapon,...EQUIP_DB.armor,...EQUIP_DB.accessory];
-    const item=allE.find(function(e){return e.id===r.equip;});
-    if(item){player.inventory.push(Object.assign({},item,{uid:Date.now()}));gains.push('獲得 【'+item.name+'】');}
-  }
-  SFX.questComplete();pLog('🎉 師門任務完成！','good');
-  player.masterTasksDone=(player.masterTasksDone||0)+1;
-  player.masterTask=null;
-  player.masterTaskSnapshot=null;
-  // Assign new task after short delay
-  setTimeout(function(){assignMasterTask();saveGame();renderMasterTask();},500);
-  saveGame();
-  renderMasterTask();
-  showNotice('師門任務完成！'+gains.join('、'),'var(--goldl)');
-}
-function renderMasterTask(){
-  if(!player)return;
-  const el=document.getElementById('mastertask-container');
-  if(!el)return;
-  if(!player.master){
-    el.innerHTML='<div style="color:var(--dim);text-align:center;padding:30px">你尚未拜入師門</div>';
-    return;
-  }
-  if(!player.masterTask){
-    assignMasterTask();
-  }
-  const task=player.masterTask;
-  const snap=player.masterTaskSnapshot||{};
-  const done=task?checkMasterTask():false;
-  let h='';
-  // Master info header
-  h+='<div class="card" style="margin-bottom:14px;display:flex;align-items:center;gap:14px">';
-  h+='<div style="font-size:40px">'+player.master.icon+'</div>';
-  h+='<div><div style="color:var(--gold);font-size:15px;font-weight:bold;letter-spacing:2px">'+player.master.name+' '+player.master.title+'</div>';
-  h+='<div style="color:var(--dim);font-size:10px;margin-top:4px;font-style:italic">「'+player.master.quote+'」</div></div></div>';
-  if(task){
-    h+='<div class="card" style="margin-bottom:12px;'+(done?'border-color:var(--goldl);background:rgba(180,140,20,.1)':'')+'">';
-    h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">';
-    h+='<span style="font-size:28px">'+task.icon+'</span>';
-    h+='<div><div style="color:var(--paper);font-size:14px;font-weight:bold">'+task.title+'</div>';
-    h+='<div style="color:var(--dim);font-size:11px;margin-top:3px">'+task.desc+'</div></div></div>';
-    // Progress indicator
-    let progress='';
-    if(task.trackKills)progress=(player.kills||0)-(snap.kills||0)+' / '+getTaskTarget(task);
-    else if(task.trackExplore)progress=(player.exploreCount||0)-(snap.exploreCount||0)+' / '+getTaskTarget(task);
-    else if(task.trackQiyu)progress=(player.qiyuCount||0)-(snap.qiyuCount||0)+' / '+getTaskTarget(task);
-    else if(task.trackDmg)progress=((player.totalDmg||0)-(snap.totalDmg||0))+' / '+getTaskTarget(task);
-    if(progress){
-      h+='<div style="color:var(--dim);font-size:11px;margin-bottom:8px">'+task.hint+progress+'</div>';
-      const pctNum=Math.min(100,parseInt(progress)*100/parseInt(progress.split('/')[1]));
-      h+='<div style="background:rgba(0,0,0,.4);border-radius:3px;height:5px;margin-bottom:10px;overflow:hidden"><div style="width:'+Math.max(2,isNaN(pctNum)?0:pctNum)+'%;height:100%;background:var(--gold);transition:width .4s"></div></div>';
-    }else{
-      h+='<div style="color:var(--dim);font-size:11px;margin-bottom:10px">'+task.hint+'</div>';
-    }
-    // Rewards preview
-    const r=task.reward||{};
-    h+='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">';
-    if(r.sp)h+='<span class="tag" style="font-size:10px;color:var(--goldl)">修煉點 +'+r.sp+'</span>';
-    if(r.exp)h+='<span class="tag" style="font-size:10px;color:var(--gold)">經驗 +'+r.exp+'</span>';
-    if(r.gold)h+='<span class="tag" style="font-size:10px;color:#90d090">銀兩 +'+r.gold+'</span>';
-    if(r.str)h+='<span class="tag" style="font-size:10px;color:#e06040">武力 +'+r.str+'</span>';
-    if(r.qi)h+='<span class="tag" style="font-size:10px;color:#4090e0">內力 +'+r.qi+'</span>';
-    if(r.wis)h+='<span class="tag" style="font-size:10px;color:#9060d0">悟性 +'+r.wis+'</span>';
-    if(r.skill){const sk=findSkill(r.skill);if(sk)h+='<span class="tag" style="font-size:10px;color:var(--goldl)">習得【'+sk.name+'】</span>';}
-    if(r.equip){const allE=[...EQUIP_DB.weapon,...EQUIP_DB.armor,...EQUIP_DB.accessory];const item=allE.find(function(e){return e.id===r.equip;});if(item)h+='<span class="tag" style="font-size:10px;color:#c080ff">'+item.name+'</span>';}
-    h+='</div>';
-    if(done){
-      h+='<button class="btn-p" style="width:100%;letter-spacing:3px" onclick="claimMasterTask()">✦ 領取師門獎勵</button>';
-    }else{
-      h+='<div style="background:rgba(0,0,0,.3);border-radius:5px;padding:8px;text-align:center;color:var(--dim);font-size:11px">繼續努力，完成任務後可領取獎勵</div>';
-    }
-    h+='</div>';
-  }else{
-    h+='<div class="card" style="text-align:center;padding:20px;color:var(--dim)">暫無任務，明日師父將有新的指引</div>';
-  }
-  el.innerHTML=h;
-}
-function getTaskTarget(task){
-  const desc=task.desc||'';
-  const num=desc.match(/\d+/);
-  return num?num[0]:'?';
-}
 
 
 // ═══════ THREE-COLUMN LAYOUT ═══════
@@ -3241,7 +2947,6 @@ function updateLeftPanel(){
     {icon:'🏆',label:'排行',screen:'s-ranking',action:"showScreen('s-ranking');renderRanking()"},
     {icon:'⚔️',label:'論劍',screen:'s-arena',action:"showScreen('s-arena');renderArena()"},
     {icon:'🏅',label:'成就',screen:'s-achievements',action:"showScreen('s-achievements');renderAchievements()"},
-    {icon:'📋',label:'師門',screen:'s-mastertask',action:"showScreen('s-mastertask');renderMasterTask()",badge:player.masterTask&&checkMasterTask()?1:0},
     {icon:'🌙',label:'休息',screen:'',action:'doRest()'},
   ];
   nb.innerHTML=navItems.map(function(nav){
