@@ -5,652 +5,549 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Texas Hold'em 撲克計算器</title>
 <style>
-  :root {
-    --bg: #0d1f0d;
-    --felt: #1a3d1a;
-    --gold: #d4a017;
-    --gold2: #b8860b;
-    --red: #c0392b;
-    --green: #27ae60;
-    --white: #ecf0f1;
-    --gray: #7f8c8d;
-    --border: #2ecc71;
-    --card-bg: #111;
-    --card-red: #c0392b;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--white);
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    min-height: 100vh;
-    padding: 10px;
-  }
-  h1 { text-align: center; color: var(--gold); font-size: 1.4em; margin: 10px 0; }
-  h2 { color: var(--gold2); font-size: 0.95em; margin: 12px 0 6px; border-bottom: 1px solid var(--gold2); padding-bottom: 4px; }
-  .section { background: var(--felt); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
-  .result-box { background: #0a1a0a; border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin: 8px 0; text-align: center; }
-  .equity-big { font-size: 2.2em; font-weight: bold; color: var(--gold); }
-  .equity-sub { font-size: 0.85em; color: var(--gray); margin-top: 4px; }
-  .card-display { display: flex; gap: 6px; flex-wrap: wrap; min-height: 50px; padding: 6px; background: #0a1f0a; border-radius: 6px; margin: 6px 0; }
-  .card-chip {
-    width: 52px; height: 68px; border-radius: 8px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-size: 1.1em; font-weight: bold; border: 2px solid #444;
-  }
-  .card-chip.red { color: var(--card-red); background: linear-gradient(135deg,#1a0a0a,#2a1010); border-color: #c0392b; }
-  .card-chip.black { color: var(--white); background: linear-gradient(135deg,#1a1a1a,#2a2a2a); border-color: #555; }
-  .card-chip .suit { font-size: 1.3em; }
-  .card-chip .rank { font-size: 1.1em; }
-  .card-chip.empty { border: 2px dashed #333; background: transparent; color: #333; font-size: 0.7em; justify-content: center; }
-  select {
-    background: #111; border: 1px solid #444; border-radius: 6px;
-    color: var(--white); padding: 8px 12px; font-size: 1em;
-    cursor: pointer; width: 100%;
-  }
-  select:focus { border-color: var(--gold2); outline: none; }
-  .picker-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
-  .picker-group { background: #0a1a0a; border: 1px solid #2a3a2a; border-radius: 8px; padding: 10px; }
-  .picker-label { font-size: 0.78em; color: var(--gray); margin-bottom: 4px; }
-  .picker-hint { font-size: 0.72em; color: #3a5a3a; margin-top: 4px; }
-  button { background: var(--gold2); color: #000; border: none; border-radius: 6px; padding: 9px 16px; font-size: 0.95em; font-weight: bold; cursor: pointer; flex: 1; min-width: 100px; }
-  button:hover { background: var(--gold); }
-  button.secondary { background: #333; color: var(--white); }
-  button.secondary:hover { background: #444; }
-  .btn-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
-  .tab-bar { display: flex; gap: 4px; margin-bottom: 8px; overflow-x: auto; }
-  .tab { background: #1a3d1a; border: 1px solid #2a4a2a; border-radius: 6px; padding: 6px 10px; font-size: 0.78em; color: var(--gray); cursor: pointer; white-space: nowrap; flex-shrink: 0; }
-  .tab.active { background: var(--gold2); color: #000; border-color: var(--gold); }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-  .stat-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #1a3d1a; font-size: 0.85em; }
-  .stat-row .k { color: var(--gray); }
-  .stat-row .v { color: var(--white); font-weight: bold; }
-  .pot-odds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; margin: 8px 0; }
-  .odds-card { background: #111; border: 1px solid #333; border-radius: 6px; padding: 8px; text-align: center; }
-  .odds-card .size { color: var(--gold2); font-weight: bold; font-size: 0.82em; }
-  .odds-card .pct { color: var(--white); font-size: 1.1em; font-weight: bold; }
-  .odds-card .need { color: var(--gray); font-size: 0.73em; }
-  .ev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
-  .ev-card { background: #111; border: 1px solid #333; border-radius: 8px; padding: 10px; text-align: center; }
-  .ev-card .label { font-size: 0.78em; color: var(--gray); }
-  .ev-card .value { font-size: 1.15em; font-weight: bold; margin: 4px 0; }
-  .ev-card .sub { font-size: 0.72em; color: var(--gray); }
-  .rec-box { background: #1a2a1a; border: 2px solid var(--green); border-radius: 8px; padding: 12px; text-align: center; margin: 8px 0; }
-  .rec-box .rec-main { font-size: 1.25em; font-weight: bold; margin-bottom: 4px; }
-  .rec-box .rec-ev { font-size: 0.82em; color: var(--gray); }
-  .rec-box.fold { border-color: var(--red); }
-  .rec-box.fold .rec-main { color: var(--red); }
-  .rec-box.call { border-color: var(--green); }
-  .rec-box.call .rec-main { color: var(--green); }
-  .rec-box.bet { border-color: var(--gold); }
-  .rec-box.bet .rec-main { color: var(--gold); }
-  .input-row { display: flex; gap: 6px; align-items: center; margin: 6px 0; flex-wrap: wrap; }
-  .input-row label { font-size: 0.85em; color: var(--gray); min-width: 70px; }
-  .input-row input { background: #111; border: 1px solid #444; border-radius: 5px; color: var(--white); padding: 7px 10px; font-size: 0.9em; width: 90px; }
-  .input-row span { font-size: 0.8em; color: var(--gray); }
-  .slider-row { display: flex; gap: 6px; align-items: center; margin: 6px 0; flex-wrap: wrap; }
-  .slider-row label { font-size: 0.85em; color: var(--gray); min-width: 100px; }
-  .slider-row input[type=range] { flex: 1; min-width: 80px; }
-  .slider-row span { font-size: 0.85em; color: var(--gold2); min-width: 40px; text-align: right; }
-  .info-box { background: #111; border-left: 3px solid var(--gold2); padding: 8px 10px; border-radius: 0 6px 6px 0; font-size: 0.8em; color: var(--gray); margin: 6px 0; line-height: 1.6; }
-  .outs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 8px 0; }
-  .outs-card { background: #111; border: 1px solid #333; border-radius: 6px; padding: 8px; text-align: center; }
-  .outs-card .type { font-size: 0.73em; color: var(--gray); }
-  .outs-card .count { font-size: 1.3em; font-weight: bold; color: var(--gold2); }
-  .outs-card .desc { font-size: 0.68em; color: var(--gray); }
-  .matrix-wrap { overflow-x: auto; }
-  .matrix { display: grid; grid-template-columns: 30px repeat(13, 1fr); gap: 1px; font-size: 0.65em; margin: 8px 0; min-width: 420px; }
-  .matrix-header { background: #1a3d1a; color: var(--gold2); font-weight: bold; text-align: center; padding: 2px; font-size: 0.78em; }
-  .matrix-row-label { background: #1a3d1a; color: var(--gold2); font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.78em; }
-  .matrix-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 2px; font-size: 0.7em; font-weight: bold; cursor: pointer; transition: transform 0.1s; min-width: 20px; min-height: 20px; }
-  .matrix-cell:hover { transform: scale(1.12); z-index: 2; }
-  .cell-label { font-size: 0.65em; text-align: center; line-height: 1.1; }
-  .loading { text-align: center; padding: 20px; color: var(--gray); }
-  .spinner { width: 28px; height: 28px; border: 3px solid #333; border-top-color: var(--gold2); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 8px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @media (max-width: 480px) {
-    .picker-row { grid-template-columns: 1fr; }
-    .ev-grid { grid-template-columns: 1fr; }
-    h1 { font-size: 1.2em; }
-  }
+:root{--bg:#0d1f0d;--felt:#1a3d1a;--gold:#d4a017;--gold2:#b8860b;--red:#c0392b;--green:#27ae60;--white:#ecf0f1;--gray:#7f8c8d;--border:#2ecc71}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;padding:10px}
+h1{text-align:center;color:var(--gold);font-size:1.3em;margin:8px 0}
+h2{color:var(--gold2);font-size:0.9em;margin:10px 0 5px;border-bottom:1px solid var(--gold2);padding-bottom:3px}
+.section{background:var(--felt);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px}
+.card-chip{width:50px;height:64px;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:1em;font-weight:bold;border:2px solid #444}
+.card-chip.red{color:var(--red);background:linear-gradient(135deg,#1a0a0a,#2a1010);border-color:#c0392b}
+.card-chip.black{color:var(--white);background:linear-gradient(135deg,#1a1a1a,#252525);border-color:#555}
+.card-chip .cs{font-size:1.2em}
+.card-chip .cr{font-size:1em}
+select{background:#111;border:1px solid #444;border-radius:6px;color:var(--white);padding:8px 10px;font-size:0.95em;width:100%;cursor:pointer}
+select:focus{border-color:var(--gold2);outline:none}
+.picker-group{background:#0a1a0a;border:1px solid #2a3a2a;border-radius:8px;padding:10px;margin:6px 0}
+.picker-label{font-size:0.75em;color:var(--gray);margin-bottom:3px}
+.card-display{display:flex;gap:6px;flex-wrap:wrap;min-height:40px;padding:6px;background:#0a1f0a;border-radius:6px;margin:6px 0;align-items:center}
+.card-display:empty::before{content:'尚未選擇';color:#3a5a3a;font-size:0.8em}
+.result-box{background:#0a1a0a;border:1px solid var(--border);border-radius:8px;padding:10px;margin:6px 0;text-align:center}
+.equity-big{font-size:2em;font-weight:bold;color:var(--gold)}
+.equity-sub{font-size:0.8em;color:var(--gray);margin-top:3px}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+button{background:var(--gold2);color:#000;border:none;border-radius:6px;padding:8px 14px;font-size:0.9em;font-weight:bold;cursor:pointer;flex:1;min-width:90px}
+button:hover{background:var(--gold)}
+button.secondary{background:#333;color:var(--white)}
+button.secondary:hover{background:#444}
+.tab-bar{display:flex;gap:4px;margin-bottom:8px;overflow-x:auto;padding-bottom:2px}
+.tab{background:#1a3d1a;border:1px solid #2a4a2a;border-radius:6px;padding:6px 10px;font-size:0.78em;color:var(--gray);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.tab.active{background:var(--gold2);color:#000;border-color:var(--gold)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.stat-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #1a3d1a;font-size:0.83em}
+.stat-row .k{color:var(--gray)}.stat-row .v{color:var(--white);font-weight:bold}
+.odds-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:6px 0}
+.odds-card{background:#111;border:1px solid #333;border-radius:6px;padding:7px 5px;text-align:center}
+.odds-card .size{color:var(--gold2);font-weight:bold;font-size:0.78em}
+.odds-card .pct{color:var(--white);font-size:1em;font-weight:bold}
+.odds-card .need{color:var(--gray);font-size:0.68em}
+.ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}
+.ev-card{background:#111;border:1px solid #333;border-radius:8px;padding:9px;text-align:center}
+.ev-card .label{font-size:0.75em;color:var(--gray)}
+.ev-card .value{font-size:1.1em;font-weight:bold;margin:3px 0}
+.ev-card .sub{font-size:0.7em;color:var(--gray)}
+.rec-box{background:#1a2a1a;border:2px solid var(--green);border-radius:8px;padding:10px;text-align:center;margin:6px 0}
+.rec-box .rec-main{font-size:1.2em;font-weight:bold;margin-bottom:3px}
+.rec-box .rec-ev{font-size:0.78em;color:var(--gray)}
+.rec-box.fold{border-color:var(--red)}.rec-box.fold .rec-main{color:var(--red)}
+.rec-box.call{border-color:var(--green)}.rec-box.call .rec-main{color:var(--green)}
+.rec-box.bet{border-color:var(--gold)}.rec-box.bet .rec-main{color:var(--gold)}
+.input-row{display:flex;gap:6px;align-items:center;margin:5px 0;flex-wrap:wrap}
+.input-row label{font-size:0.82em;color:var(--gray);min-width:65px}
+.input-row input{background:#111;border:1px solid #444;border-radius:5px;color:var(--white);padding:6px 8px;font-size:0.9em;width:85px}
+.input-row span{font-size:0.78em;color:var(--gray)}
+.slider-row{display:flex;gap:6px;align-items:center;margin:5px 0;flex-wrap:wrap}
+.slider-row label{font-size:0.82em;color:var(--gray);min-width:90px}
+.slider-row input[type=range]{flex:1;min-width:80px}
+.slider-row span{font-size:0.82em;color:var(--gold2);min-width:35px}
+.info-box{background:#111;border-left:3px solid var(--gold2);padding:8px 10px;border-radius:0 6px 6px 0;font-size:0.78em;color:var(--gray);margin:6px 0;line-height:1.7}
+.outs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:6px 0}
+.outs-card{background:#111;border:1px solid #333;border-radius:6px;padding:7px 5px;text-align:center}
+.outs-card .type{font-size:0.68em;color:var(--gray)}
+.outs-card .count{font-size:1.2em;font-weight:bold;color:var(--gold2)}
+.outs-card .desc{font-size:0.65em;color:var(--gray)}
+.matrix-wrap{overflow-x:auto}.matrix{display:grid;grid-template-columns:28px repeat(13,1fr);gap:1px;font-size:0.65em;margin:6px 0;min-width:420px}
+.matrix-header{background:#1a3d1a;color:var(--gold2);font-weight:bold;text-align:center;padding:2px;font-size:0.75em}
+.matrix-row-label{background:#1a3d1a;color:var(--gold2);font-weight:bold;display:flex;align-items:center;justify-content:center;font-size:0.75em}
+.matrix-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:2px;font-size:0.68em;font-weight:bold;cursor:pointer;min-width:18px;min-height:18px;transition:transform 0.1s}
+.matrix-cell:hover{transform:scale(1.15);z-index:2}
+.cell-label{font-size:0.62em;text-align:center;line-height:1.2}
+.loading{text-align:center;padding:20px;color:var(--gray)}
+.spinner{width:28px;height:28px;border:3px solid #333;border-top-color:var(--gold2);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:480px){.picker-row{display:block}.ev-grid{grid-template-columns:1fr}.h1{font-size:1.1em}}
 </style>
 </head>
 <body>
 <h1>🃏 Texas Hold'em 撲克計算器</h1>
-
 <div class="section">
-  <div class="tab-bar">
-    <div class="tab active" onclick="showTab('calc')">📊 勝率計算</div>
-    <div class="tab" onclick="showTab('matrix')">📈 169手牌</div>
-    <div class="tab" onclick="showTab('potodds')">💰 Pot Odds</div>
-    <div class="tab" onclick="showTab('ev')">📐 EV決策</div>
-    <div class="tab" onclick="showTab('guide')">📖 參考</div>
-  </div>
+<div class="tab-bar">
+  <div class="tab active" id="tab-btn-calc" onclick="switchTab('calc')">勝率計算</div>
+  <div class="tab" id="tab-btn-matrix" onclick="switchTab('matrix')">169手牌</div>
+  <div class="tab" id="tab-btn-potodds" onclick="switchTab('potodds')">Pot Odds</div>
+  <div class="tab" id="tab-btn-ev" onclick="switchTab('ev')">EV決策</div>
+  <div class="tab" id="tab-btn-guide" onclick="switchTab('guide')">參考</div>
+</div>
 
-  <!-- ===== 勝率計算 ===== -->
-  <div id="tab-calc" class="tab-content active">
-    <h2>🎴 你的手牌</h2>
-    <div class="picker-group">
-      <div class="picker-row">
-        <div>
-          <div class="picker-label">第 1 張牌</div>
-          <select id="sel-hc1" onchange="updateHoleCards()"></select>
-        </div>
-        <div>
-          <div class="picker-label">第 2 張牌</div>
-          <select id="sel-hc2" onchange="updateHoleCards()"></select>
-        </div>
-      </div>
-      <div class="card-display" id="your-cards-display"></div>
-    </div>
-
-    <h2>🌐 公共牌（可選）</h2>
-    <div class="picker-group">
-      <div class="picker-row">
-        <div>
-          <div class="picker-label">公牌 1</div>
-          <select id="sel-cc1" onchange="updateCommunityCards()"><option value="">—</option></select>
-        </div>
-        <div>
-          <div class="picker-label">公牌 2</div>
-          <select id="sel-cc2" onchange="updateCommunityCards()"><option value="">—</option></select>
-        </div>
-        <div>
-          <div class="picker-label">公牌 3</div>
-          <select id="sel-cc3" onchange="updateCommunityCards()"><option value="">—</option></select>
-        </div>
-      </div>
-      <div class="picker-row">
-        <div>
-          <div class="picker-label">公牌 4</div>
-          <select id="sel-cc4" onchange="updateCommunityCards()"><option value="">—</option></select>
-        </div>
-        <div>
-          <div class="picker-label">公牌 5</div>
-          <select id="sel-cc5" onchange="updateCommunityCards()"><option value="">—</option></select>
-        </div>
-      </div>
-      <div class="card-display" id="community-cards-display"></div>
-    </div>
-
-    <div class="btn-row">
-      <button onclick="calculateEquity()">🔢 計算勝率</button>
-      <button class="secondary" onclick="clearAll()">🗑 清除</button>
-    </div>
-
-    <div id="equity-result"></div>
-
-    <h2>🌱 Outs & 二四法則</h2>
-    <div id="outs-section" class="info-box">選擇手牌和公牌後自動計算</div>
-    <div id="rule24-section"></div>
-  </div>
-
-  <!-- ===== 169矩陣 ===== -->
-  <div id="tab-matrix" class="tab-content">
-    <h2>📈 169手牌勝率矩陣</h2>
-    <div class="info-box">選擇你的手牌和公牌，矩陣顯示面對隨機對手的勝率</div>
-    <div class="picker-row">
+<!-- ===== 勝率計算 ===== -->
+<div id="tab-calc" class="tab-content active">
+  <h2>🎴 你的手牌</h2>
+  <div class="picker-group">
+    <div class="picker-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
       <div>
-        <div class="picker-label">手牌 1</div>
-        <select id="sel-mx1" onchange="updateMatrixCards()"></select>
+        <div class="picker-label">第 1 張</div>
+        <select id="hc1" onchange="onHoleChange()"><option value="">— 選擇 —</option></select>
       </div>
       <div>
-        <div class="picker-label">手牌 2</div>
-        <select id="sel-mx2" onchange="updateMatrixCards()"></select>
+        <div class="picker-label">第 2 張</div>
+        <select id="hc2" onchange="onHoleChange()"><option value="">— 選擇 —</option></select>
       </div>
     </div>
-    <div class="card-display" id="matrix-selected-display"></div>
-    <div class="input-row">
-      <label>模擬次數：</label>
-      <input type="number" id="matrix-iters" value="5000" min="1000" max="50000" step="1000" style="width:90px">
-    </div>
-    <div class="btn-row">
-      <button onclick="calculateMatrix()">📊 生成矩陣</button>
-    </div>
-    <div id="matrix-result"></div>
+    <div class="card-display" id="your-display"></div>
   </div>
 
-  <!-- ===== Pot Odds ===== -->
-  <div id="tab-potodds" class="tab-content">
-    <h2>💰 Pot Odds 計算器</h2>
-    <div class="picker-group">
-      <div class="input-row">
-        <label>底池：</label>
-        <input type="number" id="pot-size" value="100" min="1" oninput="calcPotOdds()">
-        <span>chips</span>
-      </div>
-      <div class="input-row">
-        <label>對手下注：</label>
-        <input type="number" id="opp-bet" value="50" min="0" oninput="calcPotOdds()">
-        <span>chips</span>
-      </div>
-      <div class="input-row">
-        <label>跟注金額：</label>
-        <input type="number" id="call-amt" value="50" min="0" oninput="calcPotOdds()">
-        <span>chips</span>
-      </div>
+  <h2>🌐 公共牌（可選）</h2>
+  <div class="picker-group">
+    <div class="picker-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px">
+      <div><div class="picker-label">公牌 1</div><select id="cc1" onchange="onCommChange()"><option value="">—</option></select></div>
+      <div><div class="picker-label">公牌 2</div><select id="cc2" onchange="onCommChange()"><option value="">—</option></select></div>
+      <div><div class="picker-label">公牌 3</div><select id="cc3" onchange="onCommChange()"><option value="">—</option></select></div>
     </div>
-    <div id="pot-odds-result"></div>
-
-    <h2>📋 Bet Size 參考表</h2>
-    <div class="pot-odds-grid">
-      <div class="odds-card"><div class="size">1/4 底池</div><div class="pct">17%</div><div class="need">需 17%+ 勝率</div></div>
-      <div class="odds-card"><div class="size">1/3 底池</div><div class="pct">20%</div><div class="need">需 20%+ 勝率</div></div>
-      <div class="odds-card"><div class="size">1/2 底池</div><div class="pct">25%</div><div class="need">需 25%+ 勝率</div></div>
-      <div class="odds-card"><div class="size">2/3 底池</div><div class="pct">~29%</div><div class="need">需 29%+ 勝率</div></div>
-      <div class="odds-card"><div class="size">1 底池</div><div class="pct">33%</div><div class="need">需 33%+ 勝率</div></div>
-      <div class="odds-card"><div class="size">2x 底池</div><div class="pct">40%</div><div class="need">需 40%+ 勝率</div></div>
+    <div class="picker-row" style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div><div class="picker-label">公牌 4</div><select id="cc4" onchange="onCommChange()"><option value="">—</option></select></div>
+      <div><div class="picker-label">公牌 5</div><select id="cc5" onchange="onCommChange()"><option value="">—</option></select></div>
     </div>
+    <div class="card-display" id="comm-display"></div>
   </div>
 
-  <!-- ===== EV ===== -->
-  <div id="tab-ev" class="tab-content">
-    <h2>📐 EV 決策引擎</h2>
-    <div class="picker-group">
-      <div class="input-row">
-        <label>你的勝率：</label>
-        <input type="number" id="ev-equity" value="30" min="0" max="100" step="0.1">
-        <span>%</span>
-      </div>
-      <div class="input-row">
-        <label>底池：</label>
-        <input type="number" id="ev-pot" value="100" min="1">
-        <span>chips</span>
-      </div>
-      <div class="input-row">
-        <label>跟注金額：</label>
-        <input type="number" id="ev-call" value="50" min="0">
-        <span>chips</span>
-      </div>
-      <div class="input-row">
-        <label>下注金額：</label>
-        <input type="number" id="ev-bet" value="0" min="0">
-        <span>chips（不投=0）</span>
-      </div>
-      <div class="slider-row">
-        <label>對手棄牌率：</label>
-        <input type="range" id="ev-fold" min="0" max="100" value="30" oninput="document.getElementById('ev-fold-label').textContent=this.value+'%'">
-        <span id="ev-fold-label">30%</span>
-      </div>
-    </div>
-    <div class="btn-row">
-      <button onclick="calculateEV()">📊 分析 EV</button>
-    </div>
-    <div id="ev-result"></div>
+  <div class="btn-row">
+    <button onclick="doCalc()">🔢 計算勝率</button>
+    <button class="secondary" onclick="doReset()">🗑 清除</button>
   </div>
+  <div id="result-area"></div>
 
-  <!-- ===== 參考 ===== -->
-  <div id="tab-guide" class="tab-content">
-    <h2>📖 快速參考</h2>
-    <h2>♠ 二四法則</h2>
-    <div class="info-box"><strong>翻牌圈：</strong> Outs × 4 ≈ 勝率%<br><strong>轉牌圈：</strong> Outs × 2 ≈ 勝率%<br><small>⚠️ Outs &gt; 14 時，實際勝率略低於估算值</small></div>
-    <h2>💰 Pot Odds 公式</h2>
-    <div class="info-box"><strong>Pot Odds = 跟注 / (底池 + 對手下注 + 跟注)</strong><br><br>勝率 &gt; Pot Odds → 🟢 跟注 (+EV)<br>勝率 &lt; Pot Odds → 🔴 棄牌 (-EV)</div>
-    <h2>📐 EV 公式</h2>
-    <div class="info-box"><strong>Call EV =</strong> 勝率×(底池-跟注) - 輸率×跟注<br><br><strong>Bet EV =</strong> 棄牌率×底池 + (1-棄牌率)×(勝率×(底池+下注) - 輸率×下注)<br><br><strong>Fold Equity =</strong> 對手棄牌率 × (1 - 你的勝率)</div>
-    <h2>🌱 常見 Outs</h2>
-    <div class="outs-grid">
-      <div class="outs-card"><div class="type">同花聽牌</div><div class="count">9</div><div class="desc">翻牌 36% / 轉牌 18%</div></div>
-      <div class="outs-card"><div class="type">兩頭順</div><div class="count">8</div><div class="desc">翻牌 32% / 轉牌 16%</div></div>
-      <div class="outs-card"><div class="type">卡順</div><div class="count">4</div><div class="desc">翻牌 16% / 轉牌 8%</div></div>
-      <div class="outs-card"><div class="type">三條聽牌</div><div class="count">5</div><div class="desc">翻牌 20% / 轉牌 10%</div></div>
-      <div class="outs-card"><div class="type">雙聽</div><div class="count">15</div><div class="desc">翻牌 60% / 轉牌 30%</div></div>
-      <div class="outs-card"><div class="type">一對聽兩對</div><div class="count">5</div><div class="desc">翻牌 20% / 轉牌 10%</div></div>
-    </div>
+  <h2>🌱 Outs & 二四法則</h2>
+  <div id="outs-area" class="info-box">選擇手牌後自動計算 Outs</div>
+</div>
+
+<!-- ===== 169矩陣 ===== -->
+<div id="tab-matrix" class="tab-content">
+  <h2>📈 169手牌勝率矩陣</h2>
+  <div class="info-box">選擇手牌和公牌，矩陣顯示對隨機對手的勝率（%）</div>
+  <div class="picker-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <div><div class="picker-label">手牌 1</div><select id="mx1" onchange="onMxChange()"><option value="">— 選擇 —</option></select></div>
+    <div><div class="picker-label">手牌 2</div><select id="mx2" onchange="onMxChange()"><option value="">— 選擇 —</option></select></div>
+  </div>
+  <div class="card-display" id="mx-display" style="margin-top:6px"></div>
+  <div class="input-row">
+    <label>模擬次數：</label>
+    <input type="number" id="mx-iters" value="5000" min="1000" max="50000" step="1000" style="width:80px">
+  </div>
+  <div class="btn-row">
+    <button onclick="doMatrix()">📊 生成矩陣</button>
+  </div>
+  <div id="matrix-area"></div>
+</div>
+
+<!-- ===== Pot Odds ===== -->
+<div id="tab-potodds" class="tab-content">
+  <h2>💰 Pot Odds 計算器</h2>
+  <div class="picker-group">
+    <div class="input-row"><label>底池：</label><input type="number" id="pot" value="100" min="1" oninput="doPotOdds()"><span>chips</span></div>
+    <div class="input-row"><label>對手下注：</label><input type="number" id="obet" value="50" min="0" oninput="doPotOdds()"><span>chips</span></div>
+    <div class="input-row"><label>跟注：</label><input type="number" id="call" value="50" min="0" oninput="doPotOdds()"><span>chips</span></div>
+  </div>
+  <div id="pot-area"></div>
+  <h2>📋 Bet Size 參考表</h2>
+  <div class="odds-grid">
+    <div class="odds-card"><div class="size">1/4 底池</div><div class="pct">17%</div><div class="need">需 17%+</div></div>
+    <div class="odds-card"><div class="size">1/3 底池</div><div class="pct">20%</div><div class="need">需 20%+</div></div>
+    <div class="odds-card"><div class="size">1/2 底池</div><div class="pct">25%</div><div class="need">需 25%+</div></div>
+    <div class="odds-card"><div class="size">2/3 底池</div><div class="pct">~29%</div><div class="need">需 29%+</div></div>
+    <div class="odds-card"><div class="size">1 底池</div><div class="pct">33%</div><div class="need">需 33%+</div></div>
+    <div class="odds-card"><div class="size">2x 底池</div><div class="pct">40%</div><div class="need">需 40%+</div></div>
   </div>
 </div>
 
+<!-- ===== EV ===== -->
+<div id="tab-ev" class="tab-content">
+  <h2>📐 EV 決策引擎</h2>
+  <div class="picker-group">
+    <div class="input-row"><label>勝率：</label><input type="number" id="ev-eq" value="30" min="0" max="100" step="0.1"><span>%</span></div>
+    <div class="input-row"><label>底池：</label><input type="number" id="ev-pot" value="100" min="1"><span>chips</span></div>
+    <div class="input-row"><label>跟注：</label><input type="number" id="ev-call" value="50" min="0"><span>chips</span></div>
+    <div class="input-row"><label>下注：</label><input type="number" id="ev-bet" value="0" min="0"><span>chips（不投=0）</span></div>
+    <div class="slider-row">
+      <label>對手棄牌率：</label>
+      <input type="range" id="ev-fold" min="0" max="100" value="30" oninput="document.getElementById('efl').textContent=this.value+'%'">
+      <span id="efl">30%</span>
+    </div>
+  </div>
+  <div class="btn-row"><button onclick="doEV()">📊 分析 EV</button></div>
+  <div id="ev-area"></div>
+</div>
+
+<!-- ===== 參考 ===== -->
+<div id="tab-guide" class="tab-content">
+  <h2>♠ 二四法則</h2>
+  <div class="info-box"><strong>翻牌圈：</strong> Outs × 4 ≈ 勝率%<br><strong>轉牌圈：</strong> Outs × 2 ≈ 勝率%<br><small>⚠️ Outs &gt; 14 時，實際勝率略低</small></div>
+  <h2>💰 Pot Odds</h2>
+  <div class="info-box"><strong>Pot Odds = 跟注 / (底池 + 對手下注 + 跟注)</strong><br>勝率 &gt; Pot Odds → 🟢 跟注 (+EV)<br>勝率 &lt; Pot Odds → 🔴 棄牌 (-EV)</div>
+  <h2>📐 EV 公式</h2>
+  <div class="info-box"><strong>Call EV =</strong> 勝率×(底池-跟注) - 輸率×跟注<br><strong>Bet EV =</strong> 棄牌率×底池 + (1-棄牌率)×EV<br><strong>Fold Equity =</strong> 對手棄牌率 × (1-勝率)</div>
+  <h2>🌱 常見 Outs</h2>
+  <div class="outs-grid">
+    <div class="outs-card"><div class="type">同花</div><div class="count">9</div><div class="desc">翻36% / 轉18%</div></div>
+    <div class="outs-card"><div class="type">兩頭順</div><div class="count">8</div><div class="desc">翻32% / 轉16%</div></div>
+    <div class="outs-card"><div class="type">卡順</div><div class="count">4</div><div class="desc">翻16% / 轉8%</div></div>
+    <div class="outs-card"><div class="type">三條</div><div class="count">5</div><div class="desc">翻20% / 轉10%</div></div>
+    <div class="outs-card"><div class="type">雙聽</div><div class="count">15</div><div class="desc">翻60% / 轉30%</div></div>
+    <div class="outs-card"><div class="type">一對</div><div class="count">5</div><div class="desc">翻20% / 轉10%</div></div>
+  </div>
+</div>
+</div>
+
 <script>
-// ===== DATA =====
-const SUITS = ['♠','♥','♦','♣'];
-const RANKS = ['A','K','Q','J','T','9','8','7','6','5','4','3','2'];
-const RANK_IDX = {A:12,K:11,Q:10,J:9,T:8,'9':7,'8':6,'7':5,'6':4,'5':3,'4':2,'3':1,'2':0};
-const DECK = [];
-for (let s of SUITS) for (let r of RANKS) DECK.push(r+s);
-const HAND_169 = [];
-for (let i=0;i<13;i++) for (let j=0;j<13;j++){
-  const hi=RANKS[12-i], lo=RANKS[12-j];
-  if(i===j) HAND_169.push(`${hi}${lo}`);
-  else if(i>j) HAND_169.push(`${hi}${lo}s`);
-  else HAND_169.push(`${lo}${hi}o`);
+// ===== CONSTANTS =====
+const SUITS=['♠','♥','♦','♣'];
+const RANKS=['A','K','Q','J','T','9','8','7','6','5','4','3','2'];
+const RI={A:12,K:11,Q:10,J:9,T:8,'9':7,'8':6,'7':5,'6':4,'5':3,'4':2,'3':1,'2':0};
+const DECK=[];
+for(const s of SUITS) for(const r of RANKS) DECK.push(r+s);
+const H169=[];
+for(let i=0;i<13;i++) for(let j=0;j<13;j++){
+  const hi=RANKS[12-i],lo=RANKS[12-j];
+  if(i===j) H169.push(hi+lo);
+  else if(i>j) H169.push(hi+lo+'s');
+  else H169.push(lo+hi+'o');
 }
 
-let yourCards=[], communityCards=[];
-const communitySels = ['cc1','cc2','cc3','cc4','cc5'].map(id=>document.getElementById('sel-'+id));
+// ===== STATE =====
+let hole=[],comm=[];
+const holeSel=['hc1','hc2'].map(id=>document.getElementById(id));
+const commSel=['cc1','cc2','cc3','cc4','cc5'].map(id=>document.getElementById(id));
 
 // ===== HELPERS =====
-function cardSuit(c){return c.slice(-1);}
-function cardRank(c){return c.slice(0,-1);}
-function isRed(s){return s==='♥'||s==='♦';}
-function sameCard(a,b){return cardRank(a)===cardRank(b)&&cardSuit(a)===cardSuit(b);}
-function rankIdx(r){return RANK_IDX[r];}
-function deckRemaining(used){return DECK.filter(c=>!used.some(u=>sameCard(u,c)));}
+const rOf=c=>c.slice(0,-1);
+const sOf=c=>c.slice(-1);
+const red=s=>s==='♥'||s==='♦';
+const same=(a,b)=>rOf(a)===rOf(b)&&sOf(a)===sOf(b);
+const rem=used=>DECK.filter(c=>!used.some(u=>same(u,c)));
 
-// ===== HAND EVALUATION =====
-function rankValues(h5){
-  const rv=h5.map(c=>RANK_IDX[cardRank(c)]);
-  const sv=h5.map(c=>cardSuit(c));
-  const sorted=[...rv].sort((a,b)=>a-b);
-  const isFlush=sv.every(s=>s===sv[0]);
-  const diffs=sorted.map((v,i)=>i?sorted[i]-sorted[i-1]:0);
-  const isStraight=diffs.every((d,i)=>i===0||d===1);
-  const isWheel=sorted[0]===0&&sorted[1]===1&&sorted[2]===2&&sorted[3]===3&&sorted[4]===12;
-  const isBroadway=sorted[0]===8&&sorted[1]===9&&sorted[2]===10&&sorted[3]===11&&sorted[4]===12;
-  const cr={}; rv.forEach(r=>cr[r]=(cr[r]||0)+1);
+// ===== HAND EVAL =====
+const rv5=h5=>{
+  const r=h5.map(c=>RI[rOf(c)]);
+  const s=h5.map(c=>sOf(c));
+  const so=[...r].sort((a,b)=>a-b);
+  const fl=s.every(x=>x===s[0]);
+  const ds=so.map((v,i)=>i?so[i]-so[i-1]:0);
+  const st=ds.every((d,i)=>i===0||d===1);
+  const wh=so[0]===0&&so[1]===1&&so[2]===2&&so[3]===3&&so[4]===12;
+  const br=so[0]===8&&so[1]===9&&so[2]===10&&so[3]===11&&so[4]===12;
+  const cr={};r.forEach(x=>cr[x]=(cr[x]||0)+1);
   const cn=Object.values(cr).sort((a,b)=>b-a);
-  if(isFlush&&(isStraight||isWheel||isBroadway))return 900000+Math.max(...sorted);
-  if(cn[0]===4)return 800000+Math.max(...rv);
+  if(fl&&(st||wh||br))return 900000+Math.max(...so);
+  if(cn[0]===4)return 800000+Math.max(...r);
   if(cn[0]===3&&cn[1]===2)return 700000+cn[0]*1000+cn[1];
-  if(isFlush)return 600000+Math.max(...sorted);
-  if(isStraight||isWheel||isBroadway)return 500000+(isWheel?1:Math.max(...sorted));
-  if(cn[0]===3)return 400000+Math.max(...rv);
-  if(cn[0]===2&&cn[1]===2){const hi=Math.max(...rv);const lo=Math.min(...rv.filter(r=>rv.filter(r2=>r2===r).length===1));return 300000+hi*100+lo;}
-  if(cn[0]===2)return 200000+Math.max(...rv);
-  return cn[0]*1000+cn[1]*100+Math.max(...rv);
-}
-function best5(hand){
-  if(hand.length<=5)return hand;
+  if(fl)return 600000+Math.max(...so);
+  if(st||wh||br)return 500000+(wh?1:Math.max(...so));
+  if(cn[0]===3)return 400000+Math.max(...r);
+  if(cn[0]===2&&cn[1]===2){const hi=Math.max(...r);const lo=Math.min(...r.filter(x=>r.filter(y=>y===x).length===1));return 300000+hi*100+lo;}
+  if(cn[0]===2)return 200000+Math.max(...r);
+  return cn[0]*1000+cn[1]*100+Math.max(...r);
+};
+
+const b5=h=>{
+  if(h.length<=5)return h;
   let best=-1,bs=-1;
-  for(let i=0;i<hand.length-4;i++)
-    for(let j=i+1;j<hand.length-3;j++)
-      for(let k=j+1;k<hand.length-2;k++)
-        for(let l=k+1;l<hand.length-1;l++)
-          for(let m=l+1;m<hand.length;m++){
-            const five=[hand[i],hand[j],hand[k],hand[l],hand[m]];
-            const s=rankValues(five);
-            if(s>bs){bs=s;best=five;}
-          }
+  for(let i=0;i<h.length-4;i++)
+  for(let j=i+1;j<h.length-3;j++)
+  for(let k=j+1;k<h.length-2;k++)
+  for(let l=k+1;l<h.length-1;l++)
+  for(let m=l+1;m<h.length;m++){
+    const f=[h[i],h[j],h[k],h[l],h[m]];
+    const s=rv5(f);
+    if(s>bs){bs=s;best=f;}
+  }
   return best;
-}
-function compareHands(h1,h2){return rankValues(best5(h1))-rankValues(best5(h2));}
+};
+
+const cmp=(a,b)=>rv5(b5(a))-rv5(b5(b));
 
 // ===== MONTE CARLO =====
-function monteCarlo(your,community,iters=10000){
-  const used=[...your,...community];
-  const rem=deckRemaining(used);
-  if(rem.length<2)return{equity:0,tie:0};
-  let win=0,tie=0;
-  for(let i=0;i<iters;i++){
-    const sh=[...rem].sort(()=>Math.random()-0.5);
-    const opp=[sh[0],sh[1]];
-    const extra=community.length<5?sh.slice(2,5):[];
-    const cmp=compareHands([...your,...community,...extra],[...opp,...community,...extra]);
-    if(cmp>0)win++;else if(cmp===0)tie++;
+const mc=(y,c,it=10000)=>{
+  const u=[...y,...c];
+  const r=rem(u);
+  if(r.length<2)return{ew:0,et:0,el:1};
+  let w=0,t=0;
+  for(let i=0;i<it;i++){
+    const sh=[...r].sort(()=>Math.random()-0.5);
+    const o=[sh[0],sh[1]];
+    const ex=c.length<5?sh.slice(2,5):[];
+    const x=cmp([...y,...c,...ex],[...o,...c,...ex]);
+    if(x>0)w++;else if(x===0)t++;
   }
-  return{equity:win/iters,tie:tie/iters,loss:1-win/iters-tie/iters};
-}
+  return{ew:w/it,et:t/it,el:1-w/it-it/it};
+};
 
 // ===== OUTS =====
-function countOuts(your,community){
-  let outs=0;
-  const su=[...your.map(c=>cardSuit(c)),...community.map(c=>cardSuit(c))];
-  const ru=[...your.map(c=>cardRank(c)),...community.map(c=>cardRank(c))];
-  const sc={};su.forEach(s=>sc[s]=(sc[s]||0)+1);
-  for(let s in sc)if(sc[s]===4)outs+=9;
-  const rs=new Set(ru);const sorted=[...rs].map(r=>RANK_IDX[r]).sort((a,b)=>a-b);
-  for(let i=0;i<sorted.length-3;i++){const d=sorted[i+3]-sorted[i];if(d===4){outs+=8;break;}if(d===3&&sorted.length>=4)outs+=4;}
-  const rc={};ru.forEach(r=>rc[r]=(rc[r]||0)+1);
-  for(let r in rc)if(rc[r]>=2)outs+=5;
-  return Math.min(outs,20);
-}
+const outs=(y,c)=>{
+  let o=0;
+  const su=[...y.map(sOf),...c.map(sOf)];
+  const ru=[...y.map(rOf),...c.map(rOf)];
+  const sc={};su.forEach(x=>sc[x]=(sc[x]||0)+1);
+  for(const x in sc)if(sc[x]===4)o+=9;
+  const rs=new Set(ru);
+  const so=[...rs].map(x=>RI[x]).sort((a,b)=>a-b);
+  for(let i=0;i<so.length-3;i++){
+    if(so[i+3]-so[i]===4){o+=8;break;}
+    if(so[i+3]-so[i]===3&&so.length>=4)o+=4;
+  }
+  const rc={};ru.forEach(x=>rc[x]=(rc[x]||0)+1);
+  for(const x in rc)if(rc[x]>=2)o+=5;
+  return Math.min(o,20);
+};
 
-// ===== CARD CHIP UI =====
-function cardChip(card,empty=false){
-  if(empty)return`<div class="card-chip empty">空</div>`;
-  const s=cardSuit(card),r=cardRank(card);
-  return`<div class="card-chip ${isRed(s)?'red':'black'}"><span class="rank">${r}</span><span class="suit">${s}</span></div>`;
-}
+// ===== CARD CHIP =====
+const chip=c=>{
+  if(!c)return`<div class="card-chip" style="border:2px dashed #333;background:transparent"><span class="cr" style="color:#444;font-size:0.7em">—</span></div>`;
+  const s=sOf(c),r=rOf(c);
+  return`<div class="card-chip ${red(s)?'red':'black'}"><span class="cs">${s}</span><span class="cr">${r}</span></div>`;
+};
 
-// ===== INIT SELECT OPTIONS =====
-function buildSelectOptions(sel, includeEmpty=false){
-  let html=includeEmpty?'<option value="">— 選擇 —</option>':'';
-  const used=[...yourCards,...communityCards];
+// ===== FILL SELECT =====
+const fillSel=(sel,exclude)=>{
+  const ex=new Set(exclude||[]);
+  let html='<option value="">—</option>';
   DECK.forEach(c=>{
-    if(used.some(u=>sameCard(u,c)))return;
-    const r=cardRank(c),s=cardSuit(c);
-    const red=isRed(s)?'color:#c0392b':'';
-    html+=`<option value="${c}" style="${red}">${r} ${s}</option>`;
+    if(ex.has(c))return;
+    const s=sOf(c),r=rOf(c);
+    const style=red(s)?'color:#c0392b':'color:#ddd';
+    html+=`<option value="${c}" style="${style}">${r} ${s}</option>`;
   });
   sel.innerHTML=html;
+};
+
+// ===== INIT =====
+const usedAll=()=>[...hole,...comm];
+holeSel.forEach(s=>fillSel(s,[]));
+commSel.forEach(s=>fillSel(s,[]));
+fillSel(document.getElementById('mx1'),[]);
+fillSel(document.getElementById('mx2'),[]);
+
+// ===== HOLE CHANGE =====
+function onHoleChange(){
+  const v1=document.getElementById('hc1').value;
+  const v2=document.getElementById('hc2').value;
+  if(v1&&v2&&same(v1,v2)){alert('兩張不能相同');document.getElementById('hc2').value='';return;}
+  hole=v1&&v2?[v1,v2]:v1?[v1]:[];
+  // Re-fill hc2 with exclusion of hc1
+  fillSel(document.getElementById('hc2'),hole);
+  // Update displays
+  document.getElementById('your-display').innerHTML=hole.length===2?hole.map(chip).join(''):(hole.length===1?chip(hole[0])+chip(null):chip(null)+chip(null));
+  // Update outs
+  updateOuts();
+  // Update equity result if any
 }
 
-function initAllSelects(){
-  const hc1=document.getElementById('sel-hc1');
-  const hc2=document.getElementById('sel-hc2');
-  const mx1=document.getElementById('sel-mx1');
-  const mx2=document.getElementById('sel-mx2');
-  const usedAll=[...yourCards,...communityCards];
-  const avail=DECK.filter(c=>!usedAll.some(u=>sameCard(u,c)));
-  function fillSel(sel){
-    const cur=sel.value;
-    const used=[...yourCards,...communityCards];
-    let html='<option value="">—</option>';
-    avail.forEach(c=>{
-      if(used.some(u=>sameCard(u,c))&&c!==cur)return;
-      const r=cardRank(c),s=cardSuit(c),red=isRed(s)?'color:#c0392b':'';
-      html+=`<option value="${c}" style="${red}" ${c===cur?'selected':''}>${r} ${s}</option>`;
-    });
-    sel.innerHTML=html;
-  }
-  fillSel(hc1);fillSel(hc2);fillSel(mx1);fillSel(mx2);
-  communitySels.forEach(s=>{
+// ===== COMM CHANGE =====
+function onCommChange(){
+  const vals=commSel.map(s=>s.value).filter(v=>v);
+  const seen=new Set();
+  comm=vals.filter(v=>{if(seen.has(v))return false;seen.add(v);return true;});
+  document.getElementById('comm-display').innerHTML=comm.length?comm.map(chip).join(''):'<span style="color:#3a5a3a;font-size:0.8em">尚未選擇公牌</span>';
+  // Re-fill each comm sel
+  commSel.forEach((s,i)=>{
     const cur=s.value;
-    let html='<option value="">—</option>';
-    avail.forEach(c=>{
-      if([...yourCards,...communityCards].some(u=>sameCard(u,c))&&c!==cur)return;
-      const r=cardRank(c),s=cardSuit(c),red=isRed(s)?'color:#c0392b':'';
-      html+=`<option value="${c}" style="${red}" ${c===cur?'selected':''}>${r} ${s}</option>`;
+    const ex=[...hole,...comm];
+    const nhtml='<option value="">—</option>';
+    let html=nhtml;
+    DECK.forEach(c=>{
+      if(ex.includes(c)&&c!==cur)return;
+      const ss=sOf(c),rr=rOf(c);
+      const st=red(ss)?'color:#c0392b':'color:#ddd';
+      html+=`<option value="${c}" style="${st}" ${c===cur?'selected':''}>${rr} ${ss}</option>`;
     });
     s.innerHTML=html;
   });
-}
-
-function updateHoleCards(){
-  const r1=document.getElementById('sel-hc1').value;
-  const r2=document.getElementById('sel-hc2').value;
-  yourCards=r1&&r2&&!sameCard(r1,r2)?[r1,r2]:(r1?[r1]:[]);
-  initAllSelects();
-  renderCards();
-}
-
-function updateCommunityCards(){
-  const vals=communitySels.map(s=>s.value).filter(v=>v);
-  // Remove duplicates
-  const seen=new Set();
-  communityCards=vals.filter(v=>{
-    if(seen.has(v))return false;
-    seen.add(v);return true;
-  });
-  initAllSelects();
-  renderCards();
-}
-
-function updateMatrixCards(){
-  const r1=document.getElementById('sel-mx1').value;
-  const r2=document.getElementById('sel-mx2').value;
-  const mc=r1&&r2&&!sameCard(r1,r2)?[r1,r2]:(r1?[r1]:[]);
-  document.getElementById('matrix-selected-display').innerHTML=yourCards.map(c=>cardChip(c)).join('')+mc.map(c=>cardChip(c)).join('');
-}
-
-function renderCards(){
-  document.getElementById('your-cards-display').innerHTML=yourCards.length>=2
-    ?yourCards.map(c=>cardChip(c)).join('')
-    :yourCards.length===1?cardChip(yourCards[0])+cardChip(null,true):cardChip(null,true)+cardChip(null,true);
-  document.getElementById('community-cards-display').innerHTML=communityCards.length
-    ?communityCards.map(c=>cardChip(c)).join('')
-    :'<span style="color:#3a5a3a;font-size:0.8em">尚未選擇公牌</span>';
   updateOuts();
 }
 
-function clearAll(){
-  yourCards=[];communityCards=[];
-  document.getElementById('sel-hc1').value='';
-  document.getElementById('sel-hc2').value='';
-  communitySels.forEach(s=>s.value='');
-  document.getElementById('equity-result').innerHTML='';
-  initAllSelects();
-  renderCards();
+// ===== MATRIX CHANGE =====
+function onMxChange(){
+  const m1=document.getElementById('mx1').value;
+  const m2=document.getElementById('mx2').value;
+  const mc=m1&&m2&&!same(m1,m2)?[m1,m2]:m1?[m1]:[];
+  document.getElementById('mx-display').innerHTML=(mc.length===2?mc:[]).map(chip).join('');
 }
 
-// ===== TABS =====
-function showTab(name){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelector(`[onclick="showTab('${name}')"]`).classList.add('active');
-  document.getElementById('tab-'+name).classList.add('active');
+// ===== OUTS UPDATE =====
+function updateOuts(){
+  if(hole.length<2){document.getElementById('outs-area').innerHTML='請先選擇完整手牌';return;}
+  const o=outs(hole,comm);
+  const stage=comm.length>=4?'轉牌':'翻牌';
+  const r24=stage==='翻牌'?o*4:o*2;
+  document.getElementById('outs-area').innerHTML=`
+    <div style="font-weight:bold;color:var(--gold2)">🌱 Outs: <span style="font-size:1.2em">${o}</span> 張 &nbsp;|&nbsp; 階段: ${stage}</div>
+    <div style="margin-top:5px">二四法則估算：≈ <strong>${r24}%</strong>${o>14?' <span style="color:var(--red);font-size:0.85em">(⚠️ Outs&gt;14，略低)</span>':''}</div>`;
+  document.getElementById('ev-eq').value=r24;
+  doPotOdds();
 }
 
-// ===== CALCULATE =====
-function calculateEquity(){
-  if(yourCards.length<2){alert('請選擇完整的2張手牌');return;}
-  const iters=10000;
-  const div=document.getElementById('equity-result');
-  div.innerHTML=`<div class="loading"><div class="spinner"></div>計算中...</div>`;
+// ===== CALC =====
+function doCalc(){
+  if(hole.length<2){alert('請選擇完整的2張手牌');return;}
+  const area=document.getElementById('result-area');
+  area.innerHTML='<div class="loading"><div class="spinner"></div>計算中...</div>';
   setTimeout(()=>{
-    const{equity,tie,loss}=monteCarlo(yourCards,communityCards,iters);
-    const ep=(equity*100).toFixed(1),tp=(tie*100).toFixed(1),lp=(loss*100).toFixed(1);
-    let status=equity>0.55?'🟢 領先':equity>0.45?'🟡 差不多':'🔴 落後';
-    div.innerHTML=`
-      <div class="result-box"><div class="equity-big">${ep}%</div><div class="equity-sub">勝率（Monte Carlo ${iters.toLocaleString()}次）</div></div>
-      <div class="result-box" style="padding:8px"><div style="display:flex;gap:20px;justify-content:center;font-size:0.9em">
+    const{ew,et,el}=mc(hole,comm,10000);
+    const ep=(ew*100).toFixed(1),tp=(et*100).toFixed(1),lp=(el*100).toFixed(1);
+    const st=ew>0.55?'🟢 領先':ew>0.45?'🟡 差不多':'🔴 落後';
+    area.innerHTML=`
+      <div class="result-box"><div class="equity-big">${ep}%</div><div class="equity-sub">Monte Carlo 10,000次</div></div>
+      <div class="result-box" style="padding:8px"><div style="display:flex;gap:16px;justify-content:center;font-size:0.88em">
         <span>🏆 勝利: <b style="color:var(--green)">${ep}%</b></span>
-        <span>🤝 平手: <b style="color:var(--gray)">${tp}%</b></span>
-        <span>💔 失敗: <b style="color:var(--red)">${lp}%</b></span>
+        <span>🤝 平: <b style="color:var(--gray)">${tp}%</b></span>
+        <span>💔 負: <b style="color:var(--red)">${lp}%</b></span>
       </div></div>
-      <div class="result-box" style="text-align:left;font-size:0.85em">
-        <div>📊 ${status}</div>
-        <div>💡 ${equity>0.55?'可以考慮加註':equity>0.45?'可以觀望':'考慮棄牌'}</div>
+      <div class="result-box" style="text-align:left;font-size:0.83em">
+        <div>${st}</div>
+        <div style="color:var(--gray);margin-top:3px">${ew>0.55?'可考慮加註':'建議觀望或棄牌'}</div>
       </div>`;
-    document.getElementById('ev-equity').value=ep;
-    calcPotOdds();
+    document.getElementById('ev-eq').value=ep;
+    doPotOdds();
   },50);
 }
 
-function updateOuts(){
-  if(yourCards.length<2){document.getElementById('outs-section').innerHTML='請選擇完整手牌';document.getElementById('rule24-section').innerHTML='';return;}
-  const outs=countOuts(yourCards,communityCards);
-  const stage=communityCards.length>=4?'turn':'flop';
-  const rule=stage==='flop'?outs*4:outs*2;
-  document.getElementById('outs-section').innerHTML=`
-    <div style="font-size:1.1em;font-weight:bold;color:var(--gold2)">🌱 估算 Outs: <span style="font-size:1.2em">${outs}</span> 張</div>
-    <div style="font-size:0.8em;color:var(--gray);margin-top:3px">階段: ${stage==='flop'?'翻牌圈':'轉牌圈'}</div>`;
-  document.getElementById('rule24-section').innerHTML=`
-    <div class="result-box" style="text-align:center">
-      <div class="equity-big">≈ ${rule}%</div>
-      <div class="equity-sub">二四法則（${outs} Outs × ${stage==='flop'?4:2}）</div>
-      ${outs>14?'<div style="font-size:0.75em;color:var(--red);margin-top:4px">⚠️ Outs &gt; 14，實際勝率略低</div>':''}
-    </div>`;
-}
-
-function equityColor(eq){
-  const r=Math.round(255*(1-eq)),g=Math.round(200*eq),b=Math.round(30*(1-eq));
-  return`rgb(${r},${g},${b})`;
-}
-
-function calculateMatrix(){
-  if(yourCards.length<2){alert('請先選擇你的2張手牌');return;}
-  const iters=parseInt(document.getElementById('matrix-iters').value)||5000;
-  const used=[...yourCards,...communityCards];
-  const div=document.getElementById('matrix-result');
-  div.innerHTML=`<div class="loading"><div class="spinner"></div>生成矩陣中...</div>`;
+// ===== MATRIX =====
+function doMatrix(){
+  if(hole.length<2){alert('請先選擇2張手牌');return;}
+  const it=parseInt(document.getElementById('mx-iters').value)||5000;
+  const area=document.getElementById('matrix-area');
+  area.innerHTML='<div class="loading"><div class="spinner"></div>生成中...</div>';
   setTimeout(()=>{
+    const u=[...hole,...comm];
     const md={};
-    HAND_169.forEach(h=>{
-      const r1=h[0],r2=h[1],su=h.includes('s');
+    H169.forEach(h=>{
+      const r1=h[0],r2=h[1],su=h.endsWith('s');
       let cs;
       if(r1===r2)cs=[r1+'♠',r2+'♣'];
       else if(su)cs=[r1+'♠',r2+'♠'];
       else cs=[r1+'♠',r2+'♣'];
-      if(cs.some(c=>used.some(u=>sameCard(u,c)))){md[h]=null;return;}
-      const{equity}=monteCarlo(cs,communityCards,iters);
-      md[h]=equity;
+      if(cs.some(c=>u.some(x=>same(x,c)))){md[h]=null;return;}
+      md[h]=mc(cs,comm,it).ew;
     });
-    let html=`<div class="matrix-wrap"><div class="matrix">`;
-    html+=`<div class="matrix-header"></div>`;
+    const eqc=eq=>{const r=Math.round(255*(1-eq)),g=Math.round(200*eq),b=Math.round(30*(1-eq));return`rgb(${r},${g},${b})`;};
+    const holeRanks=hole.map(rOf).sort().join('');
+    let html='<div class="matrix-wrap"><div class="matrix">';
+    html+='<div class="matrix-header"></div>';
     for(let i=12;i>=0;i--)html+=`<div class="matrix-header">${RANKS[i]}</div>`;
     for(let row=12;row>=0;row--){
       html+=`<div class="matrix-row-label">${RANKS[row]}</div>`;
       for(let col=12;col>=0;col--){
         const hi=(12-row)*13+(12-col);
-        const h=HAND_169[hi];
+        const h=H169[hi];
         const eq=md[h];
         if(eq===null){html+=`<div class="matrix-cell" style="background:#1a1a1a;color:#333">—</div>`;}
         else{
-          const bg=equityColor(eq);
+          const bg=eqc(eq);
           const txt=eq>0.5?'#fff':eq>0.35?'#ddd':'#999';
-          const hl=h===yourCards.map(c=>cardRank(c)).sort().join('')||h===yourCards.map(c=>cardRank(c)).join('')?'border:2px solid var(--gold);':'';
+          const hl=h===holeRanks?'border:2px solid var(--gold);':'';
           html+=`<div class="matrix-cell" style="background:${bg};color:${txt};${hl}" title="${h}: ${(eq*100).toFixed(0)}%">
             <span class="cell-label">${h}<br>${(eq*100).toFixed(0)}%</span></div>`;
         }
       }
     }
-    html+=`</div></div>`;
-    html+=`<div style="display:flex;gap:10px;align-items:center;font-size:0.72em;margin-top:6px;flex-wrap:wrap">
+    html+='</div></div>';
+    html+=`<div style="display:flex;gap:8px;align-items:center;font-size:0.7em;margin-top:5px;flex-wrap:wrap">
       <span style="color:var(--gray)">勝率:</span>
-      <div style="width:18px;height:12px;background:rgb(0,180,0);border-radius:2px"></div><span>60%+</span>
-      <div style="width:18px;height:12px;background:rgb(100,180,50);border-radius:2px"></div><span>50%</span>
-      <div style="width:18px;height:12px;background:rgb(200,100,50);border-radius:2px"></div><span>40%</span>
-      <div style="width:18px;height:12px;background:rgb(200,50,50);border-radius:2px"></div><span>30%</span>
+      <div style="width:16px;height:11px;background:rgb(0,180,0);border-radius:2px"></div><span>60%+</span>
+      <div style="width:16px;height:11px;background:rgb(100,180,50);border-radius:2px"></div><span>50%</span>
+      <div style="width:16px;height:11px;background:rgb(200,100,50);border-radius:2px"></div><span>40%</span>
+      <div style="width:16px;height:11px;background:rgb(200,50,50);border-radius:2px"></div><span>&lt;30%</span>
     </div>`;
-    div.innerHTML=html;
+    area.innerHTML=html;
   },50);
 }
 
 // ===== POT ODDS =====
-function calcPotOdds(){
-  const pot=parseFloat(document.getElementById('pot-size').value)||0;
-  const opp=parseFloat(document.getElementById('opp-bet').value)||0;
-  const call=parseFloat(document.getElementById('call-amt').value)||0;
-  const equity=parseFloat(document.getElementById('ev-equity').value)||0;
-  if(call<=0){document.getElementById('pot-odds-result').innerHTML='<div class="info-box">請輸入跟注金額</div>';return;}
-  const po=call/(pot+opp+call);
-  const ok=equity>po*100;
-  document.getElementById('pot-odds-result').innerHTML=`
-    <div class="result-box"><div class="equity-big" style="color:var(--gold2)">${(po*100).toFixed(1)}%</div><div class="equity-sub">你需要戰勝的最低勝率（Pot Odds）</div></div>
+function doPotOdds(){
+  const pot=parseFloat(document.getElementById('pot').value)||0;
+  const ob=parseFloat(document.getElementById('obet').value)||0;
+  const cl=parseFloat(document.getElementById('call').value)||0;
+  const eq=parseFloat(document.getElementById('ev-eq').value)||0;
+  const area=document.getElementById('pot-area');
+  if(cl<=0){area.innerHTML='<div class="info-box">請輸入跟注金額</div>';return;}
+  const po=cl/(pot+ob+cl);
+  const pct=po*100;
+  const ok=eq>pct;
+  area.innerHTML=`
+    <div class="result-box"><div class="equity-big" style="color:var(--gold2)">${pct.toFixed(1)}%</div><div class="equity-sub">最低需戰勝的勝率（Pot Odds）</div></div>
     <div class="rec-box ${ok?'call':'fold'}">
-      <div class="rec-main">${ok?'✅ 可以跟注 (+EV)':'❌ 應該棄牌 (-EV)'}</div>
-      <div class="rec-ev">勝率: ${equity.toFixed(1)}% | Pot Odds: ${(po*100).toFixed(1)}% | 差距: ${(equity-po*100).toFixed(1)}%</div>
+      <div class="rec-main">${ok?'✅ 可跟注 (+EV)':'❌ 應棄牌 (-EV)'}</div>
+      <div class="rec-ev">勝率 ${eq.toFixed(1)}% ${ok?'>':'<'} Pot Odds ${pct.toFixed(1)}% &nbsp;差距 ${Math.abs(eq-pct).toFixed(1)}%</div>
     </div>
-    <div class="stat-row"><span class="k">潜在底池</span><span class="v">${pot+opp+call} chips</span></div>`;
+    <div class="stat-row"><span class="k">潜在底池</span><span class="v">${pot+ob+cl}</span></div>`;
 }
 
 // ===== EV =====
-function calculateEV(){
-  const equity=(parseFloat(document.getElementById('ev-equity').value)||0)/100;
+function doEV(){
+  const eq=(parseFloat(document.getElementById('ev-eq').value)||0)/100;
   const pot=parseFloat(document.getElementById('ev-pot').value)||0;
-  const call=parseFloat(document.getElementById('ev-call').value)||0;
-  const bet=parseFloat(document.getElementById('ev-bet').value)||0;
-  const foldP=(parseFloat(document.getElementById('ev-fold').value)||0)/100;
-  const loseP=1-equity;
-  const callEV=equity*(pot-call)-loseP*call;
-  const betEV=foldP*pot+(1-foldP)*(equity*(pot+bet)-loseP*bet);
-  const foldEq=foldP*loseP;
-  const combEV=foldEq*pot+equity*(1-foldP)*(pot+bet);
+  const cl=parseFloat(document.getElementById('ev-call').value)||0;
+  const bt=parseFloat(document.getElementById('ev-bet').value)||0;
+  const fp=(parseFloat(document.getElementById('ev-fold').value)||0)/100;
+  const lp=1-eq;
+  const cEV=eq*(pot-cl)-lp*cl;
+  const bEV=fp*pot+(1-fp)*(eq*(pot+bt)-lp*bt);
+  const fEq=fp*lp;
+  const cmb=fEq*pot+eq*(1-fp)*(pot+bt);
   let rec='',rc='';
-  if(bet>0&&betEV>callEV&&betEV>0){rec='💰 VALUE BET';rc='bet';}
-  else if(callEV>0&&callEV>=betEV){rec='✅ CALL';rc='call';}
-  else if(callEV<0&&foldEq*pot>Math.abs(callEV)){rec='🎭 BLUFF';rc='bet';}
+  if(bt>0&&bEV>cEV&&bEV>0){rec='💰 VALUE BET';rc='bet';}
+  else if(cEV>0&&cEV>=bEV){rec='✅ CALL';rc='call';}
+  else if(cEV<0&&fEq*pot>Math.abs(cEV)){rec='🎭 BLUFF';rc='bet';}
   else{rec='❌ FOLD';rc='fold';}
-  document.getElementById('ev-result').innerHTML=`
+  const area=document.getElementById('ev-area');
+  area.innerHTML=`
     <div class="rec-box ${rc}"><div class="rec-main">${rec}</div></div>
     <div class="ev-grid">
-      <div class="ev-card"><div class="label">跟注 EV</div><div class="value" style="color:${callEV>0?'var(--green)':'var(--red)'}">${callEV>=0?'+':''}${callEV.toFixed(1)}</div><div class="sub">chips/hand</div></div>
-      <div class="ev-card"><div class="label">下注 EV</div><div class="value" style="color:${betEV>0?'var(--green)':'var(--red)'}">${betEV>=0?'+':''}${betEV.toFixed(1)}</div><div class="sub">chips/hand</div></div>
+      <div class="ev-card"><div class="label">Call EV</div><div class="value" style="color:${cEV>0?'var(--green)':'var(--red)'}">${cEV>=0?'+':''}${cEV.toFixed(1)}</div><div class="sub">chips/hand</div></div>
+      <div class="ev-card"><div class="label">Bet EV</div><div class="value" style="color:${bEV>0?'var(--green)':'var(--red)'}">${bEV>=0?'+':''}${bEV.toFixed(1)}</div><div class="sub">chips/hand</div></div>
     </div>
     <div class="ev-grid">
-      <div class="ev-card"><div class="label">棄牌權益</div><div class="value" style="color:var(--gold2)">${(foldEq*100).toFixed(1)}%</div><div class="sub">fold×(1-equity)</div></div>
-      <div class="ev-card"><div class="label">綜合 EV</div><div class="value" style="color:${combEV>0?'var(--green)':'var(--red)'}">${combEV>=0?'+':''}${combEV.toFixed(1)}</div><div class="sub">含棄牌權益</div></div>
+      <div class="ev-card"><div class="label">棄牌權益</div><div class="value" style="color:var(--gold2)">${(fEq*100).toFixed(1)}%</div><div class="sub">fold×(1-eq)</div></div>
+      <div class="ev-card"><div class="label">綜合 EV</div><div class="value" style="color:${cmb>0?'var(--green)':'var(--red)'}">${cmb>=0?'+':''}${cmb.toFixed(1)}</div><div class="sub">含棄牌</div></div>
     </div>
     <div class="info-box">
-      <strong>Call EV</strong> = ${(equity*100).toFixed(0)}%×${pot} - ${(loseP*100).toFixed(0)}%×${call} = ${callEV>=0?'+':''}${callEV.toFixed(1)}<br>
-      <strong>Bet EV</strong> = ${(foldP*100).toFixed(0)}%×${pot} + ${((1-foldP)*100).toFixed(0)}%×(${equity>0.5?'+':'-'}${Math.abs(loseP*bet).toFixed(1)}) = ${betEV>=0?'+':''}${betEV.toFixed(1)}
+      <strong>Call EV</strong> = ${(eq*100).toFixed(0)}%×${pot} - ${(lp*100).toFixed(0)}%×${cl} = ${cEV>=0?'+':''}${cEV.toFixed(1)}<br>
+      <strong>Bet EV</strong> = ${(fp*100).toFixed(0)}%×${pot} + ${((1-fp)*100).toFixed(0)}%×EV = ${bEV>=0?'+':''}${bEV.toFixed(1)}
     </div>`;
 }
 
-// ===== INIT =====
-initAllSelects();
-renderCards();
+// ===== RESET =====
+function doReset(){
+  hole=[];comm=[];
+  holeSel.forEach(s=>s.value='');
+  commSel.forEach(s=>s.value='');
+  document.getElementById('your-display').innerHTML=chip(null)+chip(null);
+  document.getElementById('comm-display').innerHTML='';
+  document.getElementById('result-area').innerHTML='';
+  document.getElementById('outs-area').innerHTML='選擇手牌後自動計算 Outs';
+  document.getElementById('ev-eq').value='30';
+  doPotOdds();
+  fillSel(document.getElementById('hc1'),[]);
+  fillSel(document.getElementById('hc2'),[]);
+  commSel.forEach(s=>fillSel(s,[]));
+}
+
+// ===== TABS =====
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-btn-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
 </script>
 </body>
 </html>
